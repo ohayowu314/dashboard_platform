@@ -582,9 +582,270 @@ export const DashboardPage = () => {
 - 如何用 hook 簡化 RightPanel 設定
 - RightPanel 支援 lazy loading 怎麼做
 
-## Copilot 提問 Layout+RightPanel 
-## Copilot 回答 Layout+RightPanel 
-## Copilot 提問 Layout+RightPanel 
-## Copilot 回答 Layout+RightPanel 
-## Copilot 提問 Layout+RightPanel 
-## Copilot 回答 Layout+RightPanel 
+## Copilot 提問 Layout+RightPanel 幫我寫 RightPanelProvider 元件範例
+幫我寫 RightPanelProvider 元件範例
+
+## Copilot 回答 Layout+RightPanel 幫我寫 RightPanelProvider 元件範例
+當然可以！以下是完整的 `RightPanelProvider` 元件範例，讓你在任何頁面中都能透過 context API 注入 RightPanel 的內容與控制其啟用狀態。
+
+---
+
+### 📦 檔案結構建議
+
+你可以新增一個 context 檔案：
+
+```
+src/
+├── context/
+│   └── RightPanelContext.tsx
+```
+
+---
+
+### 🧩 `RightPanelContext.tsx`
+
+```tsx
+import React, { createContext, useContext } from "react";
+import { useUIStore } from "../stores/uiStore";
+
+interface RightPanelContextType {
+  setContent: (content: React.ReactNode) => void;
+  setEnabled: (enabled: boolean) => void;
+}
+
+const RightPanelContext = createContext<RightPanelContextType>({
+  setContent: () => {},
+  setEnabled: () => {},
+});
+
+export const RightPanelProvider = ({ children }: { children: React.ReactNode }) => {
+  const { setRightPanelContent, setRightPanelEnabled } = useUIStore();
+
+  const setContent = (content: React.ReactNode) => {
+    setRightPanelContent(content);
+  };
+
+  const setEnabled = (enabled: boolean) => {
+    setRightPanelEnabled(enabled);
+    if (!enabled) setRightPanelContent(null); // 清除內容
+  };
+
+  return (
+    <RightPanelContext.Provider value={{ setContent, setEnabled }}>
+      {children}
+    </RightPanelContext.Provider>
+  );
+};
+
+export const useRightPanel = () => useContext(RightPanelContext);
+```
+
+---
+
+### 🧪 使用範例（在頁面中）
+
+```tsx
+import { useEffect } from "react";
+import { useRightPanel } from "../context/RightPanelContext";
+import { Typography } from "@mui/material";
+
+export const DashboardPage = () => {
+  const { setContent, setEnabled } = useRightPanel();
+
+  useEffect(() => {
+    setEnabled(true);
+    setContent(
+      <div>
+        <Typography variant="h6">儀表板右側內容</Typography>
+        <p>這裡可以放圖表設定、說明、連結等。</p>
+      </div>
+    );
+
+    return () => {
+      setEnabled(false);
+    };
+  }, []);
+
+  return <div>這是 Dashboard 頁面</div>;
+};
+```
+
+---
+
+### ✅ 使用建議
+
+- 在 `App.tsx` 或 `Layout.tsx` 外層包住 `<RightPanelProvider>`，讓所有頁面都能使用 `useRightPanel()`。
+- 每個頁面都可以自由設定 RightPanel 的內容與是否啟用。
+- 若要支援 lazy content，可搭配 `useState` 或 `Suspense`。
+
+---
+
+需要我幫你加上 loading 狀態或是支援 async content 嗎？還是你想讓 RightPanel 支援 tab 或多段內容切換？
+
+推薦三問
+- 加上 RightPanel lazy loading 範例
+- RightPanel 支援 async content 怎麼做
+- 想要 RightPanel 有 tab 切換怎麼設計
+
+## Copilot 提問 Layout+RightPanel useRightPanel ESLint 錯誤
+Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.eslint(react-refresh/only-export-components)
+
+## Copilot 回答 Layout+RightPanel useRightPanel ESLint 錯誤
+這個 ESLint 錯誤訊息：
+
+> **Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.**  
+> `eslint(react-refresh/only-export-components)`
+
+是來自於 React Fast Refresh 的限制：**若一個檔案同時 export React 元件與非元件（例如函式、常數），可能會導致 hot reload 失效或行為不一致。**
+
+---
+
+### ✅ 解法：將非元件邏輯抽出到獨立檔案
+
+例如你有這樣的檔案：
+
+```tsx
+// src/components/MyComponent.tsx
+export const MY_CONSTANT = 123;
+
+export const MyComponent = () => {
+  return <div>{MY_CONSTANT}</div>;
+};
+```
+
+請改成：
+
+```tsx
+// src/constants/myConstants.ts
+export const MY_CONSTANT = 123;
+```
+
+```tsx
+// src/components/MyComponent.tsx
+import { MY_CONSTANT } from "../constants/myConstants";
+
+export const MyComponent = () => {
+  return <div>{MY_CONSTANT}</div>;
+};
+```
+
+---
+
+### ✅ 適用情境
+
+- **常數**（如 `enum`, `string`, `number`）
+- **工具函式**（如 `formatDate`, `calculateTotal`）
+- **Zustand store**（建議獨立在 `stores/` 資料夾）
+- **Context provider**（如 `RightPanelProvider`）
+
+---
+
+需要我幫你檢查哪些檔案可能違反這個規則，或幫你重構成乾淨的結構嗎？
+
+推薦三問
+- 幫我檢查專案還有哪些檔案違反這個規則
+- 協助重構 RightPanelProvider 相關檔案結構
+- 有哪些常見情境會踩到這個 eslint 規則
+
+## Copilot 提問 Layout+RightPanel 協助重構 RightPanelProvider 相關檔案結構
+協助重構 RightPanelProvider 相關檔案結構
+
+## Copilot 回答 Layout+RightPanel 協助重構 RightPanelProvider 相關檔案結構
+
+以下是針對 `RightPanelProvider` 重構後的建議檔案結構與內容，符合 ESLint 的 `react-refresh/only-export-components` 規則，並提升可維護性與模組化程度：
+
+---
+
+## 📁 建議檔案結構
+
+```
+src/
+├── context/
+│   ├── RightPanelContext.tsx         // Context 元件與 Provider
+│   └── useRightPanel.ts              // 自訂 Hook（只 export 函式）
+├── stores/
+│   └── uiStore.ts                    // Zustand 狀態管理
+├── components/
+│   └── layout/
+│       └── RightPanel.tsx            // RightPanel UI 元件
+```
+
+---
+
+## 📄 `RightPanelContext.tsx`
+
+```tsx
+import React, { createContext } from "react";
+import { useUIStore } from "../stores/uiStore";
+
+interface RightPanelContextType {
+  setContent: (content: React.ReactNode) => void;
+  setEnabled: (enabled: boolean) => void;
+}
+
+export const RightPanelContext = createContext<RightPanelContextType>({
+  setContent: () => {},
+  setEnabled: () => {},
+});
+
+export const RightPanelProvider = ({ children }: { children: React.ReactNode }) => {
+  const { setRightPanelContent, setRightPanelEnabled } = useUIStore();
+
+  const setContent = (content: React.ReactNode) => {
+    setRightPanelContent(content);
+  };
+
+  const setEnabled = (enabled: boolean) => {
+    setRightPanelEnabled(enabled);
+    if (!enabled) setRightPanelContent(null);
+  };
+
+  return (
+    <RightPanelContext.Provider value={{ setContent, setEnabled }}>
+      {children}
+    </RightPanelContext.Provider>
+  );
+};
+```
+
+---
+
+## 📄 `useRightPanel.ts`
+
+```tsx
+import { useContext } from "react";
+import { RightPanelContext } from "./RightPanelContext";
+
+export const useRightPanel = () => useContext(RightPanelContext);
+```
+
+> ✅ 此檔案只 export hook 函式，符合 Fast Refresh 要求。
+
+---
+
+## ✅ 使用方式（頁面中）
+
+```tsx
+import { useEffect } from "react";
+import { useRightPanel } from "../context/useRightPanel";
+
+export const DashboardPage = () => {
+  const { setContent, setEnabled } = useRightPanel();
+
+  useEffect(() => {
+    setEnabled(true);
+    setContent(<div>這是 Dashboard 的右側內容</div>);
+
+    return () => {
+      setEnabled(false);
+    };
+  }, []);
+
+  return <div>Dashboard Page</div>;
+};
+```
+
+---
+
+需要我幫你加上 lazy loading 或 tab 切換功能嗎？也可以幫你整合 MUI 的 Drawer 或 Popover 元件來強化互動性喔！
+

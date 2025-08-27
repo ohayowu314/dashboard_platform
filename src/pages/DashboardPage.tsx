@@ -1,15 +1,21 @@
 import { useEffect } from "react";
-import { useUIStore } from "../stores/uiStore";
+import { useRightPanel } from "../context/useRightPanel";
+import { Typography } from "@mui/material";
 
 export const DashboardPage: React.FC = () => {
-  const { setRightPanelEnabled, setRightPanelContent } = useUIStore();
+  const { setContent, setEnabled } = useRightPanel();
 
   useEffect(() => {
-    setRightPanelEnabled(true);
-    setRightPanelContent(<div>這是 Dashboard 的右側內容</div>);
+    setEnabled(true);
+    setContent(
+      <div>
+        <Typography variant="h6">儀表板右側內容</Typography>
+        <p>這裡可以放圖表設定、說明、連結等。</p>
+      </div>
+    );
+
     return () => {
-      setRightPanelEnabled(true); // 預設啟用
-      setRightPanelContent(null);
+      setEnabled(false);
     };
   }, []);
 

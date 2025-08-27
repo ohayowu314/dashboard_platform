@@ -6,6 +6,7 @@ import { Outlet } from "react-router-dom";
 import { useUIStore } from "../../stores/uiStore";
 import "./layout.css";
 import { useEffect } from "react";
+import { RightPanelProvider } from "../../context/RightPanelProvider";
 
 export const Layout = () => {
   const { rightPanelEnabled, rightPanelPinned, setRightPanelVisible } =
@@ -36,16 +37,18 @@ export const Layout = () => {
   }, [rightPanelEnabled, rightPanelPinned, setRightPanelVisible]);
 
   return (
-    <div className="layout-container">
-      <Sidebar />
-      <div className="main-area">
-        <TopNav />
-        <div className="main-content">
-          <Outlet />
+    <RightPanelProvider>
+      <div className="layout-container">
+        <Sidebar />
+        <div className="main-area">
+          <TopNav />
+          <div className="main-content">
+            <Outlet />
+          </div>
         </div>
-      </div>
 
-      {rightPanelEnabled && <RightPanel />}
-    </div>
+        {rightPanelEnabled && <RightPanel />}
+      </div>
+    </RightPanelProvider>
   );
 };
