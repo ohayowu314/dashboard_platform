@@ -8,6 +8,8 @@ interface UIState {
   setRightPanelContent: (content: React.ReactNode) => void;
   rightPanelVisible: boolean;
   setRightPanelVisible: (visible: boolean) => void;
+  rightPanelPinned: boolean;
+  setRightPanelPinned: (pinned: boolean) => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -17,4 +19,11 @@ export const useUIStore = create<UIState>((set) => ({
   setRightPanelContent: (content) => set({ rightPanelContent: content }),
   rightPanelVisible: false,
   setRightPanelVisible: (visible) => set({ rightPanelVisible: visible }),
+  rightPanelPinned: JSON.parse(
+    localStorage.getItem("rightPanelPinned") || "false"
+  ),
+  setRightPanelPinned: (pinned) => {
+    localStorage.setItem("rightPanelPinned", JSON.stringify(pinned));
+    set({ rightPanelPinned: pinned });
+  },
 }));
