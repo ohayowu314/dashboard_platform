@@ -39,25 +39,9 @@
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
     transform: translateX(100%);
     transition: transform 0.3s ease;
+    z-index: 1000;
 }
 
 .right-panel.visible {
     transform: translateX(0);
-}
-
-/* 右側滑入偵測區域 */
-.right-hover-zone {
-    position: fixed;
-    top: 60px;
-    /* 避開 TopNav */
-    right: 0;
-    width: 30px;
-    height: calc(100vh - 60px);
-    z-index: 1100;
-    background-color: transparent;
-}
-
-.right-hover-zone.visible {
-    width: 300px;
-    /* background-color: rgba(0, 0, 0, 0.05); */
 }

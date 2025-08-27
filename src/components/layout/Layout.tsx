@@ -5,10 +5,35 @@ import { RightPanel } from "./RightPanel";
 import { Outlet } from "react-router-dom";
 import { useUIStore } from "../../stores/uiStore";
 import "./layout.css";
+import { useEffect } from "react";
 
 export const Layout = () => {
-  const { rightPanelEnabled, setRightPanelVisible, rightPanelVisible } =
+  const { rightPanelEnabled, rightPanelPinned, setRightPanelVisible } =
     useUIStore();
+
+  useEffect(() => {
+    if (!rightPanelEnabled) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const panelWidth = 300;
+      const threshold = 30;
+      const x = e.clientX;
+
+      const isNearRightEdge = window.innerWidth - x <= threshold;
+      const isOverPanel = x >= window.innerWidth - panelWidth;
+
+      if (rightPanelPinned) return;
+
+      if (isNearRightEdge || isOverPanel) {
+        setRightPanelVisible(true);
+      } else {
+        setRightPanelVisible(false);
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [rightPanelEnabled, rightPanelPinned, setRightPanelVisible]);
 
   return (
     <div className="layout-container">
@@ -20,16 +45,7 @@ export const Layout = () => {
         </div>
       </div>
 
-      {/* 滑入偵測區域 */}
-      {rightPanelEnabled && (
-        <div
-          className={`right-hover-zone ${rightPanelVisible ? "visible" : ""}`}
-          onMouseEnter={() => setRightPanelVisible(true)}
-          onMouseLeave={() => setRightPanelVisible(false)}
-        />
-      )}
-
-      <RightPanel />
+      {rightPanelEnabled && <RightPanel />}
     </div>
   );
 };
