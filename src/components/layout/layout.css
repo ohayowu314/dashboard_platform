@@ -1,0 +1,63 @@
+/* components/layout/layout.css */
+.layout-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar {
+    width: 240px;
+    background-color: #1e1e2f;
+}
+
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-nav {
+    height: 60px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.right-panel {
+    position: fixed;
+    right: 0;
+    top: 60px;
+    width: 300px;
+    height: calc(100vh - 60px);
+    background-color: #f9f9f9;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.right-panel.visible {
+    transform: translateX(0);
+}
+
+/* 右側滑入偵測區域 */
+.right-hover-zone {
+    position: fixed;
+    top: 60px;
+    /* 避開 TopNav */
+    right: 0;
+    width: 30px;
+    height: calc(100vh - 60px);
+    z-index: 1100;
+    background-color: transparent;
+}
+
+.right-hover-zone.visible {
+    width: 300px;
+    /* background-color: rgba(0, 0, 0, 0.05); */
+}
