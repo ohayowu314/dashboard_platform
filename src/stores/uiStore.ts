@@ -19,6 +19,11 @@ export const useUIStore = create<UIState>((set) => ({
   setRightPanelContent: (content) => set({ rightPanelContent: content }),
   rightPanelVisible: false,
   setRightPanelVisible: (visible) => set({ rightPanelVisible: visible }),
-  rightPanelPinned: false,
-  setRightPanelPinned: (pinned) => set({ rightPanelPinned: pinned }),
+  rightPanelPinned: JSON.parse(
+    localStorage.getItem("rightPanelPinned") || "false"
+  ),
+  setRightPanelPinned: (pinned) => {
+    localStorage.setItem("rightPanelPinned", JSON.stringify(pinned));
+    set({ rightPanelPinned: pinned });
+  },
 }));
