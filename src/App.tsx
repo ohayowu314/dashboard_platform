@@ -1,24 +1,23 @@
-import { useState } from "react";
+// App.tsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Layout } from "./components/layout/Layout";
+import { UploadPage } from "./pages/UploadPage";
+import { ChartConfigPage } from "./pages/ChartConfigPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { DownloadPage } from "./pages/DownloadPage";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <h1>Vite + React</h1>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route path="upload" element={<UploadPage />} />
+          <Route path="chart-config" element={<ChartConfigPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="download" element={<DownloadPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
