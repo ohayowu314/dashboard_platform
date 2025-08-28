@@ -756,7 +756,7 @@ export const MyComponent = () => {
 
 ---
 
-## 📁 建議檔案結構
+### 📁 建議檔案結構
 
 ```
 src/
@@ -772,7 +772,7 @@ src/
 
 ---
 
-## 📄 `RightPanelContext.tsx`
+### 📄 `RightPanelContext.tsx`
 
 ```tsx
 import React, { createContext } from "react";
@@ -810,7 +810,7 @@ export const RightPanelProvider = ({ children }: { children: React.ReactNode }) 
 
 ---
 
-## 📄 `useRightPanel.ts`
+### 📄 `useRightPanel.ts`
 
 ```tsx
 import { useContext } from "react";
@@ -823,7 +823,7 @@ export const useRightPanel = () => useContext(RightPanelContext);
 
 ---
 
-## ✅ 使用方式（頁面中）
+### ✅ 使用方式（頁面中）
 
 ```tsx
 import { useEffect } from "react";
@@ -849,3 +849,48 @@ export const DashboardPage = () => {
 
 需要我幫你加上 lazy loading 或 tab 切換功能嗎？也可以幫你整合 MUI 的 Drawer 或 Popover 元件來強化互動性喔！
 
+## Copilot 提問 專案背景提示2
+如果我要開新的聊天，如何給予你完整的背景提示，能讓你快速進入狀況，幫我延續現在的狀態解決問題
+
+## Copilot 回答 專案背景提示2
+很棒的問題！如果你要開啟新的聊天但希望我能**延續目前的專案背景與狀態**，你可以在新對話一開始提供一段**背景提示**，格式如下：
+
+---
+
+### 🧩 建議背景提示格式：
+
+```markdown
+【專案背景】
+- 技術：Vite + React + MUI + Zustand + TypeScript
+- 類型：資料視覺化儀表板
+- 架構：
+  src/
+  ├── components/layout/Sidebar.tsx, TopNav.tsx, RightPanel.tsx, Layout.tsx
+  ├── pages/UploadPage.tsx, ChartConfigPage.tsx, DashboardPage.tsx, DownloadPage.tsx
+  ├── stores/uiStore.ts
+  ├── types.ts
+  ├── utils.ts
+  └── App.tsx
+
+【RightPanel 狀態】
+- 使用 Zustand 管理 rightPanelEnabled / Visible / Pinned
+- 已完成釘選功能與滑鼠位置偵測顯示
+- 使用 RightPanelProvider + useRightPanel hook 注入內容
+
+【目前問題或需求】
+（請在這裡描述你要解決的問題或想新增的功能）
+```
+
+---
+
+### ✅ 範例開場（新聊天）
+
+> 嗨，我有一個使用 Vite + React + MUI + Zustand + TypeScript 的資料視覺化儀表板專案。  
+> 我們有一個 RightPanel 元件，已經完成釘選功能與滑鼠位置偵測顯示，並使用 RightPanelProvider + useRightPanel hook 注入內容。  
+> 現在我想讓 RightPanel 支援 tab 切換功能，請問該怎麼設計？
+
+---
+
+這樣我就能**立即進入狀況**，不需要你重複過去的細節，也能幫你延續之前的架構與邏輯。
+
+需要我幫你產生一段可複製的背景提示範本嗎？還是你想把目前的狀態整理成 README 或開發筆記？
