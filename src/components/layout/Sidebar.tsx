@@ -1,27 +1,13 @@
-// components/layout/Sidebar.tsx
+// src/components/layout/Sidebar.tsx
 import React from "react";
-import { useLocation } from "react-router-dom";
-import {
-  Box,
-  List,
-  ListItemButton,
-  ListItemText,
-  Typography,
-} from "@mui/material";
-import logoImage from "../../assets/snake.jpg";
-
-const tocMap: Record<string, string[]> = {
-  "/upload": ["上傳資料", "資料預覽"],
-  "/chart-config": ["選擇資料表", "設定圖表"],
-  "/dashboard": ["儀表板配置", "圖表管理"],
-  "/download": ["匯出圖片", "匯出設定"],
-};
+import { Link } from "react-router-dom";
+import { Box, List, ListItemButton, ListItemText } from "@mui/material";
+import Logo from "../common/Logo";
+import type { TocItem } from "../../types";
+import { useLayoutStore } from "../../stores/layoutStore";
 
 export const Sidebar: React.FC = () => {
-  const location = useLocation();
-  const currentPath = location.pathname;
-  const tocItems = tocMap[currentPath] || [];
-
+  const tocItems: TocItem[] = useLayoutStore((state) => state.tocItems);
   return (
     <Box
       sx={{
@@ -35,22 +21,26 @@ export const Sidebar: React.FC = () => {
       }}
     >
       {/* Logo 區塊 */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h6" fontWeight="bold">
-          <img
-            src={logoImage}
-            alt="A description of my image"
-            style={{ width: "30px" }}
-          />{" "}
-          MyDashboard
-        </Typography>
+      <Box
+        sx={{
+          mb: 4,
+          textDecoration: "none", // 取消底線
+          "&:hover": {
+            textDecoration: "none", // 滑鼠停留時也取消底線
+          },
+          color: "inherit", // 繼承文字顏色
+        }}
+        component={Link}
+        to="/"
+      >
+        <Logo />
       </Box>
 
       {/* TOC 區塊 */}
       <List>
-        {tocItems.map((item, index) => (
-          <ListItemButton key={index} sx={{ color: "#fff" }}>
-            <ListItemText primary={item} />
+        {tocItems.map((item) => (
+          <ListItemButton key={item.path} component={Link} to={item.path}>
+            <ListItemText primary={item.label} />
           </ListItemButton>
         ))}
       </List>

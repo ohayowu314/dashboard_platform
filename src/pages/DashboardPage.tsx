@@ -1,23 +1,43 @@
-import { useEffect } from "react";
-import { useRightPanel } from "../context/useRightPanel";
+// src/pages/DashboardPage.tsx
 import { Typography } from "@mui/material";
+import { PageWrapper } from "../components/layout/PageWrapper";
+import { useLayoutContext } from "../context/useLayoutContext";
+import { tocMap } from "../routes/tocMap";
+import type { TocItem } from "../types";
+
+const tocItems: TocItem[] = tocMap["/dashboard"] || [];
 
 export const DashboardPage: React.FC = () => {
-  const { setContent, setEnabled, toggleEnabled } = useRightPanel();
-
-  useEffect(() => {
-    setEnabled(true);
-    setContent(
-      <div>
-        <Typography variant="h6">儀表板右側內容</Typography>
-        <p>這裡可以放圖表設定、說明、連結等。</p>
-      </div>
-    );
-
-    return () => {
-      setEnabled(false);
-    };
-  }, []);
-
-  return <div>主內容區塊<button onClick={() => { toggleEnabled() }}>測試用</button></div>;
+  const { toggleRightPanelEnabled, setTocItems } = useLayoutContext();
+  return (
+    <PageWrapper
+      tocItems={tocItems}
+      breadcrumb={["儀表板"]}
+      content={
+        <div>
+          主內容區塊
+          <button
+            onClick={() => {
+              toggleRightPanelEnabled();
+            }}
+          >
+            測試用:右側邊欄開關
+          </button>
+          <button
+            onClick={() => {
+              setTocItems([...tocItems, { label: "測試用", path: "/test" }]);
+            }}
+          >
+            測試用:加入目錄
+          </button>
+        </div>
+      }
+      rightPanel={
+        <div>
+          <Typography variant="h6">儀表板右側內容</Typography>
+          <p>這裡可以放圖表設定、說明、連結等。</p>
+        </div>
+      }
+    />
+  );
 };

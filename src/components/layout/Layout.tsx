@@ -1,28 +1,26 @@
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
+import React from "react";
+import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { RightPanel } from "./RightPanel";
-import { Outlet } from "react-router-dom";
-import { useUIStore } from "../../stores/uiStore";
+import { useLayoutContext } from "../../context/useLayoutContext";
 import "./layout.css";
-import { RightPanelProvider } from "../../context/RightPanelProvider";
 
-export const Layout = () => {
-  const { rightPanelEnabled } = useUIStore();
+export const Layout: React.FC = () => {
+  const { rightPanelEnabled } = useLayoutContext();
 
   return (
-    <RightPanelProvider>
-      <div className="layout-container">
-        <Sidebar />
-        <div className="main-area">
-          <TopNav />
-          <div className="main-content">
-            <Outlet />
-          </div>
+    <div className="layout-container">
+      <Sidebar />
+      <div className="main-area">
+        <TopNav />
+        <div className="main-content">
+          <Outlet />
         </div>
-
-        {rightPanelEnabled && <RightPanel />}
       </div>
-    </RightPanelProvider>
+
+      {rightPanelEnabled && <RightPanel />}
+    </div>
   );
 };

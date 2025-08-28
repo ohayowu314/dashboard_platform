@@ -271,7 +271,7 @@ src/
 ### 🧱 Layout.tsx 範例
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
 import { RightPanel } from './RightPanel';
@@ -376,7 +376,10 @@ export const useUIStore = create<UIState>((set) => ({
 
 如果你希望我幫你建立某個元件的具體程式碼（例如 Sidebar 或 TopNav），或是整合路由與 Layout，我可以一步步協助你完成。你想先從哪個元件開始？
 
-推薦三問: `先做 Sidebar 元件範例`、`TopNav 怎麼實作 breadcrumb 路徑`、`RightPanel 滑入效果怎麼寫`
+### 推薦三問
+- 先做 Sidebar 元件範例
+- TopNav 怎麼實作 breadcrumb 路徑
+- RightPanel 滑入效果怎麼寫
 
 ## Copilot 回答 先做 Sidebar 元件範例
 
@@ -394,7 +397,7 @@ src/components/layout/Sidebar.tsx
 ### 🧩 Sidebar 元件程式碼
 
 ```tsx
-// components/layout/Sidebar.tsx
+// src/components/layout/Sidebar.tsx
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material';
@@ -559,7 +562,7 @@ src/components/layout/TopNav.tsx
 ### 🧩 TopNav 元件實作（含 Breadcrumb 與搜尋按鈕）
 
 ```tsx
-// components/layout/TopNav.tsx
+// src/components/layout/TopNav.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -752,7 +755,7 @@ src/
 
 這是 上方導覽列 top nav 的代碼
 ```tsx
-// components/layout/TopNav.tsx
+// src/components/layout/TopNav.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -991,7 +994,7 @@ export const useUIStore = create<UIState>((set) => ({
 ### ✅ 第二步：建立 `RightPanel` 元件
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 import React, { useState } from "react";
 import { Box } from "@mui/material";
 import { useUIStore } from "../../stores/uiStore";
@@ -1030,7 +1033,7 @@ export const RightPanel: React.FC = () => {
 ### ✅ 第三步：在 `Layout.tsx` 中加入 `RightPanel`
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { RightPanel } from "./RightPanel";
 
 export const Layout: React.FC = ({ children }) => {
@@ -1084,7 +1087,7 @@ export const DashboardPage: React.FC = () => {
 
 需要我幫你加上滑入偵測區域或是自動根據路由切換內容嗎？
 
-推薦三問: 
+### 推薦三問
 - 怎麼加右側滑入偵測區域
 - 如何根據路由自動切換 RightPanel 內容
 - RightPanel 動畫效果可以再優化嗎
@@ -1102,7 +1105,7 @@ export const DashboardPage: React.FC = () => {
 ### ✅ 在 `Layout.tsx` 加入滑入偵測區域
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { RightPanel } from "./RightPanel";
 import { useUIStore } from "../../stores/uiStore";
 
@@ -1147,7 +1150,7 @@ export const Layout: React.FC = ({ children }) => {
 ### ✅ 修改 `RightPanel.tsx` 接收 `hovering` 狀態
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 interface RightPanelProps {
   hovering: boolean;
 }
@@ -1187,7 +1190,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({ hovering }) => {
 
 ## Copilot 提問 Layout+RightPanel 滑入偵測區 補充 Layout.tsx
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { RightPanel } from "./RightPanel";
@@ -1220,7 +1223,7 @@ export const Layout = () => {
 你可以在 `RightPanel` 前面加上一個偵測區塊：
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { RightPanel } from "./RightPanel";
@@ -1296,7 +1299,7 @@ export const Layout = () => {
 ### ✅ 第三步：修改 `RightPanel.tsx` 接收 `hovering` 狀態
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 import React from "react";
 import { Box } from "@mui/material";
 import { useUIStore } from "../../stores/uiStore";
@@ -1368,7 +1371,7 @@ export const useUIStore = create<UIState>((set) => ({
 ### ✅ 更新 `Layout.tsx`：滑入時設定 `rightPanelVisible`
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { RightPanel } from "./RightPanel";
@@ -1409,7 +1412,7 @@ export const Layout = () => {
 ### ✅ 更新 `RightPanel.tsx`：使用 `rightPanelVisible` 控制顯示
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 import React from "react";
 import { Box } from "@mui/material";
 import { useUIStore } from "../../stores/uiStore";
@@ -1533,7 +1536,7 @@ export const RightPanel: React.FC = () => {
 ### ✅ 修改 `RightPanel.tsx` 使用 className 控制動畫
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 import React from "react";
 import { useUIStore } from "../../stores/uiStore";
 import "./layout.css";
@@ -1556,7 +1559,7 @@ export const RightPanel: React.FC = () => {
 ### ✅ 確保 `Layout.tsx` 中滑入偵測區域已設定
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { useUIStore } from "../../stores/uiStore";
 
 export const Layout = () => {
@@ -1856,7 +1859,7 @@ src/
 ### 🧱 Layout.tsx 範例
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { Sidebar } from './Sidebar';
 import { TopNav } from './TopNav';
 import { RightPanel } from './RightPanel';
@@ -1961,7 +1964,10 @@ export const useUIStore = create<UIState>((set) => ({
 
 如果你希望我幫你建立某個元件的具體程式碼（例如 Sidebar 或 TopNav），或是整合路由與 Layout，我可以一步步協助你完成。你想先從哪個元件開始？
 
-推薦三問: `先做 Sidebar 元件範例`、`TopNav 怎麼實作 breadcrumb 路徑`、`RightPanel 滑入效果怎麼寫`
+### 推薦三問
+- 先做 Sidebar 元件範例
+- TopNav 怎麼實作 breadcrumb 路徑
+- RightPanel 滑入效果怎麼寫`
 
 ## Copilot 回答 先做 Sidebar 元件範例
 
@@ -1979,7 +1985,7 @@ src/components/layout/Sidebar.tsx
 ### 🧩 Sidebar 元件程式碼
 
 ```tsx
-// components/layout/Sidebar.tsx
+// src/components/layout/Sidebar.tsx
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Box, List, ListItemButton, ListItemText, Typography } from '@mui/material';
@@ -2144,7 +2150,7 @@ src/components/layout/TopNav.tsx
 ### 🧩 TopNav 元件實作（含 Breadcrumb 與搜尋按鈕）
 
 ```tsx
-// components/layout/TopNav.tsx
+// src/components/layout/TopNav.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -2337,7 +2343,7 @@ src/
 
 這是 上方導覽列 top nav 的代碼
 ```tsx
-// components/layout/TopNav.tsx
+// src/components/layout/TopNav.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -2576,7 +2582,7 @@ export const useUIStore = create<UIState>((set) => ({
 ### ✅ 第二步：建立 `RightPanel` 元件
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 import React, { useState } from "react";
 import { Box } from "@mui/material";
 import { useUIStore } from "../../stores/uiStore";
@@ -2615,7 +2621,7 @@ export const RightPanel: React.FC = () => {
 ### ✅ 第三步：在 `Layout.tsx` 中加入 `RightPanel`
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { RightPanel } from "./RightPanel";
 
 export const Layout: React.FC = ({ children }) => {
@@ -2669,7 +2675,7 @@ export const DashboardPage: React.FC = () => {
 
 需要我幫你加上滑入偵測區域或是自動根據路由切換內容嗎？
 
-推薦三問: 
+### 推薦三問
 - 怎麼加右側滑入偵測區域
 - 如何根據路由自動切換 RightPanel 內容
 - RightPanel 動畫效果可以再優化嗎
@@ -2687,7 +2693,7 @@ export const DashboardPage: React.FC = () => {
 ### ✅ 在 `Layout.tsx` 加入滑入偵測區域
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { RightPanel } from "./RightPanel";
 import { useUIStore } from "../../stores/uiStore";
 
@@ -2732,7 +2738,7 @@ export const Layout: React.FC = ({ children }) => {
 ### ✅ 修改 `RightPanel.tsx` 接收 `hovering` 狀態
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 interface RightPanelProps {
   hovering: boolean;
 }
@@ -2772,7 +2778,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({ hovering }) => {
 
 ## Copilot 提問 Layout+RightPanel 滑入偵測區 補充 Layout.tsx
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { RightPanel } from "./RightPanel";
@@ -2805,7 +2811,7 @@ export const Layout = () => {
 你可以在 `RightPanel` 前面加上一個偵測區塊：
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { RightPanel } from "./RightPanel";
@@ -2881,7 +2887,7 @@ export const Layout = () => {
 ### ✅ 第三步：修改 `RightPanel.tsx` 接收 `hovering` 狀態
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 import React from "react";
 import { Box } from "@mui/material";
 import { useUIStore } from "../../stores/uiStore";
@@ -2953,7 +2959,7 @@ export const useUIStore = create<UIState>((set) => ({
 ### ✅ 更新 `Layout.tsx`：滑入時設定 `rightPanelVisible`
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
 import { RightPanel } from "./RightPanel";
@@ -2994,7 +3000,7 @@ export const Layout = () => {
 ### ✅ 更新 `RightPanel.tsx`：使用 `rightPanelVisible` 控制顯示
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 import React from "react";
 import { Box } from "@mui/material";
 import { useUIStore } from "../../stores/uiStore";
@@ -3118,7 +3124,7 @@ export const RightPanel: React.FC = () => {
 ### ✅ 修改 `RightPanel.tsx` 使用 className 控制動畫
 
 ```tsx
-// components/layout/RightPanel.tsx
+// src/components/layout/RightPanel.tsx
 import React from "react";
 import { useUIStore } from "../../stores/uiStore";
 import "./layout.css";
@@ -3141,7 +3147,7 @@ export const RightPanel: React.FC = () => {
 ### ✅ 確保 `Layout.tsx` 中滑入偵測區域已設定
 
 ```tsx
-// components/layout/Layout.tsx
+// src/components/layout/Layout.tsx
 import { useUIStore } from "../../stores/uiStore";
 
 export const Layout = () => {
@@ -3254,7 +3260,7 @@ export const RightPanel: React.FC = () => {
 這樣就完成了「點擊釘選右側面板」的功能 ✅  
 是否需要我幫你加上「釘選狀態儲存到 localStorage」或「自動根據路由切換釘選狀態」？
 
-推薦三問
+### 推薦三問
 - 釘選狀態怎麼存到 localStorage
 - 切換路由時釘選自動取消
 - 釘選時如何讓 hover 區域失效

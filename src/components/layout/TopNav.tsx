@@ -1,4 +1,4 @@
-// components/layout/TopNav.tsx
+// src/components/layout/TopNav.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -10,18 +10,17 @@ import {
   TextField,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useLayoutStore } from "../../stores/layoutStore";
 
 export const TopNav: React.FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
-
-  const pathSegments = location.pathname.split("/").filter(Boolean);
+  const breadcrumb = useLayoutStore((state) => state.breadcrumb);
 
   const handleBreadcrumbClick = (index: number) => {
-    const path = "/" + pathSegments.slice(0, index + 1).join("/");
+    const path = "/" + breadcrumb.slice(0, index + 1).join("/");
     navigate(path);
   };
 
@@ -50,27 +49,27 @@ export const TopNav: React.FC = () => {
     >
       {/* Breadcrumb 區塊 */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        {pathSegments.length > 3 ? (
+        {breadcrumb.length > 3 ? (
           <>
             <Typography
               sx={{ cursor: "pointer" }}
               onClick={() => handleBreadcrumbClick(0)}
             >
-              {pathSegments[0]}
+              {breadcrumb[0]}
             </Typography>
             <Typography>{">"}</Typography>
             <Typography
               sx={{ cursor: "pointer" }}
-              onClick={() => handleBreadcrumbClick(pathSegments.length - 2)}
+              onClick={() => handleBreadcrumbClick(breadcrumb.length - 2)}
             >
-              {pathSegments[pathSegments.length - 2]}
+              {breadcrumb[breadcrumb.length - 2]}
             </Typography>
             <Typography>{">"}</Typography>
             <Typography
               sx={{ cursor: "pointer", fontWeight: "bold" }}
-              onClick={() => handleBreadcrumbClick(pathSegments.length - 1)}
+              onClick={() => handleBreadcrumbClick(breadcrumb.length - 1)}
             >
-              {pathSegments[pathSegments.length - 1]}
+              {breadcrumb[breadcrumb.length - 1]}
             </Typography>
             <IconButton size="small" onClick={handleMoreClick}>
               <Typography fontSize={12}>...</Typography>
@@ -80,7 +79,7 @@ export const TopNav: React.FC = () => {
               open={Boolean(anchorEl)}
               onClose={handleMoreClose}
             >
-              {pathSegments.slice(1, pathSegments.length - 2).map((seg, i) => (
+              {breadcrumb.slice(1, breadcrumb.length - 2).map((seg, i) => (
                 <MenuItem
                   key={i}
                   onClick={() => {
@@ -94,13 +93,13 @@ export const TopNav: React.FC = () => {
             </Menu>
           </>
         ) : (
-          pathSegments.map((seg, i) => (
+          breadcrumb.map((seg, i) => (
             <React.Fragment key={i}>
               {i > 0 && <Typography>{">"}</Typography>}
               <Typography
                 sx={{
                   cursor: "pointer",
-                  fontWeight: i === pathSegments.length - 1 ? "bold" : "normal",
+                  fontWeight: i === breadcrumb.length - 1 ? "bold" : "normal",
                 }}
                 onClick={() => handleBreadcrumbClick(i)}
               >
