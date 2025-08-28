@@ -12,7 +12,14 @@ export const DashboardPage: React.FC = () => {
   return (
     <PageWrapper
       tocItems={tocItems}
-      breadcrumb={["儀表板"]}
+      breadcrumb={[
+        "儀表板1",
+        "儀表板2",
+        "儀表板3",
+        "儀表板4",
+        "儀表板5",
+        "儀表板6",
+      ]}
       content={
         <div>
           主內容區塊

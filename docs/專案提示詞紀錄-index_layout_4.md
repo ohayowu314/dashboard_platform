@@ -187,8 +187,234 @@ export const tocMap: Record<string, TocItem[]> = {
 
 需要我幫你補上 `HomePage.tsx` 的完整程式碼或是 `PageWrapper` 的實作細節嗎？
 
-## Copilot 提問 
-## Copilot 回答 
+## Copilot 提問 Breadcrumb懸浮顯示
+【目前問題或需求】
+目前 Breadcrumb 路徑如果超過三個階層，只顯示最小的兩階層，其他用 `...` 收合。而這個 `...` 收合必須點擊展開，但我想要滑入就能展開
+
+
+【當前相關檔案】
+```tsx
+// src/components/layout/Breadcrumb.tsx
+import React, { useState } from "react";
+import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useLayoutStore } from "../../stores/layoutStore";
+
+export const Breadcrumb: React.FC = () => {
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const breadcrumb = useLayoutStore((state) => state.breadcrumb);
+
+  const handleBreadcrumbClick = (index: number) => {
+    const path = "/" + breadcrumb.slice(0, index + 1).join("/");
+    navigate(path);
+  };
+
+  const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMoreClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      {breadcrumb.length > 3 ? (
+        <>
+          <IconButton size="small" onClick={handleMoreClick}>
+            <Typography fontSize={12}>...</Typography>
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMoreClose}
+          >
+            {breadcrumb.slice(0, breadcrumb.length - 2).map((seg, i) => (
+              <MenuItem
+                key={i}
+                onClick={() => {
+                  handleBreadcrumbClick(i);
+                  handleMoreClose();
+                }}
+              >
+                {seg}
+              </MenuItem>
+            ))}
+          </Menu>
+          <Typography>{">"}</Typography>
+          <Typography
+            sx={{ cursor: "pointer" }}
+            onClick={() => handleBreadcrumbClick(breadcrumb.length - 2)}
+          >
+            {breadcrumb[breadcrumb.length - 2]}
+          </Typography>
+          <Typography>{">"}</Typography>
+          <Typography
+            sx={{
+              cursor: "pointer",
+              fontWeight: "bold",
+              color: "primary.main",
+            }}
+            onClick={() => handleBreadcrumbClick(breadcrumb.length - 1)}
+          >
+            {breadcrumb[breadcrumb.length - 1]}
+          </Typography>
+        </>
+      ) : (
+        breadcrumb.map((seg, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <Typography>{">"}</Typography>}
+            <Typography
+              sx={{
+                cursor: "pointer",
+                fontWeight: i === breadcrumb.length - 1 ? "bold" : "normal",
+                color: i === breadcrumb.length - 1 ? "primary.main" : "inherit",
+              }}
+              onClick={() => handleBreadcrumbClick(i)}
+            >
+              {seg}
+            </Typography>
+          </React.Fragment>
+        ))
+      )}
+    </Box>
+  );
+};
+```
+
+```ts
+export interface PageConfig {
+  tocItems: TocItem[];
+  breadcrumb: string[];
+  rightPanel?: React.ReactNode;
+  content: React.ReactNode;
+}
+```
+
+
+## Copilot 回答 Breadcrumb懸浮顯示
+你想要將 Breadcrumb 中的 `...` 收合改成「滑入展開」而不是「點擊展開」，這可以透過 MUI 的 `Menu` 元件搭配 `onMouseEnter` 和 `onMouseLeave` 事件來實作。以下是修改建議：
+
+---
+
+### ✅ 修改重點
+
+1. **改用 `onMouseEnter` 開啟 Menu**
+2. **使用 `onMouseLeave` 關閉 Menu**
+3. **將 `IconButton` 換成 `Box` 或 `Typography`，避免 hover 時出現點擊效果**
+
+---
+
+### ✅ 修改後的 `Breadcrumb.tsx`
+
+```tsx
+import React, { useState } from "react";
+import { Box, Typography, Menu, MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useLayoutStore } from "../../stores/layoutStore";
+
+export const Breadcrumb: React.FC = () => {
+  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const breadcrumb = useLayoutStore((state) => state.breadcrumb);
+
+  const handleBreadcrumbClick = (index: number) => {
+    const path = "/" + breadcrumb.slice(0, index + 1).join("/");
+    navigate(path);
+  };
+
+  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMouseLeave = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      {breadcrumb.length > 3 ? (
+        <>
+          <Box
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            sx={{ cursor: "default", display: "flex", alignItems: "center" }}
+          >
+            <Typography fontSize={12}>...</Typography>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMouseLeave}
+              MenuListProps={{
+                onMouseLeave: handleMouseLeave,
+              }}
+            >
+              {breadcrumb.slice(0, breadcrumb.length - 2).map((seg, i) => (
+                <MenuItem
+                  key={i}
+                  onClick={() => {
+                    handleBreadcrumbClick(i);
+                    handleMouseLeave();
+                  }}
+                >
+                  {seg}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+          <Typography>{">"}</Typography>
+          <Typography
+            sx={{ cursor: "pointer" }}
+            onClick={() => handleBreadcrumbClick(breadcrumb.length - 2)}
+          >
+            {breadcrumb[breadcrumb.length - 2]}
+          </Typography>
+          <Typography>{">"}</Typography>
+          <Typography
+            sx={{
+              cursor: "pointer",
+              fontWeight: "bold",
+              color: "primary.main",
+            }}
+            onClick={() => handleBreadcrumbClick(breadcrumb.length - 1)}
+          >
+            {breadcrumb[breadcrumb.length - 1]}
+          </Typography>
+        </>
+      ) : (
+        breadcrumb.map((seg, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <Typography>{">"}</Typography>}
+            <Typography
+              sx={{
+                cursor: "pointer",
+                fontWeight: i === breadcrumb.length - 1 ? "bold" : "normal",
+                color: i === breadcrumb.length - 1 ? "primary.main" : "inherit",
+              }}
+              onClick={() => handleBreadcrumbClick(i)}
+            >
+              {seg}
+            </Typography>
+          </React.Fragment>
+        ))
+      )}
+    </Box>
+  );
+};
+```
+
+---
+
+### ✅ 補充建議
+
+- 若你希望 `Menu` 展開後不會因為滑出 `...` 而立即消失，可以考慮加上 `setTimeout` 延遲關閉。
+- 若 `breadcrumb` 是動態更新的，記得在 `useEffect` 中監聽變化並重設 `anchorEl`。
+
+---
+
+需要我幫你加上延遲關閉的 debounce 嗎？或者你想要讓 `Menu` 展開後可以點擊外部才關閉？
+
 ## Copilot 提問 
 ## Copilot 回答 
 ## Copilot 提問 

@@ -1,6 +1,6 @@
 // src/components/layout/Breadcrumb.tsx
 import React, { useState } from "react";
-import { Box, Typography, IconButton, Menu, MenuItem } from "@mui/material";
+import { Box, Typography, Menu, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useLayoutStore } from "../../stores/layoutStore";
 
@@ -14,11 +14,11 @@ export const Breadcrumb: React.FC = () => {
     navigate(path);
   };
 
-  const handleMoreClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMoreClose = () => {
+  const handleMouseLeave = () => {
     setAnchorEl(null);
   };
 
@@ -26,26 +26,32 @@ export const Breadcrumb: React.FC = () => {
     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
       {breadcrumb.length > 3 ? (
         <>
-          <IconButton size="small" onClick={handleMoreClick}>
-            <Typography fontSize={12}>...</Typography>
-          </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMoreClose}
+          <Box
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            sx={{ cursor: "default", display: "flex", alignItems: "center" }}
           >
-            {breadcrumb.slice(0, breadcrumb.length - 2).map((seg, i) => (
-              <MenuItem
-                key={i}
-                onClick={() => {
-                  handleBreadcrumbClick(i);
-                  handleMoreClose();
-                }}
-              >
-                {seg}
-              </MenuItem>
-            ))}
-          </Menu>
+            <Typography fontSize={12}>...</Typography>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMouseLeave}
+              onMouseLeave={handleMouseLeave}
+              slotProps={{ list: { onMouseLeave: handleMouseLeave } }}
+            >
+              {breadcrumb.slice(0, breadcrumb.length - 2).map((seg, i) => (
+                <MenuItem
+                  key={i}
+                  onClick={() => {
+                    handleBreadcrumbClick(i);
+                    handleMouseLeave();
+                  }}
+                >
+                  {seg}
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
           <Typography>{">"}</Typography>
           <Typography
             sx={{ cursor: "pointer" }}
