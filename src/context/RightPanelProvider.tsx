@@ -8,7 +8,7 @@ export const RightPanelProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { setRightPanelContent, setRightPanelEnabled } = useUIStore();
+  const { setRightPanelContent, setRightPanelEnabled, rightPanelEnabled } = useUIStore();
 
   const setContent = (content: React.ReactNode) => {
     setRightPanelContent(content);
@@ -19,8 +19,12 @@ export const RightPanelProvider = ({
     if (!enabled) setRightPanelContent(null); // 清除內容
   };
 
+  const toggleEnabled = () => {
+    setRightPanelEnabled(!rightPanelEnabled);
+  };
+
   return (
-    <RightPanelContext.Provider value={{ setContent, setEnabled }}>
+    <RightPanelContext.Provider value={{ setContent, setEnabled, toggleEnabled }}>
       {children}
     </RightPanelContext.Provider>
   );

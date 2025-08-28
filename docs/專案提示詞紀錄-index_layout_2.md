@@ -894,3 +894,104 @@ export const DashboardPage = () => {
 這樣我就能**立即進入狀況**，不需要你重複過去的細節，也能幫你延續之前的架構與邏輯。
 
 需要我幫你產生一段可複製的背景提示範本嗎？還是你想把目前的狀態整理成 README 或開發筆記？
+
+## Monica 提問 Layout+RightPanel 廢棄滑入滑出功能
+```css
+/* components/layout/layout.css */
+.layout-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar {
+    width: 240px;
+    background-color: #1e1e2f;
+}
+
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-nav {
+    height: 60px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.right-panel {
+    position: fixed;
+    right: 0;
+    top: 60px;
+    width: 300px;
+    height: calc(100vh - 60px);
+    background-color: #f9f9f9;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+```
+===
+修改一下 CSS 我希望右邊欄直接顯示在 main 右邊
+
+
+## Monica 回答 Layout+RightPanel 廢棄滑入滑出功能
+好的,我已經修改了 CSS 讓右邊欄直接顯示在 main 區域的右邊。以下是更新後的 CSS 程式碼:
+
+```css
+/* components/layout/layout.css */
+.layout-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar {
+    width: 240px;
+    background-color: #1e1e2f;
+}
+
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+}
+
+.top-nav {
+    height: 60px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.right-panel {
+    width: 300px;
+    background-color: #f9f9f9;
+    border-left: 1px solid #ddd;
+    padding: 16px;
+}
+```
+
+主要變更如下:
+
+1. 將 `.main-area` 的 `flex-direction` 從 `column` 改為 `row`，讓右邊欄可以顯示在 main 區域的右側。
+2. 移除了 `.right-panel` 的 `position: fixed` 和 `transform` 屬性，讓它直接顯示在 main 區域的右側。
+3. 增加了 `.right-panel` 的 `width` 和 `border-left` 屬性，讓右邊欄有適當的寬度和邊框。
+
+這樣就可以讓右邊欄直接顯示在 main 區域的右側了。請確認這樣的佈局是否符合您的需求。
+

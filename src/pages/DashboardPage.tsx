@@ -3,7 +3,7 @@ import { useRightPanel } from "../context/useRightPanel";
 import { Typography } from "@mui/material";
 
 export const DashboardPage: React.FC = () => {
-  const { setContent, setEnabled } = useRightPanel();
+  const { setContent, setEnabled, toggleEnabled } = useRightPanel();
 
   useEffect(() => {
     setEnabled(true);
@@ -19,5 +19,5 @@ export const DashboardPage: React.FC = () => {
     };
   }, []);
 
-  return <div>主內容區塊</div>;
+  return <div>主內容區塊<button onClick={() => { toggleEnabled() }}>測試用</button></div>;
 };
