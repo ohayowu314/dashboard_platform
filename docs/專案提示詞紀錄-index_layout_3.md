@@ -1118,7 +1118,7 @@ Sidebar、TopNav、RightPanel 狀態管理最佳做法
 
 是否有辦法一次性管理他們的狀態和 Provider
 
-### Copilot 回答 Sidebar + TopNav + RightPanel 狀態管理最佳做法
+## Copilot 回答 Sidebar + TopNav + RightPanel 狀態管理最佳做法
 非常可以！你完全抓到重點 👍  
 既然 `RightPanel` 已經使用 `Context` 管理狀態，那麼 **Sidebar 的目錄設定** 和 **TopNav 的 breadcrumb** 也可以納入同一個 Context 中統一管理，這樣可以：
 
