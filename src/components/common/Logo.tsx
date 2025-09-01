@@ -1,9 +1,8 @@
 // src/components/common/Logo.tsx
-import React from "react";
 import { Typography } from "@mui/material";
 import logoImage from "../../assets/snake.jpg"; // 根據實際路徑調整
 
-const Logo: React.FC = () => {
+const Logo = () => {
   return (
     <Typography variant="h6" fontWeight="bold">
       <img

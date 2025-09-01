@@ -1,3 +1,4 @@
+// src/context/LayoutProvider.tsx
 import { LayoutContext } from "./LayoutContext";
 import { useLayoutStore } from "../stores/layoutStore";
 

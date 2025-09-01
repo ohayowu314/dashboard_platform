@@ -1,5 +1,5 @@
 // src/components/layout/Breadcrumb.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Breadcrumbs,
   Link,
@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useLayoutStore } from "../../stores/layoutStore";
 import type { BreadcrumbItem } from "../../types";
 
-export const Breadcrumb: React.FC = () => {
+export const Breadcrumb = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const breadcrumbItems: BreadcrumbItem[] = useLayoutStore(

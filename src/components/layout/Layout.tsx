@@ -1,5 +1,4 @@
 // src/components/layout/Layout.tsx
-import React from "react";
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopNav } from "./TopNav";
@@ -7,7 +6,7 @@ import { RightPanel } from "./RightPanel";
 import { useLayoutContext } from "../../context/useLayoutContext";
 import "./layout.css";
 
-export const Layout: React.FC = () => {
+export const Layout = () => {
   const { rightPanelEnabled } = useLayoutContext();
 
   return (

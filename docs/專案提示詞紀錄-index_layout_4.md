@@ -2117,12 +2117,3 @@ export const Breadcrumb: React.FC = () => {
 
 要不要我幫你加一個 **demo 截圖 UI 範例 (假資料)**，讓你直觀看到「桌面版 vs 手機版」的效果？
 
-
-## Copilot 提問 
-## Copilot 回答 
-## Copilot 提問 
-## Copilot 回答 
-## Copilot 提問 
-## Copilot 回答 
-## Copilot 提問 
-## Copilot 回答 

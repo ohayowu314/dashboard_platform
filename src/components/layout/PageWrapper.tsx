@@ -3,12 +3,12 @@ import { useEffect } from "react";
 import { useLayoutContext } from "../../context/useLayoutContext";
 import type { PageConfig } from "../../types";
 
-export const PageWrapper: React.FC<PageConfig> = ({
+export const PageWrapper = ({
   tocItems,
   breadcrumbItems: breadcrumb,
   rightPanelContent: rightPanel,
   content,
-}) => {
+}: PageConfig) => {
   const {
     setTocItems,
     setBreadcrumbItems: setBreadcrumb,

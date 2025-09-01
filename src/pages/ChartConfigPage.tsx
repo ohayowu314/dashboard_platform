@@ -1,12 +1,11 @@
 // src/pages/ChartConfigPage.tsx
-import React from "react";
 import { PageWrapper } from "../components/layout/PageWrapper";
 import { tocMap } from "../routes/tocMap";
 import type { TocItem } from "../types";
 
 const tocItems: TocItem[] = tocMap["/chart-config"] || [];
 
-export const ChartConfigPage: React.FC = () => {
+export const ChartConfigPage = () => {
   return (
     <PageWrapper
       tocItems={tocItems}

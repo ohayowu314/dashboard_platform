@@ -6,7 +6,7 @@ import type { TocItem } from "../types";
 
 const tocItems: TocItem[] = tocMap["/dashboard"] || [];
 
-export const DashboardPage: React.FC = () => {
+export const DashboardPage = () => {
   return (
     <PageWrapper
       tocItems={tocItems}

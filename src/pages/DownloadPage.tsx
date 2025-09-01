@@ -1,12 +1,11 @@
 // src/pages/DownloadPage.tsx
-import React from "react";
 import { PageWrapper } from "../components/layout/PageWrapper";
 import { tocMap } from "../routes/tocMap";
 import type { TocItem } from "../types";
 
 const tocItems: TocItem[] = tocMap["/download"] || [];
 
-export const DownloadPage: React.FC = () => {
+export const DownloadPage = () => {
   return (
     <PageWrapper
       tocItems={tocItems}

@@ -1,10 +1,10 @@
 // src/components/layout/TopNav.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, IconButton, Modal, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Breadcrumb } from "./Breadcrumb";
 
-export const TopNav: React.FC = () => {
+export const TopNav = () => {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const handleSearchOpen = () => setSearchOpen(true);

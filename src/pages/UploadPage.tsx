@@ -5,7 +5,7 @@ import type { TocItem } from "../types";
 
 const tocItems: TocItem[] = tocMap["/upload"] || [];
 
-export const UploadPage: React.FC = () => {
+export const UploadPage = () => {
   return (
     <PageWrapper
       tocItems={tocItems}

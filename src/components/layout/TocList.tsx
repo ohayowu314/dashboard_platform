@@ -10,12 +10,12 @@ interface Props {
   indentPerLevel?: number;
 }
 
-export const TocList: React.FC<Props> = ({
+export const TocList = ({
   tocItems,
   isExpandable = true,
   expandedLevel = 3,
   indentPerLevel = 2,
-}) => {
+}: Props) => {
   return (
     <List>
       {tocItems.map((item) => (

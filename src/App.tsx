@@ -1,4 +1,4 @@
-// App.tsx
+// src/App.tsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LayoutProvider } from "./context/LayoutProvider";
 import { Layout } from "./components/layout/Layout";

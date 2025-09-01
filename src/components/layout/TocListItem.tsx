@@ -1,5 +1,5 @@
 // src/components/layout/TocListItem.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   List,
   ListItemButton,
@@ -19,13 +19,13 @@ interface Props {
   indentPerLevel: number;
 }
 
-export const TocListItem: React.FC<Props> = ({
+export const TocListItem = ({
   item,
   level,
   isExpandable,
   expandedLevel,
   indentPerLevel,
-}) => {
+}: Props) => {
   const [open, setOpen] = useState(false);
   const hasChildren = item.children && item.children.length > 0;
   const isExpandableItem = hasChildren && isExpandable && expandedLevel > level;

@@ -1,5 +1,4 @@
 // src/components/layout/Sidebar.tsx
-import React from "react";
 import { Link } from "react-router-dom";
 import { Box } from "@mui/material";
 import Logo from "../common/Logo";
@@ -7,7 +6,7 @@ import type { TocItem } from "../../types";
 import { useLayoutStore } from "../../stores/layoutStore";
 import { TocList } from "./TocList";
 
-export const Sidebar: React.FC = () => {
+export const Sidebar = () => {
   const tocItems: TocItem[] = useLayoutStore((state) => state.tocItems);
   return (
     <Box
