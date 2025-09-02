@@ -1,14 +1,32 @@
 // src/components/layout/TopNav.tsx
 import { useState } from "react";
-import { Box, IconButton, Modal, TextField } from "@mui/material";
+import { Box, IconButton, Modal, TextField, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Breadcrumb } from "./Breadcrumb";
 
 export const TopNav = () => {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const handleSearchOpen = () => setSearchOpen(true);
-  const handleSearchClose = () => setSearchOpen(false);
+  const handleSearchClose = () => {
+    setSearchOpen(false);
+    setSearchValue(""); // 關閉時清空搜尋值
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+  };
+
+  const handleSearchSubmit = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      // 在此處執行搜尋邏輯，例如：
+      // 1. 根據 searchValue 導航到搜尋結果頁面
+      // 2. 在當前頁面觸發搜尋
+      console.log("Searching for:", searchValue);
+      handleSearchClose();
+    }
+  };
 
   return (
     <Box
@@ -22,8 +40,17 @@ export const TopNav = () => {
         bgcolor: "#fff",
       }}
     >
-      {/* Breadcrumb 區塊 */}
-      <Breadcrumb />
+      {/* 頁面標題與 Breadcrumb 區塊 */}
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        {/* 這裡可以放頁面標題 */}
+        <Typography
+          variant="h6"
+          sx={{ mr: 2, display: { xs: "none", sm: "block" } }}
+        >
+          頁面標題
+        </Typography>
+        <Breadcrumb />
+      </Box>
 
       {/* 搜尋按鈕 */}
       <IconButton onClick={handleSearchOpen}>
@@ -32,32 +59,23 @@ export const TopNav = () => {
 
       {/* 全螢幕搜尋浮層 */}
       <Modal open={searchOpen} onClose={handleSearchClose}>
-        <Box
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              handleSearchClose();
-            }
-          }}
+        <TextField
+          autoFocus
+          placeholder="請輸入搜尋內容..."
+          variant="outlined"
+          value={searchValue}
+          onChange={handleSearchChange}
+          onKeyDown={handleSearchSubmit}
           sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            bgcolor: "rgba(0,0,0,0.8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1300,
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "60%",
+            bgcolor: "#fff",
+            borderRadius: 1,
           }}
-        >
-          <TextField
-            autoFocus
-            placeholder="請輸入搜尋內容..."
-            variant="outlined"
-            sx={{ width: "60%", bgcolor: "#fff", borderRadius: 1 }}
-          />
-        </Box>
+        />
       </Modal>
     </Box>
   );
