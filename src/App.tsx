@@ -8,22 +8,28 @@ import { ChartConfigPage } from "./pages/ChartConfigPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { DownloadPage } from "./pages/DownloadPage";
 import { TestingPage } from "./pages/TestingPage";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import theme from "./theme";
 
 function App() {
   return (
     <BrowserRouter>
-      <LayoutProvider>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<HomePage />} />
-            <Route path="upload" element={<UploadPage />} />
-            <Route path="chart-config" element={<ChartConfigPage />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="download" element={<DownloadPage />} />
-            <Route path="testing" element={<TestingPage />} />
-          </Route>
-        </Routes>
-      </LayoutProvider>
+      <ThemeProvider theme={theme}>
+        {/* CssBaseline 提供了簡潔、一致的 CSS 基礎 */}
+        <CssBaseline />
+        <LayoutProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="upload" element={<UploadPage />} />
+              <Route path="chart-config" element={<ChartConfigPage />} />
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="download" element={<DownloadPage />} />
+              <Route path="testing" element={<TestingPage />} />
+            </Route>
+          </Routes>
+        </LayoutProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

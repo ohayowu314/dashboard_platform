@@ -3,10 +3,18 @@ import { useState } from "react";
 import { Box, IconButton, Modal, TextField, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Breadcrumb } from "./Breadcrumb";
+import { useTheme } from "@mui/material/styles";
 
 export const TopNav = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const theme = useTheme();
+
+  const appBarHeight = (
+    theme.components?.MuiAppBar?.styleOverrides?.root as {
+      height?: number | string;
+    }
+  )?.height;
 
   const handleSearchOpen = () => setSearchOpen(true);
   const handleSearchClose = () => {
@@ -31,13 +39,13 @@ export const TopNav = () => {
   return (
     <Box
       sx={{
-        height: 60,
-        px: 2,
+        height: appBarHeight || 64,
+        px: theme.spacing(2),
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        borderBottom: "1px solid #ddd",
-        bgcolor: "#fff",
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        bgcolor: theme.palette.background.paper,
       }}
     >
       {/* 頁面標題與 Breadcrumb 區塊 */}
