@@ -10,11 +10,7 @@ export const TopNav = () => {
   const [searchValue, setSearchValue] = useState("");
   const theme = useTheme();
 
-  const appBarHeight = (
-    theme.components?.MuiAppBar?.styleOverrides?.root as {
-      height?: number | string;
-    }
-  )?.height;
+  const appBarHeight = theme.appLayout.navHeight;
 
   const handleSearchOpen = () => setSearchOpen(true);
   const handleSearchClose = () => {

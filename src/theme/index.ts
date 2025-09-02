@@ -11,16 +11,9 @@ const theme = createTheme({
       paper: "#fff",
     },
   },
-  spacing: 8, // 定義一個間距單位
-  components: {
-    MuiAppBar: {
-      // 或 MuiPaper 等，取決於你的元件
-      styleOverrides: {
-        root: {
-          height: 64, // 在這裡定義導覽列高度
-        },
-      },
-    },
+  appLayout: {
+    navHeight: 64,
   },
+  spacing: 8, // 定義一個間距單位
 });
 export default theme;
