@@ -15,17 +15,15 @@ import {
   Alert,
 } from "@mui/material";
 import { PageWrapper } from "../components/layout/PageWrapper";
-import { parseFile } from "../utils";
+import { parseDataFile } from "../utils";
+import type { ParsedData } from "../types";
 
 export const DataTableEditorPage = () => {
   const location = useLocation();
   const file: File | null = location.state?.file || null;
 
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState<{
-    headers: string[];
-    rows: string[][];
-  } | null>(null);
+  const [data, setData] = useState<ParsedData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -37,7 +35,7 @@ export const DataTableEditorPage = () => {
       }
 
       try {
-        const parsedData = await parseFile(file);
+        const parsedData = await parseDataFile(file);
         setData(parsedData);
       } catch (e: Error | undefined | unknown) {
         if (e instanceof Error) setError(e.message);

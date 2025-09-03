@@ -4,25 +4,23 @@ import { useLayoutContext } from "../../context/useLayoutContext";
 import type { PageConfig } from "../../types";
 
 export const PageWrapper = ({
-  breadcrumbItems: breadcrumb,
-  rightPanelContent: rightPanel,
+  breadcrumbItems,
+  rightPanelContent,
   content,
 }: Omit<PageConfig, "tocItems">) => {
-  const {
-    setBreadcrumbItems: setBreadcrumb,
-    setRightPanelContent,
-    setRightPanelEnabled,
-  } = useLayoutContext();
+  const { setBreadcrumbItems, setRightPanelContent, setRightPanelEnabled } =
+    useLayoutContext();
 
   useEffect(() => {
-    setBreadcrumb(breadcrumb);
-    if (rightPanel) {
-      setRightPanelContent(rightPanel);
+    setBreadcrumbItems(breadcrumbItems);
+    if (rightPanelContent) {
+      setRightPanelContent(rightPanelContent);
       setRightPanelEnabled(true);
     } else {
       setRightPanelEnabled(false);
       setRightPanelContent(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <>{content}</>;
