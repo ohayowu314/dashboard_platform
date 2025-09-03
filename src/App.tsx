@@ -26,12 +26,15 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<HomePage />} />
-              <Route path="chart-edit" element={<ChartEditorPage />} />
+              <Route path="charts/edit" element={<ChartEditorPage />} />
               <Route path="charts" element={<ChartsPage />} />
-              <Route path="chart-view" element={<ChartViewPage />} />
+              <Route path="charts/view" element={<ChartViewPage />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="dashboards" element={<DashboardsPage />} />
-              <Route path="data-table-edit" element={<DataTableEditorPage />} />
+              <Route
+                path="data-tables/edit"
+                element={<DataTableEditorPage />}
+              />
               <Route path="data-tables" element={<DataTablesPage />} />
               <Route path="upload" element={<UploadPage />} />
               <Route path="download" element={<DownloadPage />} />
