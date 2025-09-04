@@ -1,6 +1,6 @@
 // src/pages/DataTableEditorPage.tsx
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -13,29 +13,32 @@ import {
   Paper,
   CircularProgress,
   Alert,
-  TextField, // 新增
-  InputAdornment, // 新增
-  Tooltip, // 新增
-  IconButton, // 新增
+  TextField,
+  InputAdornment,
+  Tooltip,
+  IconButton,
+  Grid,
+  Button,
 } from "@mui/material";
-import { Edit as EditIcon } from "@mui/icons-material"; // 新增
+import { Edit as EditIcon } from "@mui/icons-material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { PageWrapper } from "../components/layout/PageWrapper";
 import { parseDataFile } from "../utils";
 import type { ParsedData } from "../types";
 
 export const DataTableEditorPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const file: File | null = location.state?.file || null;
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<ParsedData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // 新增：表格名稱狀態，預設為檔案名稱
   const [tableName, setTableName] = useState<string>(
     file?.name.split(".")[0] || "未命名表格"
   );
-  // 新增：編輯狀態
   const [isEditingName, setIsEditingName] = useState(false);
 
   useEffect(() => {
@@ -59,6 +62,17 @@ export const DataTableEditorPage = () => {
     processFile();
   }, [file]);
 
+  const handleConfirm = () => {
+    console.log(`確認並儲存表格: ${tableName}`);
+    // 這裡可以加入儲存資料到後端的邏輯
+    navigate("/data-tables"); // 儲存後導航回列表頁
+  };
+
+  const handleCancel = () => {
+    console.log("取消編輯");
+    navigate("/data-tables"); // 取消後導航回列表頁
+  };
+
   const pageConfig = {
     breadcrumbItems: [
       { label: "資料表格管理", path: "/data-tables" },
@@ -66,63 +80,89 @@ export const DataTableEditorPage = () => {
     ],
     content: (
       <Box sx={{ p: 3 }}>
-        {/* 標題區塊：使用 Box 保持水平對齊 */}
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Typography variant="h4" sx={{ mr: 1, fontWeight: "bold" }}>
-            表格名稱
-          </Typography>
-          {isEditingName ? (
-            <TextField
-              value={tableName}
-              onChange={(e) => setTableName(e.target.value)}
-              onBlur={() => setIsEditingName(false)}
-              autoFocus
-              variant="standard"
-              sx={{ flexGrow: 1 }}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
+        <Grid
+          container
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mb: 2 }}
+        >
+          {/* 標題區塊 */}
+          <Grid size="grow">
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography variant="h4" sx={{ mr: 1, fontWeight: "bold" }}>
+                表格名稱
+              </Typography>
+              {isEditingName ? (
+                <TextField
+                  value={tableName}
+                  onChange={(e) => setTableName(e.target.value)}
+                  onBlur={() => setIsEditingName(false)}
+                  autoFocus
+                  variant="standard"
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <EditIcon fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              ) : (
+                <Tooltip title="點擊編輯表格名稱">
+                  <Box
+                    onClick={() => setIsEditingName(true)}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      cursor: "pointer",
+                      "&:hover": {
+                        "& .MuiTypography-root": {
+                          color: "primary.main",
+                          textDecoration: "underline",
+                        },
+                        "& .MuiSvgIcon-root": {
+                          color: "primary.main",
+                        },
+                      },
+                    }}
+                  >
+                    <Typography
+                      variant="h4"
+                      component="span"
+                      sx={{ fontWeight: "bold" }}
+                    >
+                      {tableName}
+                    </Typography>
+                    <IconButton size="small" sx={{ ml: 0.5 }}>
                       <EditIcon fontSize="small" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-          ) : (
-            // 修正：將 Typography 和 IconButton 包裝在一個 Box 中，並添加懸停樣式
-            <Tooltip title="點擊編輯表格名稱">
-              <Box
-                onClick={() => setIsEditingName(true)}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  "&:hover": {
-                    "& .MuiTypography-root": {
-                      color: "primary.main", // 懸停時變色
-                      textDecoration: "underline", // 懸停時加底線
-                    },
-                    "& .MuiSvgIcon-root": {
-                      color: "primary.main", // 懸停時變色
-                    },
-                  },
-                }}
-              >
-                <Typography
-                  variant="h4"
-                  component="span"
-                  sx={{ fontWeight: "bold" }}
-                >
-                  {tableName}
-                </Typography>
-                <IconButton size="small" sx={{ ml: 0.5 }}>
-                  <EditIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            </Tooltip>
-          )}
-        </Box>
+                    </IconButton>
+                  </Box>
+                </Tooltip>
+              )}
+            </Box>
+          </Grid>
+
+          {/* 新增：確認與取消按鈕 */}
+          <Grid>
+            <Button
+              variant="outlined"
+              startIcon={<CancelIcon />}
+              onClick={handleCancel}
+              sx={{ mr: 1 }}
+            >
+              取消
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<CheckCircleOutlineIcon />}
+              onClick={handleConfirm}
+            >
+              確認
+            </Button>
+          </Grid>
+        </Grid>
 
         {loading && <CircularProgress />}
         {error && <Alert severity="error">{error}</Alert>}
@@ -132,7 +172,7 @@ export const DataTableEditorPage = () => {
             <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
               資料預覽
             </Typography>
-            {/* 修正：將高度和 overflow 屬性直接設定在 TableContainer 上 */}
+            {/* 修正：stickyHeader overflow 屬性 須配合高度 */}
             <TableContainer
               component={Paper}
               sx={{ height: "70vh", overflow: "auto" }}
