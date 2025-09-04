@@ -46,13 +46,6 @@ export const TopNav = () => {
     >
       {/* 頁面標題與 Breadcrumb 區塊 */}
       <Box sx={{ display: "flex", alignItems: "center" }}>
-        {/* 這裡可以放頁面標題 */}
-        <Typography
-          variant="h6"
-          sx={{ mr: 2, display: { xs: "none", sm: "block" } }}
-        >
-          頁面標題
-        </Typography>
         <Breadcrumb />
       </Box>
 
