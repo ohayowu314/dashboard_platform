@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CloseIcon from "@mui/icons-material/Close";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   open: boolean;
@@ -27,6 +28,7 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const navigate = useNavigate(); // 使用 Hook
 
   const handleCancel = () => {
     if (!uploading) {
@@ -68,10 +70,12 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
       onClose();
       if (selectedFiles.length === 1) {
         console.log("單一檔案上傳，導航至上傳資料表格頁面...");
+        // 使用 navigate 傳遞 state
+        navigate("/data-tables/edit", { state: { file: selectedFiles[0] } });
       } else {
         console.log("多個檔案上傳，返回資料表格列表頁...");
+        setSelectedFiles([]);
       }
-      setSelectedFiles([]);
     }, 2000);
   };
 

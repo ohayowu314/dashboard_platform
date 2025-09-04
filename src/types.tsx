@@ -36,6 +36,12 @@ export interface DataTableInfo {
 export type DataType = string | number | boolean | null | undefined;
 export type DataRow = Record<string, DataType>;
 export type DataTable = DataRow[];
+
+export interface ParsedData {
+  headers: string[];
+  rows: (string | number)[][];
+}
+
 export interface DataTableWithInfo {
   info: DataTableInfo;
   data: DataTable;
