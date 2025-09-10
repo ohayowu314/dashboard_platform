@@ -11,6 +11,11 @@
 <body>
   <div id="root">如果畫面沒切換，代表內容沒有載入，請聯繫開發者或管理員</div>
   <script type="module" src="/src/main.tsx"></script>
+  <script>
+    console.log('Hello from index.html');
+    console.log('page is fully loaded');
+    console.log(window.api.getNames());
+  </script>
 </body>
 
 </html>
