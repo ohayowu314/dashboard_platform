@@ -86,6 +86,8 @@
 │   ├── types.cts         # 共用型別定義
 │   ├── utils.cts         # 工具函式
 │   └── tsconfig.json     # Electron 專用 TypeScript 設定
+├── shared                # 前後端共用型別與常數
+│   └── types/            # TypeScript 共用型別定義
 ├── public                # 靜態檔案
 ├── tests                 # 測試（待實作）
 └── .github               # CI/CD 設定

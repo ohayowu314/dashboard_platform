@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import { createMainWindow } from "./windows/mainWindow.cjs";
 import { APIModule } from "./ipc/APIModule.cjs";
-
+console.log("Main process started");
 app.whenReady().then(() => {
   console.log(`This platform is ${process.platform}`);
   console.log(`App path is ${app.getAppPath()}`);

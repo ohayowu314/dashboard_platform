@@ -1,6 +1,7 @@
 import { FileManager } from "../models/FileManager.cjs";
 import { ChartManager } from "../models/ChartManager.cjs";
-import { ChartInfo, IpcMainListener } from "../types.cjs";
+import { IpcMainListener } from "../types.cjs";
+import { ChartInfo } from "shared/types/chart";
 
 export const ChartAPIHandlers: Record<string, IpcMainListener> = {
   // 上傳圖表設定檔

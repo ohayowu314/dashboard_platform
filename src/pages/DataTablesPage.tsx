@@ -22,19 +22,25 @@ const fakeDataTableInfos = [
   {
     id: "1",
     name: "銷售數據",
-    uploadDate: "2023-10-26",
+    file_path: "ttt.ss.ddf",
+    created_at: "2023-10-26",
+    updated_at: "2023-10-26",
     fileSize: "1.2 MB",
   },
   {
     id: "2",
     name: "客戶資訊",
-    uploadDate: "2023-10-25",
+    file_path: "ttt.ss.ddf",
+    created_at: "2023-10-25",
+    updated_at: "2023-10-25",
     fileSize: "800 KB",
   },
   {
     id: "3",
     name: "庫存報表",
-    uploadDate: "2023-10-24",
+    file_path: "ttt.ss.ddf",
+    created_at: "2023-10-24",
+    updated_at: "2023-10-24",
     fileSize: "3.5 MB",
   },
 ];

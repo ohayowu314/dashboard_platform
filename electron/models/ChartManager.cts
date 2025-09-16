@@ -1,4 +1,4 @@
-import { ChartInfo } from "../types.cjs";
+import { ChartInfo } from "shared/types/chart";
 import { DatabaseManager } from "../models/DatabaseManager.cjs";
 
 export const ChartManager = {

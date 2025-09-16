@@ -25,5 +25,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
-  }
+  },
+  "extends": "../tsconfig.base.json",
+  "include": ["./", "../shared"]
 }

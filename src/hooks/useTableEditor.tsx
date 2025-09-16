@@ -1,6 +1,6 @@
 // src/hooks/useTableEditor.ts
 import { useState, useCallback } from "react";
-import type { ParsedData } from "../types";
+import type { ParsedData } from "shared/types";
 
 interface UseTableEditorReturn {
   tableName: string;

@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
-import type { DataTableInfo } from "../../types";
+import type { DataTableInfo } from "shared/types/dataTable";
 
 interface Props {
   dataTables: DataTableInfo[];
@@ -64,7 +64,7 @@ export const DataTableList = ({ dataTables, viewMode }: Props) => {
           {dataTables.map((table) => (
             <TableRow key={table.id}>
               <TableCell>{table.name}</TableCell>
-              <TableCell>{table.uploadDate}</TableCell>
+              <TableCell>{table.updated_at}</TableCell>
               <TableCell>{table.fileSize}</TableCell>
               <TableCell align="right">
                 <IconButton
@@ -107,7 +107,7 @@ export const DataTableList = ({ dataTables, viewMode }: Props) => {
                   </IconButton>
                 </Box>
                 <Typography variant="body2" color="text.secondary">
-                  上傳日期: {table.uploadDate}
+                  上傳日期: {table.updated_at}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   檔案大小: {table.fileSize}

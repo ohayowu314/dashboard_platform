@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".", // 確保從專案根目錄解析
+    "paths": {
+      "shared/types/*": ["shared/types/*"]
+    }
+  }
+}

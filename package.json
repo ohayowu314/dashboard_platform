@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Dashboard Platform Application",
   "author": "Jack Wu <mailto:48574669+ohayowu314@users.noreply.github.com>",
-  "main": "dist-electron/main.cjs",
+  "main": "dist-electron/electron/main.cjs",
   "homepage": "./",
   "scripts": {
     "dev": "npm-run-all --parallel dev:react dev:electron",

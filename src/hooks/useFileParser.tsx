@@ -1,7 +1,7 @@
 // src/hooks/useFileParser.ts
 import { useState, useEffect } from "react";
 import { parseDataFile } from "../utils";
-import type { ParsedData } from "../types";
+import type { ParsedData } from "shared/types";
 
 interface UseFileParserReturn {
   loading: boolean;

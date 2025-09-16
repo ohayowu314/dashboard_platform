@@ -1,6 +1,6 @@
 // src/utils.tsx
 import Papa from "papaparse";
-import type { ParsedData } from "./types";
+import type { ParsedData } from "shared/types";
 
 // 針對 PapaParse 的資料，定義一個更精確的型別
 interface PapaResultRow {

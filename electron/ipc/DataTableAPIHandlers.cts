@@ -1,6 +1,7 @@
 import { FileManager } from "../models/FileManager.cjs";
 import { DataTableManager } from "../models/DataTableManager.cjs";
-import { DataTable, DataTableInfo, IpcMainListener } from "../types.cjs";
+import { IpcMainListener } from "../types.cjs";
+import { DataTable, DataTableInfo } from "shared/types/dataTable";
 
 export const DataTableAPIHandlers: Record<string, IpcMainListener> = {
   // 上傳資料表

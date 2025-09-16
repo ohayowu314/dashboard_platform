@@ -12,7 +12,7 @@ import {
   Paper,
 } from "@mui/material";
 import EditableCell from "./EditableCell";
-import type { ParsedData } from "../../types";
+import type { ParsedData } from "shared/types";
 
 interface DataTableProps {
   data: ParsedData;

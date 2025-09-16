@@ -1,4 +1,4 @@
-import { DataTableInfo } from "../types.cjs";
+import { DataTableInfo } from "shared/types/dataTable";
 import { DatabaseManager } from "../models/DatabaseManager.cjs";
 
 export const DataTableManager = {
