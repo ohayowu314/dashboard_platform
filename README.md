@@ -1,134 +1,189 @@
 # 資料管理與視覺化平台
 
-> **⚠️ 注意：此倉庫仍處於開發階段，尚未完成完整的功能或正式發布。**
+> ⚠️ **此倉庫仍處於開發階段，當前版本：`v0.1.0`，尚未正式發布。**
 
 ---
 
-## 專案簡介
-本專案旨在建立一個模組化且可擴展的資料管理與視覺化平台，適用於中小型資料分析團隊、教育用途或內部 BI 工具開發。平台主要功能包括：
-- 📊 **資料表管理**：支援匯入、編輯、顯示及操作 CSV/JSON 資料。
-- 📈 **儀表板管理**：提供多層次的圖表編輯與視覺化功能。
-- 🧭 **導航與佈局**：清晰的導航結構（側邊欄、頂部導航、麵包屑等）。
-- ⚙️ **狀態管理**：採用 Zustand 和 React Context 提升效能。
-- 🖥 **響應式 UI**：整合 Material-UI，提供現代化的使用者介面。
+## 📌 專案簡介
+
+本專案致力於打造一個模組化、可擴展的資料管理與視覺化平台，適用於中小型資料分析團隊、教育場景或企業內部 BI 工具開發。
+
+🔧 **最新進展（v0.1.0）**
+- ✅ **支援桌面應用（Electron）**
+- ✅ **資料表管理：已支援 CSV/JSON 上傳、編輯、視圖切換**
+- 🛠 **儀表板管理 UI開發中**
+- 🛠 **互動式圖表功能開發中**
 
 ---
 
-## 功能特性
+## 🚀 功能特性
 
 ### 1. 資料表管理
-- 支援拖曳與多檔案上傳，並提供「純資料」與「含資訊」兩種模式。
-- 動態解析 CSV/JSON 檔案並預覽內容。
-- 支援表格命名、確認儲存與操作選單（瀏覽、編輯、下載、刪除）。
-- 視圖模式切換：列表與卡片視圖。
+- 支援 CSV / JSON 檔案拖曳與多檔案上傳。
+- 即時預覽與資料解析（使用 PapaParse）。
+- 可編輯欄位與資料，含元件停用狀態控制。
+- 命名與儲存資料表，支援列表/卡片視圖切換。
 
-### 2. 儀表板管理（初步實作中）
-- 已建立儀表板主頁與右側設定面板。
-- 預計支援圖表組合與互動式設定。
+### 2. 儀表板管理（進行中）
+- 儀表板主頁與設定面板已建立。
+- 預期整合 Recharts / Grid Layout 提供互動式圖表。
 
-### 3. 導航與佈局
-- 麵包屑：響應式設計，根據螢幕大小動態顯示。
-- 側邊欄：嵌套、可折疊的導航結構，支援圖示顯示。
-- 頂部導航：整合搜尋框與頁面標題顯示。
+### 3. 桌面應用支援（Electron）
+從 v0.1.0 起，專案正式整合 Electron，支援跨平台桌面執行。其架構劃分如下：
+- `electron/main.cts`：Electron 主進程入口，初始化應用、創建主視窗。
+- `electron/preload.cts`：與前端溝通的 bridge 腳本（使用 Context Bridge）。
+- `electron/windows/`：視窗配置，例如主視窗尺寸、選單與事件綁定。
+- `electron/ipc/`：IPC 處理模組，將前端請求轉交至主進程（資料表、儀表板等）。
+- `electron/models/`：模型層，處理資料存取（如 SQLite 操作、檔案處理等）。
+- `electron/services/`：邏輯服務層，封裝如資料表增刪查改功能。
+- `electron/types.cts`、`constants.cts`、`utils.cts`：共用型別、常數與工具函式。
 
-### 4. 狀態管理
-- 採用 Zustand + React Context 實現集中式狀態管理。
-- 支援右側面板開關與麵包屑更新。
+> 💡 預設資料儲存在 SQLite 本機資料庫，並透過 IPC 通訊與前端互動。
 
-### 5. UI 整合與響應式設計（初步實作中）
-- 使用 Material-UI 元件（如 Table、Grid）提升視覺一致性。
-- 預期支援多螢幕尺寸，提供最佳化的使用者體驗。
+可用打包指令參見下方 ⬇️
 
-### 6. 開發工作流與 CI/CD
-- GitHub Actions：配置 lint、型別檢查、測試與安全性審核流程。
-- 依賴性審查與 CodeQL 安全性分析。
+### 4. 導航與佈局
+- 響應式麵包屑（支援「更多」折疊）。
+- 側邊欄支援多層結構與可折疊項目。
+- 頂部列整合搜尋框與動態頁面標題。
+
+### 5. 狀態管理
+- 使用 Zustand + React Context 管理 UI 狀態。
+- 控制右側面板、麵包屑、佈局設定等全域狀態。
+
+### 6. 響應式 UI 設計
+- 基於 Material-UI 元件庫設計，支援多螢幕裝置。
+- 使用主題與 Grid 系統提供一致性介面。
+
+### 7. 開發工作流與 CI/CD
+- 使用 GitHub Actions：
+  - ✅ Lint / 型別檢查
+  - ✅ 單元測試（待補充）
+  - ✅ 安全性審查（CodeQL + 依賴掃描）
 
 ---
 
-## 專案架構
+## 📁 專案結構總覽
 
 ```bash
 ├── src
-│   ├── assets            # 靜態資源（圖片、範例資料）
-│   ├── components        # UI 元件（含 layout、common、DataTablesPage 等）
-│   ├── context           # React Context 與 Provider
+│   ├── assets            # 圖片與樣本資料
+│   ├── components        # UI 元件與通用元件
+│   ├── context           # React Contexts
 │   ├── pages             # 各功能頁面
 │   ├── stores            # Zustand 狀態管理
 │   ├── theme             # MUI 主題設定
 │   ├── types.tsx         # 型別定義
-│   └── utils.tsx         # 工具函式（如資料解析）
-├── public                # 公共資源
-├── tests                 # 測試文件（尚未實作）
-└── .github               # GitHub Actions 配置
-```
+│   └── utils.tsx         # 工具函式
+├── electron              # Electron 主程式與桌面應用邏輯
+│   ├── ipc               # 前後端通訊 (IPC Handlers)
+│   ├── models            # 檔案、資料表、圖表等資料操作邏輯
+│   ├── services          # 業務邏輯層，例如 DataTableService
+│   ├── windows           # 視窗配置與建立函式
+│   ├── main.cts          # Electron 主進程入口
+│   ├── preload.cts       # Preload 腳本，建立前端與主進程橋接
+│   ├── constants.cts     # 共用常數定義
+│   ├── types.cts         # 共用型別定義
+│   ├── utils.cts         # 工具函式
+│   └── tsconfig.json     # Electron 專用 TypeScript 設定
+├── public                # 靜態檔案
+├── tests                 # 測試（待實作）
+└── .github               # CI/CD 設定
+````
 
 ---
 
-## 技術棧
-- 前端框架：React + Vite
-- UI 庫：Material-UI
-- 路由管理：React Router
-- 狀態管理：Zustand + React Context
-- 型別檢查：TypeScript
-- 資料解析：PapaParse（CSV）、JSON 原生解析
-- 測試框架：Jest + React Testing Library
-- CI/CD：GitHub Actions
+## 🧰 技術棧
+
+| 領域     | 技術                        |
+| -------- | --------------------------- |
+| 前端框架 | React + Vite                |
+| UI 庫    | Material-UI                 |
+| 狀態管理 | Zustand + React Context     |
+| 路由管理 | React Router (HashRouter)   |
+| 資料解析 | PapaParse（CSV）、JSON 原生 |
+| 型別系統 | TypeScript                  |
+| 測試     | Jest（規劃中）              |
+| 打包     | Electron + electron-builder |
+| CI/CD    | GitHub Actions + CodeQL     |
 
 ---
 
-## 開發指南
+## ⚙️ 開發指南
 
-### 環境需求
-- Node.js 版本：`>=16.0.0`
-- npm 或 yarn
+### ✅ 環境需求
 
-### 安裝
+* Node.js `>= 16.x`
+* npm 或 yarn
+
+### 🔧 安裝依賴
+
 ```bash
-# Clone 此倉庫
 git clone https://github.com/ohayowu314/dashboard_platform.git
-
-# 安裝依賴
+cd dashboard_platform
 npm install
 ```
 
-### 啟動開發伺服器（使用 Vite）
+### ▶️ 啟動開發伺服器（含前端與桌面應用）
+
 ```bash
 npm run dev
 ```
 
-### 執行測試
+### 🧪 執行測試（未完整實作）
+
 ```bash
 npm test
 ```
 
+### 🛠 打包桌面應用
+
+```bash
+# macOS (ARM)
+npm run dist:mac
+
+# Windows (x64)
+npm run dist:win
+
+# Linux (x64)
+npm run dist:linux
+```
+
 ---
 
-## 進度與待辦事項
+## 📋 開發進度與規劃
 
 ### ✅ 已完成
-- 資料表上傳、預覽與編輯流程。
-- 基礎佈局與導航元件。
 
-### 🛠 待辦
-- 儀表板互動式圖表整合。
-- 資料表匯出與 API 儲存。
-- 優化 UI/UX 設計。
-- 單元測試與 E2E 測試。
-- 撰寫完整的使用者文件。
+* 資料表上傳、即時預覽與基本編輯。
+* 基礎導航架構與 UI 元件整合。
+* Electron 整合，支援桌面執行。
 
----
+### 🧩 進行中
 
-## 貢獻指南
-歡迎任何形式的貢獻！請遵循以下步驟：
-1. Fork 此倉庫。
-2. 創建分支進行修改（`git checkout -b feature/your-feature`）。
-3. 提交 PR（Pull Request）。
+* 多檔案上傳、拖曳、格式驗證、重複檢查。
+* 儀表板互動式圖表功能。
+* 資料表儲存整合 API / SQLite。
+* 單元與端對端測試。
+* UI/UX 優化與文件補充。
 
 ---
 
-## 版權聲明
-此專案採用 [MIT License](LICENSE)。請自由使用、修改與分發。
+## 🤝 貢獻指南
+
+歡迎開發者參與改進！
+
+1. Fork 本倉庫
+2. 建立新分支：`git checkout -b feature/your-feature`
+3. 提交 PR 並詳述變更內容
+4. 通過 CI 檢查並等待合併審核
 
 ---
 
-如有任何問題或建議，請開 Issue 或聯繫我們！🎉
+## 📄 授權
+
+本專案採用 [MIT License](LICENSE)，可自由使用、修改與再散布。
+
+---
+
+如有任何問題、建議或錯誤回報，歡迎開啟 [Issue](https://github.com/ohayowu314/dashboard_platform/issues) 或直接聯絡我們 🙌

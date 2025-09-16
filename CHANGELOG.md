@@ -4,6 +4,23 @@
 
 ---
 
+## [0.1.0](https://github.com/ohayowu314/dashboard_platform/compare/v0.1.0-pre-alpha...v0.1.0) (2025-09-15)
+
+
+### Features
+
+* Add disabled state to `EditableCell` component 為 `EditableCell` 元件新增停用狀態 ([f47b9fb](https://github.com/ohayowu314/dashboard_platform/commit/f47b9fbc0eafbcacdce86f82d8b4adb89e1458d4))
+* **electron:** Add Electron support for desktop application 為桌面應用程式新增 Electron 支援 ([b46db10](https://github.com/ohayowu314/dashboard_platform/commit/b46db10e890b794a47ea92090dbc4d6edf7ced41))
+* **electron:** Enhance Electron setup with improved TypeScript configuration and routing adjustments 透過改進 TypeScript 配置和路由調整，增強 Electron 設定 ([8029d0a](https://github.com/ohayowu314/dashboard_platform/commit/8029d0aadb12cb170cdd6cc332090d3c9b2d627d))
+* **electron:** Update Electron main process with enhanced window configuration and cleanup; remove unused data files 更新 Electron 主進程，增強視窗配置和清理功能；刪除未使用的資料檔案 ([caf02b0](https://github.com/ohayowu314/dashboard_platform/commit/caf02b0d43c8ced7523bcbbda69fa5e27113cfbe))
+* Refactor `DataTableEditorPage` with new reusable components and hooks 重構 `DataTableEditorPage`，新增新的可重複使用元件和鉤子 ([cc5633f](https://github.com/ohayowu314/dashboard_platform/commit/cc5633f60544be214c7799e2109dfcc4dec3a3fc))
+
+
+### Bug Fixes
+
+* Replace BrowserRouter with HashRouter for improved routing compatibility 將 BrowserRouter 替換為 HashRouter，以提高路由相容性 ([544cbb4](https://github.com/ohayowu314/dashboard_platform/commit/544cbb460e016ca4d494d06078e6a1cf5e97b624))
+
+
 ## v0.1.0 pre-alpha（開發階段）
 版本狀態：Pre-alpha（功能尚未穩定，僅供開發測試）
 
