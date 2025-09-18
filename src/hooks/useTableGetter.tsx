@@ -4,6 +4,7 @@ import { getDataTableWithInfo } from "../utils";
 import type {
   DataTableHeaderSchema,
   DataTableInfo,
+  TableId,
 } from "shared/types/dataTable";
 
 interface useTableGetterReturn {
@@ -14,7 +15,7 @@ interface useTableGetterReturn {
 }
 
 export const useTableGetter = (
-  tableId: number | undefined
+  tableId: TableId | undefined
 ): useTableGetterReturn => {
   const [loading, setLoading] = useState(true);
   const [info, setInfo] = useState<DataTableInfo | null>(null);

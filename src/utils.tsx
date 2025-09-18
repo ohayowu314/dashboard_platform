@@ -3,6 +3,7 @@ import Papa from "papaparse";
 import type {
   DataTableHeaderSchema,
   DataTableWithInfo,
+  TableId,
 } from "shared/types/dataTable";
 
 // 針對 PapaParse 的資料，定義一個更精確的型別
@@ -70,7 +71,7 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
 };
 
 export const getDataTableWithInfo = (
-  tableId: number
+  tableId: TableId
 ): Promise<DataTableWithInfo> => {
   return window.api.getTable(tableId);
 };

@@ -1,12 +1,14 @@
+export type SupportedFileType = "csv" | "json";
+export type FileType = SupportedFileType | "unknown";
 export type ColumnType = "string" | "number" | "boolean" | "date";
 export interface ColumnInfo {
   name: string;
   desc?: string;
   type: ColumnType;
 }
-
+export type TableId = string | number;
 export interface DataTableInfo {
-  id: string;
+  id: TableId;
   name: string;
   description?: string;
   file_path: string;

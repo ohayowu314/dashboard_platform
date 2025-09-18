@@ -2,18 +2,18 @@
 import { useState, useEffect } from "react";
 import { useFileParser } from "./useFileParser";
 import { useTableGetter } from "./useTableGetter";
-import type { DataTableHeaderSchema } from "shared/types/dataTable";
+import type { DataTableHeaderSchema, TableId } from "shared/types/dataTable";
 import type { EditorMode } from "src/types";
 
 export interface DataTableState {
   data: DataTableHeaderSchema | null;
   name: string;
-  id?: number | null;
+  id?: TableId | null;
 }
 
 export const useTableDataInitializer = (
   editorMode: EditorMode,
-  tableId?: number,
+  tableId?: TableId,
   file?: File | null
 ) => {
   const [loading, setLoading] = useState(true);

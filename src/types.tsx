@@ -1,3 +1,5 @@
+import type { TableId } from "shared/types/dataTable";
+
 // src/types.tsx
 export interface TocItem {
   label: string;
@@ -24,7 +26,7 @@ export interface CreateTableNavigateState {
 }
 export interface EditTableNavigateState {
   editorMode: "edit";
-  tableId: number;
+  tableId: TableId;
 }
 export interface UploadTableNavigateState {
   editorMode: "upload";

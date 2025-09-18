@@ -1,6 +1,7 @@
 // src/preload.d.ts
 export {};
 import type {
+  TableId,
   DataTableHeaderSchema,
   DataTableInfo,
   DataTableWithInfo,
@@ -13,10 +14,10 @@ interface DataTableAPI {
     content: DataTableHeaderSchema
   ) => Promise<DataTableInfo>;
   getAllTableInfos: () => Promise<DataTableInfo[]>;
-  getTable: (id: string | number) => Promise<DataTableWithInfo>;
-  deleteTable: (id: string | number) => Promise<Message>;
+  getTable: (id: TableId) => Promise<DataTableWithInfo>;
+  deleteTable: (id: TableId) => Promise<Message>;
   updateTable: (
-    id: string | number,
+    id: TableId,
     name: string,
     data: DataTableHeaderSchema
   ) => Promise<DataTableWithInfo>;

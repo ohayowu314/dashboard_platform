@@ -22,6 +22,7 @@ import { useState } from "react";
 import type { DataTableInfo } from "shared/types/dataTable";
 import { DeleteWarningDialog } from "../common/DeleteWarningDialog";
 import { useNavigate } from "react-router-dom";
+import type { EditTableNavigateState } from "src/types";
 
 interface Props {
   dataTables: DataTableInfo[];
@@ -47,7 +48,13 @@ export const DataTableList = ({
     tableId: string | number
   ) => {
     console.log(`點擊了表格 ${tableId}`);
-    navigate("/data-tables/edit", { state: { tableId: tableId } });
+    const state: EditTableNavigateState = {
+      editorMode: "edit",
+      tableId: tableId,
+    };
+    navigate("/data-tables/edit", {
+      state,
+    });
   };
 
   const handleMenuClick = (

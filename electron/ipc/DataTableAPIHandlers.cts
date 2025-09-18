@@ -4,6 +4,7 @@ import { IpcMainListener } from "../types.cjs";
 import {
   DataTableHeaderSchema,
   DataTableWithInfo,
+  TableId,
 } from "shared/types/dataTable";
 
 export const DataTableAPIHandlers: Record<string, IpcMainListener> = {
@@ -33,7 +34,7 @@ export const DataTableAPIHandlers: Record<string, IpcMainListener> = {
   // 取得所有資料表資訊
   "get-all-table-infos": () => DataTableManager.getAllTableInfos(),
   // 取得單一資料表
-  "get-table": (_event, id: number): DataTableWithInfo => {
+  "get-table": (_event, id: TableId): DataTableWithInfo => {
     const tableInfo = DataTableManager.getTableInfoById(id);
     if (!tableInfo) throw new Error("資料表不存在");
 
@@ -49,7 +50,7 @@ export const DataTableAPIHandlers: Record<string, IpcMainListener> = {
       id,
       name,
       data,
-    }: { id: number; name: string; data: DataTableHeaderSchema }
+    }: { id: TableId; name: string; data: DataTableHeaderSchema }
   ): DataTableWithInfo => {
     const tableInfo = DataTableManager.getTableInfoById(id);
     if (!tableInfo) throw new Error("資料表不存在");
@@ -64,7 +65,7 @@ export const DataTableAPIHandlers: Record<string, IpcMainListener> = {
     return { info: updatedTable, data };
   },
   // 刪除資料表
-  "delete-table": (_event, id: number) => {
+  "delete-table": (_event, id: TableId) => {
     const table = DataTableManager.getTableInfoById(id);
     if (!table) throw new Error("資料表不存在");
 

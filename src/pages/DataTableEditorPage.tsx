@@ -10,13 +10,14 @@ import PageHeader from "../components/common/PageHeader";
 import { useTableEditor } from "../hooks/useTableEditor";
 import { useTableDataInitializer } from "../hooks/useTableDataInitializer.tsx";
 import type { EditorMode } from "src/types.tsx";
+import type { TableId } from "shared/types/dataTable.ts";
 
 export const DataTableEditorPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const editorMode: EditorMode = location.state?.editorMode || null;
-  const tableId: number | undefined = location.state?.tableId;
+  const tableId: TableId | undefined = location.state?.tableId;
   const file: File | null = location.state?.file || null;
 
   // 1. 使用新的 Hook 來統一處理資料初始化和載入狀態

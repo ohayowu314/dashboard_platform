@@ -1,4 +1,4 @@
-import { DataTableInfo } from "shared/types/dataTable";
+import { DataTableInfo, TableId } from "shared/types/dataTable";
 import { DatabaseManager } from "../models/DatabaseManager.cjs";
 
 export const DataTableManager = {
@@ -17,7 +17,7 @@ export const DataTableManager = {
       "SELECT id, name, description, file_path, created_at, updated_at FROM tables"
     );
   },
-  getTableInfoById: (id: number): DataTableInfo | undefined => {
+  getTableInfoById: (id: TableId): DataTableInfo | undefined => {
     return DatabaseManager.get<DataTableInfo>(
       "SELECT id, name, description, file_path, created_at, updated_at FROM tables WHERE id = ?",
       [id]
@@ -41,7 +41,7 @@ export const DataTableManager = {
     return DataTableManager.getTableInfoById(result.lastInsertRowid as number)!; // 驚嘆號是 ts 標註，表示不可能是 undefined 或 null
   },
   updateTableInfo: (info: {
-    id: number;
+    id: TableId;
     name?: string;
     description?: string;
     file_path?: string;
@@ -68,7 +68,7 @@ export const DataTableManager = {
     DatabaseManager.run(sql, values);
     return DataTableManager.getTableInfoById(info.id)!;
   },
-  deleteTableInfo: (id: number): void => {
+  deleteTableInfo: (id: TableId): void => {
     DatabaseManager.run("DELETE FROM tables WHERE id = ?", [id]);
   },
 };
