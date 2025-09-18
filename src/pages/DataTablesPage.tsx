@@ -1,5 +1,6 @@
 // src/pages/DataTablesPage.tsx
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -11,18 +12,20 @@ import {
 } from "@mui/material";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import AddIcon from "@mui/icons-material/Add";
+import UploadIcon from "@mui/icons-material/Upload";
 import GridViewIcon from "@mui/icons-material/GridView";
 import { PageWrapper } from "../components/layout/PageWrapper";
-import type { PageConfig } from "../types";
 import { DataTableList } from "../components/DataTablesPage/DataTableList";
 import { UploadDataTableDialog } from "../components/DataTablesPage/UploadDataTableDialog";
 import type { DataTableInfo } from "shared/types/dataTable";
+import type { CreateTableNavigateState, PageConfig } from "../types";
 
 export const DataTablesPage = () => {
   const [searchText, setSearchText] = useState("");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
   const [tableInfos, setTableInfos] = useState<DataTableInfo[]>([]); // 真正從後端來的資料
+  const navigate = useNavigate();
   console.log("DataTablesPage");
 
   useEffect(() => {
@@ -49,6 +52,11 @@ export const DataTablesPage = () => {
     if (newViewMode !== null) {
       setViewMode(newViewMode);
     }
+  };
+
+  const handleNewTableClick = () => {
+    const state: CreateTableNavigateState = { editorMode: "create" };
+    navigate("/data-tables/edit", { state });
   };
 
   // 頁面配置
@@ -102,11 +110,21 @@ export const DataTablesPage = () => {
                 onChange={(e) => setSearchText(e.target.value)}
               />
             </Grid>
-            {/* 上傳按鈕 */}
+            {/* 新增表格按鈕 */}
             <Grid>
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
+                onClick={() => handleNewTableClick()}
+              >
+                新增資料表格
+              </Button>
+            </Grid>
+            {/* 上傳按鈕 */}
+            <Grid>
+              <Button
+                variant="contained"
+                startIcon={<UploadIcon />}
                 onClick={() => setUploadDialogOpen(true)}
               >
                 上傳資料表格
