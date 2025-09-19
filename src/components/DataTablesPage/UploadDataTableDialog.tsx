@@ -11,13 +11,13 @@ import {
   FormControlLabel,
   Typography,
   Box,
-  LinearProgress,
   IconButton,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
-import type { UploadTableNavigateState } from "src/types";
+import type { UploadTableNavigateState } from "../../types";
+import { useUploadStore } from "../../stores/uploadStore";
 
 interface Props {
   open: boolean;
@@ -27,15 +27,14 @@ interface Props {
 export const UploadDataTableDialog = ({ open, onClose }: Props) => {
   const [uploadMode, setUploadMode] = useState<"mode1" | "mode2">("mode1");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [uploading, setUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
-  const navigate = useNavigate(); // 使用 Hook
+  const navigate = useNavigate();
+  const { startUploads } = useUploadStore();
 
   const handleCancel = () => {
-    if (!uploading) {
-      setSelectedFiles([]);
-      onClose();
-    }
+    // 這裡我們不再需要檢查 uploading 狀態，因為上傳是非同步在 Store 裡進行的
+    setSelectedFiles([]);
+    onClose();
   };
 
   const fileTypeFilter = (file: File) =>
@@ -63,26 +62,24 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
   };
 
   const handleUpload = () => {
-    setUploading(true);
-    console.log(`正在以模式 ${uploadMode} 上傳以下檔案:`, selectedFiles);
+    if (selectedFiles.length === 0) return;
 
-    setTimeout(() => {
-      setUploading(false);
+    if (selectedFiles.length === 1) {
+      console.log("單一檔案上傳，導航至上傳資料表格頁面...");
       onClose();
-      if (selectedFiles.length === 1) {
-        console.log("單一檔案上傳，導航至上傳資料表格頁面...");
-        // 使用 navigate 傳遞 state
-        const state: UploadTableNavigateState = {
-          editorMode: "upload",
-          file: selectedFiles[0],
-        };
-        navigate("/data-tables/edit", { state });
-      } else {
-        console.log("多個檔案上傳，返回資料表格列表頁...");
-        // TODO : 多檔案上傳後的處理邏輯
-        setSelectedFiles([]);
-      }
-    }, 2000);
+      const state: UploadTableNavigateState = {
+        editorMode: "upload",
+        file: selectedFiles[0],
+      };
+      navigate("/data-tables/edit", { state });
+    } else {
+      console.log("多個檔案上傳，開始非同步上傳流程並返回列表頁...");
+      // 呼叫 Zustand Store 的 action 來開始上傳
+      startUploads(selectedFiles);
+      // 關閉對話框
+      onClose();
+      setSelectedFiles([]);
+    }
   };
 
   // 拖曳事件處理器
@@ -114,7 +111,7 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
 
   return (
     <Dialog open={open} onClose={handleCancel} maxWidth="sm" fullWidth>
-      <DialogTitle>上傳資料表格</DialogTitle>{" "}
+      <DialogTitle>上傳資料表格</DialogTitle>
       <IconButton
         aria-label="close"
         onClick={handleCancel}
@@ -214,16 +211,13 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
             </ul>
           </Box>
         )}
-        {uploading && <LinearProgress sx={{ mt: 2 }} />}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} disabled={uploading}>
-          取消
-        </Button>
+        <Button onClick={handleCancel}>取消</Button>
         <Button
           onClick={handleUpload}
           variant="contained"
-          disabled={selectedFiles.length === 0 || uploading}
+          disabled={selectedFiles.length === 0}
         >
           確認
         </Button>
