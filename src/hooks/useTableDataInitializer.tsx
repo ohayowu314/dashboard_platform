@@ -1,9 +1,9 @@
 // src/hooks/useTableDataInitializer.tsx
 import { useState, useEffect } from "react";
+import type { DataTableHeaderSchema, TableId } from "shared/types/dataTable";
+import type { EditorMode } from "../types";
 import { useFileParser } from "./useFileParser";
 import { useTableGetter } from "./useTableGetter";
-import type { DataTableHeaderSchema, TableId } from "shared/types/dataTable";
-import type { EditorMode } from "src/types";
 
 export interface DataTableState {
   data: DataTableHeaderSchema | null;

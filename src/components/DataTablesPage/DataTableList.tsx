@@ -1,4 +1,6 @@
 // src/components/DataTablesPage/DataTableList.tsx
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Card,
@@ -18,11 +20,9 @@ import {
   Link,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useState } from "react";
 import type { DataTableInfo, TableId } from "shared/types/dataTable";
+import type { EditTableNavigateState } from "../../types";
 import { DeleteWarningDialog } from "../common/DeleteWarningDialog";
-import { useNavigate } from "react-router-dom";
-import type { EditTableNavigateState } from "src/types";
 
 interface Props {
   dataTables: DataTableInfo[];
