@@ -20,6 +20,12 @@ export const DataTableAPIHandlers: Record<string, IpcMainListener> = {
     }
   ) => {
     const { name, description } = tableInfo;
+
+    const existing = DataTableManager.getTableInfoByName(name);
+    if (existing) {
+      throw new Error(`Table with name ${name} already exists`);
+    }
+
     const directory = FileManager.getUserDataPath("tables");
 
     const fileName = `${Date.now()}_${name}.json`;

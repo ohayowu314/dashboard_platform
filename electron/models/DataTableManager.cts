@@ -34,6 +34,10 @@ export const DataTableManager = {
     description?: string;
     file_path: string;
   }): DataTableInfo => {
+    const existing = DataTableManager.getTableInfoByName(info.name);
+    if (existing) {
+      throw new Error(`Table with name ${info.name} already exists`);
+    }
     const result = DatabaseManager.run(
       "INSERT INTO tables (name, description, file_path) VALUES (?, ?, ?)",
       [info.name, info.description, info.file_path]
