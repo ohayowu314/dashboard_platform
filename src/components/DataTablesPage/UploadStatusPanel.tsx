@@ -8,10 +8,12 @@ import {
   ListItemText,
   LinearProgress,
   Paper,
+  IconButton,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   useUploadStore,
   type FileUploadStatus,
@@ -31,25 +33,32 @@ const getIcon = (status: FileUploadStatus["status"]) => {
 
 export const UploadStatusPanel: React.FC = () => {
   const uploads = useUploadStore((state) => state.uploads);
+  const removeUpload = useUploadStore((state) => state.removeUpload); // 取得移除方法
 
   if (uploads.length === 0) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h6">編輯控制面板</Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
-          這裡可以添加欄位類型、篩選、排序等控制項。
-        </Typography>
-      </Box>
-    );
+    return <Box sx={{ p: 2 }}>這裡可以添加欄位類型、篩選、排序等控制項。</Box>;
   }
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6">上傳狀態</Typography>
       <List dense sx={{ mt: 1 }}>
         {uploads.map((upload) => (
           <Paper key={upload.id} elevation={1} sx={{ mb: 1, p: 1 }}>
-            <ListItem disablePadding>
+            <ListItem
+              disablePadding
+              secondaryAction={
+                (upload.status === "success" || upload.status === "failed") && (
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => removeUpload(upload.id)}
+                    size="small"
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                )
+              }
+            >
               {getIcon(upload.status)}
               <ListItemText
                 primary={

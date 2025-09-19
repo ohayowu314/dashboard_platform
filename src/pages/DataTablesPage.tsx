@@ -35,7 +35,9 @@ export const DataTablesPage = () => {
 
   // 監聽 uploads 狀態的變化，並在有成功上傳時刷新列表
   useEffect(() => {
+    console.log("Uploads state changed:", uploads);
     if (uploads.some((u) => u.status === "success")) {
+      console.log("Detected successful upload, refreshing table infos...");
       refreshTableInfos();
     }
   }, [uploads]);
@@ -162,7 +164,7 @@ export const DataTablesPage = () => {
       </Box>
     ),
     rightPanelContent: <UploadStatusPanel />, // 這裡使用新元件
-    rightPanelTitle: uploads.length > 0 ? "上傳狀態" : "編輯控制面板",
+    rightPanelTitle: "上傳狀態",
   };
 
   return <PageWrapper {...pageConfig} />;
