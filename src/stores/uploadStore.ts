@@ -11,7 +11,8 @@ export interface FileUploadStatus {
   progress?: number;
   error?: string;
   info?: DataTableInfo;
-  timeoutId?: ReturnType<typeof setTimeout>; // 用於儲存定時器 ID
+  timeoutId?: ReturnType<typeof setTimeout>;
+  isExpanded?: boolean;
 }
 
 interface UploadState {
@@ -26,7 +27,8 @@ interface UploadState {
   // 處理上傳檔案的非同步邏輯
   startUploads: (files: File[]) => Promise<void>;
   reset: () => void;
-  removeUpload: (id: string) => void; // 新增移除方法
+  removeUpload: (id: string) => void;
+  toggleExpand: (id: string) => void;
 }
 
 export const useUploadStore = create<UploadState>()(
@@ -35,11 +37,18 @@ export const useUploadStore = create<UploadState>()(
       uploads: [],
 
       addUpload: (file: File) => {
-        const newId = `${file.name}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const newId = `${file.name}-${Date.now()}-${Math.random()
+          .toString(36)
+          .substring(2, 9)}`;
         set((state) => ({
           uploads: [
             ...state.uploads,
-            { id: newId, fileName: file.name, status: "uploading" },
+            {
+              id: newId,
+              fileName: file.name,
+              status: "uploading",
+              isExpanded: false,
+            }, // 初始化為收合狀態
           ],
         }));
         return newId;
@@ -48,7 +57,9 @@ export const useUploadStore = create<UploadState>()(
       updateUploadStatus: (id, status, info, error) => {
         set((state) => ({
           uploads: state.uploads.map((upload) =>
-            upload.id === id ? { ...upload, status, info, error } : upload
+            upload.id === id
+              ? { ...upload, status, info, error, isExpanded: false }
+              : upload
           ),
         }));
       },
@@ -56,6 +67,16 @@ export const useUploadStore = create<UploadState>()(
       removeUpload: (id) => {
         set((state) => ({
           uploads: state.uploads.filter((upload) => upload.id !== id),
+        }));
+      },
+
+      toggleExpand: (id) => {
+        set((state) => ({
+          uploads: state.uploads.map((upload) =>
+            upload.id === id
+              ? { ...upload, isExpanded: !upload.isExpanded }
+              : upload
+          ),
         }));
       },
 
@@ -81,7 +102,7 @@ export const useUploadStore = create<UploadState>()(
             // 成功後設定定時器
             setTimeout(() => {
               removeUpload(newId);
-            }, 10000); // 10 秒後自動移除
+            }, 10000);
           } catch (e: unknown) {
             console.error(`上傳 ${file.name} 失敗:`, e);
             const errorMsg = e instanceof Error ? e.message : "未知錯誤";
@@ -90,7 +111,7 @@ export const useUploadStore = create<UploadState>()(
             // 失敗後設定定時器
             setTimeout(() => {
               removeUpload(newId);
-            }, 30000); // 30 秒後自動移除
+            }, 30000);
           }
         }
       },
