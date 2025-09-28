@@ -5,6 +5,7 @@ import type {
   DataTableWithInfo,
   TableId,
 } from "shared/types/dataTable";
+import { MAX_FILE_SIZE } from "./constants";
 
 // 針對 PapaParse 的資料，定義一個更精確的型別
 interface PapaResultRow {
@@ -13,6 +14,18 @@ interface PapaResultRow {
 
 export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
   return new Promise((resolve, reject) => {
+    if (!file) {
+      return reject(new Error("檔案不存在"));
+    }
+    if (!["text/csv", "application/json"].includes(file.type)) {
+      return reject(new Error("不支援的檔案類型"));
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return reject(new Error("檔案太大"));
+    }
+    if (file.size === 0) {
+      return reject(new Error("檔案為空"));
+    }
     if (file.type === "text/csv") {
       // 在 PapaParse 的 .parse 方法中，使用泛型來指定資料型別
       Papa.parse<PapaResultRow>(file, {
