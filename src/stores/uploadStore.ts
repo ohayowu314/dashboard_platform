@@ -10,6 +10,7 @@ export interface FileUploadStatus {
   status: "uploading" | "success" | "failed";
   progress?: number;
   error?: string;
+  errorName?: string;
   info?: DataTableInfo;
   timeoutId?: ReturnType<typeof setTimeout>;
   isExpanded?: boolean;
@@ -22,7 +23,8 @@ interface UploadState {
     id: string,
     status: FileUploadStatus["status"],
     info?: DataTableInfo,
-    error?: string
+    error?: string,
+    errorName?: string
   ) => void;
   // 處理上傳檔案的非同步邏輯
   startUploads: (files: File[]) => Promise<void>;
@@ -54,11 +56,11 @@ export const useUploadStore = create<UploadState>()(
         return newId;
       },
 
-      updateUploadStatus: (id, status, info, error) => {
+      updateUploadStatus: (id, status, info, error, errorName) => {
         set((state) => ({
           uploads: state.uploads.map((upload) =>
             upload.id === id
-              ? { ...upload, status, info, error, isExpanded: false }
+              ? { ...upload, status, info, error, errorName, isExpanded: false }
               : upload
           ),
         }));
@@ -106,8 +108,9 @@ export const useUploadStore = create<UploadState>()(
           } catch (e: unknown) {
             console.error(`上傳 ${file.name} 失敗:`, e);
             const errorMsg = e instanceof Error ? e.message : "未知錯誤";
+            const errorName = e instanceof Error ? e.name : "Error";
             // 更新狀態為失敗
-            updateUploadStatus(newId, "failed", undefined, errorMsg);
+            updateUploadStatus(newId, "failed", undefined, errorMsg, errorName);
             // 失敗後設定定時器
             setTimeout(() => {
               removeUpload(newId);
