@@ -22,9 +22,6 @@ export const STANDARD_JSON_EXAMPLE = `[
     }
 ]`;
 
-// 使用一個特定的前綴來標記 JSON 格式錯誤，以便前端識別
-export const JSON_FORMAT_ERROR_PREFIX = "JSON_FORMAT_ERROR:";
-
 // 針對 PapaParse 的資料，定義一個更精確的型別
 interface PapaResultRow {
   [key: string]: string | number;
@@ -80,9 +77,7 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
 
           if (!Array.isArray(data) || data.length === 0) {
             return reject(
-              new ValidationError(
-                `${JSON_FORMAT_ERROR_PREFIX}JSON 檔案格式不正確，應為陣列且不為空。`
-              )
+              new ValidationError(`JSON 檔案格式不正確，應為陣列且不為空。`)
             );
           }
 
@@ -91,7 +86,7 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
           if (isAnyValueOrArray) {
             return reject(
               new ValidationError(
-                `${JSON_FORMAT_ERROR_PREFIX}JSON 檔案內容格式不正確，陣列元素應為非陣列的物件。`
+                `JSON 檔案內容格式不正確，陣列元素應為非陣列的物件。`
               )
             );
           }
@@ -105,7 +100,7 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
           if (!isConsistent) {
             return reject(
               new ValidationError(
-                `${JSON_FORMAT_ERROR_PREFIX}JSON 檔案格式不正確，所有物件必須有相同的鍵。`
+                `JSON 檔案格式不正確，所有物件必須有相同的鍵。`
               )
             );
           }

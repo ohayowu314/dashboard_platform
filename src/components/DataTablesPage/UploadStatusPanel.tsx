@@ -31,7 +31,7 @@ import {
   type FileUploadStatus,
 } from "../../stores/uploadStore";
 
-import { STANDARD_JSON_EXAMPLE, JSON_FORMAT_ERROR_PREFIX } from "../../utils";
+import { STANDARD_JSON_EXAMPLE } from "../../utils";
 
 // --- 標準格式對話框元件 ---
 interface StandardFormatDialogProps {
@@ -252,13 +252,7 @@ export const UploadStatusPanel: React.FC = () => {
                     }}
                   >
                     <Typography variant="body2" color="error">
-                      錯誤原因:{" "}
-                      {/* 判斷是否為 JSON 格式錯誤，若是，則去除前綴 */}
-                      {upload.error && upload.errorName === "ValidationError"
-                        ? upload.error.substring(
-                            JSON_FORMAT_ERROR_PREFIX.length
-                          )
-                        : upload.error}
+                      錯誤原因: {upload.error}
                     </Typography>
                     {/* 檢查是否有 JSON 格式錯誤前綴，顯示連結 */}
                     {upload.error && upload.errorName === "ValidationError" && (
