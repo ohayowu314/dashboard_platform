@@ -17,6 +17,10 @@ export interface DataTableInfo {
   fileSize?: string | number;
   columnInfos?: ColumnInfo[];
 }
+export type UploadInputDataTableInfo = Pick<
+  DataTableInfo,
+  "name" | "description"
+>;
 
 export type DataValue = string | number | boolean | null | undefined;
 export type DataRecord = Record<string, DataValue>;
