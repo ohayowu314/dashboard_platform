@@ -5,15 +5,18 @@ import type {
   DataTableHeaderSchema,
   DataTableInfo,
   DataTableWithInfo,
+  UploadInputDataTableInfo,
 } from "shared/types/dataTable";
-import type { Message } from "shared/types";
+import type { Message, ConflictResult } from "shared/types";
 import type { ChartInfo } from "shared/types/chart";
 interface DataTableAPI {
   uploadTable: (
-    tableInfo: { name: string; description?: string },
-    content: DataTableHeaderSchema
+    tableInfo: UploadInputDataTableInfo,
+    content: DataTableHeaderSchema,
+    uploadMode: UploadMode
   ) => Promise<DataTableInfo>;
   getAllTableInfos: () => Promise<DataTableInfo[]>;
+  checkTablesConflict: (names: string[]) => Promise<ConflictResult[]>;
   getTable: (id: TableId) => Promise<DataTableWithInfo>;
   deleteTable: (id: TableId) => Promise<Message>;
   updateTable: (

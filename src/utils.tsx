@@ -131,3 +131,24 @@ export const getDataTableWithInfo = (
 ): Promise<DataTableWithInfo> => {
   return window.api.getTable(tableId);
 };
+
+/**
+ * 從檔名中移除副檔名，作為所需名稱。
+ * 範例: "users.csv" -> "users"
+ * 範例: "data.v1.json" -> "data.v1"
+ * @param filename 包含副檔名的檔案名稱
+ * @returns 移除副檔名後的純淨名稱
+ */
+export const getNameFromFile = (filename: string): string => {
+  // 尋找最後一個點 ('.') 的位置
+  const lastDotIndex = filename.lastIndexOf(".");
+
+  // 如果沒有找到點，或者點是第一個字元 (例如 '.DS_Store' 這種情況，雖然不常見)，
+  // 則返回原始名稱。
+  if (lastDotIndex === -1 || lastDotIndex === 0) {
+    return filename;
+  }
+
+  // 返回從開頭到最後一個點之前的子字串
+  return filename.substring(0, lastDotIndex);
+};

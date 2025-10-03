@@ -4,6 +4,7 @@ import type { DataTableHeaderSchema, TableId } from "shared/types/dataTable";
 import type { EditorMode } from "../types";
 import { useFileParser } from "./useFileParser";
 import { useTableGetter } from "./useTableGetter";
+import { getNameFromFile } from "../utils";
 
 export interface DataTableState {
   data: DataTableHeaderSchema | null;
@@ -55,7 +56,7 @@ export const useTableDataInitializer = (
         } else if (fileParsedData) {
           setInitialState({
             data: fileParsedData,
-            name: file?.name.split(".")[0] || "未命名表格",
+            name: file ? getNameFromFile(file.name) : "未命名表格",
             id: null,
           });
         }
