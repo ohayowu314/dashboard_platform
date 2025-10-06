@@ -4,6 +4,69 @@
 
 ---
 
+## [0.2.1](https://github.com/ohayowu314/dashboard_platform/compare/v0.2.0...v0.2.1) (2025-10-03)
+此版本重構上傳流程，加入多檔案與衝突解決，改善使用者體驗與穩定性。
+
+### ⚡ BREAKING CHANGES 重大變更
+- **多檔案上傳與衝突解決** (Issue [#39](https://github.com/ohayowu314/dashboard_platform/issues/39), [d9fffde](https://github.com/ohayowu314/dashboard_platform/commit/d9fffde0a4039ef32d98422a3c77bde330b97aa5), [0f672ac](https://github.com/ohayowu314/dashboard_platform/commit/0f672ac7d9859b8e7a073f7cffff63af2e7c0da2), [e214c33](https://github.com/ohayowu314/dashboard_platform/commit/e214c331063d3cdb4f65bd680a875ae2a1be66a8))  
+  資料表上傳支援多檔案並行，前端即時檢查與標示檔名（表名）衝突，使用者可針對每個衝突檔案選擇「自動更名」、「覆蓋」、「略過」等行為，並將決策同步傳遞給後端，後端透過 `uploadMode` 參數，執行 `getNewTableName` 或覆蓋操作。  
+  _Multi-file upload now supports real-time conflict detection and resolution. Users can choose "rename", "replace", or "skip" for each conflicting file, and the backend will process according to the selected mode._
+
+---
+
+### ✨ Features 新功能
+
+#### 📤 資料表上傳 Data Table Upload
+- **多檔案上傳流程重構** (Issue [#39](https://github.com/ohayowu314/dashboard_platform/issues/39), [e214c33](https://github.com/ohayowu314/dashboard_platform/commit/e214c331063d3cdb4f65bd680a875ae2a1be66a8), [8c4ab0c](https://github.com/ohayowu314/dashboard_platform/commit/8c4ab0c6db07e95259e569a3a46726c443651ac4))  
+  上傳對話框支援多檔案拖拉、選取，並即時顯示每個檔案的衝突狀態與解決選項（rename/replace/skip），可動態移除單一檔案。  
+  _Upload dialog supports multi-file drag & drop, real-time conflict status, and per-file conflict resolution options (rename/replace/skip). Files can be removed individually._
+- **即時衝突檢查** (Issue [#39](https://github.com/ohayowu314/dashboard_platform/issues/39), [e214c33](https://github.com/ohayowu314/dashboard_platform/commit/e214c331063d3cdb4f65bd680a875ae2a1be66a8), [0f672ac](https://github.com/ohayowu314/dashboard_platform/commit/0f672ac7d9859b8e7a073f7cffff63af2e7c0da2))  
+  前端選檔後自動 debounce 向後端查詢所有檔案（表名）是否衝突，並於 UI 標示。間隔時間設定為 300ms，避免頻繁 API 請求。  
+  _After file selection, frontend debounces and queries backend for all table name conflicts, displaying results in the UI. Real-time conflict detection with a 300ms debounce mechanism to reduce redundant API calls._
+- **上傳狀態面板** (Issue [#40](https://github.com/ohayowu314/dashboard_platform/issues/40), [f27ac50](https://github.com/ohayowu314/dashboard_platform/commit/f27ac50dc5cdb353524b639c4c710c9ad68b073d), [71fdb0a](https://github.com/ohayowu314/dashboard_platform/commit/71fdb0a09687da212800c6f7dc4b271c3e37aea7), [4b7e019](https://github.com/ohayowu314/dashboard_platform/commit/4b7e019ddd1b1a2b814a20ba4b20b1902f74c10a), [8c4ab0c](https://github.com/ohayowu314/dashboard_platform/commit/8c4ab0c6db07e95259e569a3a46726c443651ac4), [0a88c30](https://github.com/ohayowu314/dashboard_platform/commit/0a88c30c5516d513d4403352834eda8b1e53b4b1))  
+  右側面板新增 `UploadStatusPanel`，支援展開/收合、顯示上傳進度、成功/失敗狀態、錯誤訊息、手動移除、成功10秒/失敗30秒自動消失。  
+  _New `UploadStatusPanel` in the right panel: supports expand/collapse, shows upload progress, success/failure, error messages, manual removal, and auto-removal (10s for success, 30s for failure)._
+- **useDebounce hook** ([e214c33](https://github.com/ohayowu314/dashboard_platform/commit/e214c331063d3cdb4f65bd680a875ae2a1be66a8))  
+  自訂 React hook，優化高頻率檔案選取時的衝突查詢效能。  
+  _Custom React hook for debouncing high-frequency file selection events, optimizing conflict check performance._
+- **Zustand 狀態管理** ([f27ac50](https://github.com/ohayowu314/dashboard_platform/commit/f27ac50dc5cdb353524b639c4c710c9ad68b073d), [71fdb0a](https://github.com/ohayowu314/dashboard_platform/commit/71fdb0a09687da212800c6f7dc4b271c3e37aea7), [888c61d](https://github.com/ohayowu314/dashboard_platform/commit/888c61d13771292877be9dff21dc4e603d7d1587), [1c277ff](https://github.com/ohayowu314/dashboard_platform/commit/1c277ff387fd0501158ec2914a8d73bd68b23f4c))  
+  上傳流程與狀態統一由 `uploadStore` 管理，解耦元件間狀態傳遞。  
+  _Upload process and state are managed by a centralized Zustand store, decoupling component state._
+
+#### 🧩 JSON 格式驗證與錯誤提示 JSON Format Validation & Error Display
+- **嚴格 JSON 格式驗證** (Issue [#38](https://github.com/ohayowu314/dashboard_platform/issues/38), [f27ac50](https://github.com/ohayowu314/dashboard_platform/commit/f27ac50dc5cdb353524b639c4c710c9ad68b073d))  
+  上傳 JSON 檔案時，檢查是否為非空陣列、每個元素皆為物件且鍵值一致，否則拋出 ValidationError。  
+  _Strict JSON validation: uploaded JSON must be a non-empty array of objects with consistent keys, otherwise a ValidationError is thrown._
+- **標準格式範例與複製** (Issue [#38](https://github.com/ohayowu314/dashboard_platform/issues/38), [f27ac50](https://github.com/ohayowu314/dashboard_platform/commit/f27ac50dc5cdb353524b639c4c710c9ad68b073d))  
+  錯誤訊息提供「檢視標準 JSON 格式」對話框，內含可複製的標準範例。  
+  _Error messages provide a dialog with a standard JSON format example and one-click copy._
+- **錯誤訊息優化** (Issue [#38](https://github.com/ohayowu314/dashboard_platform/issues/38), [de35f00](https://github.com/ohayowu314/dashboard_platform/commit/de35f006b37285cf1003d5f387f07844fac12b77), [f27ac50](https://github.com/ohayowu314/dashboard_platform/commit/f27ac50dc5cdb353524b639c4c710c9ad68b073d))  
+  前後端錯誤訊息一致，ValidationError 會於 UI 明確標示。  
+  _Frontend and backend error messages are unified; ValidationError is clearly indicated in the UI._
+
+#### 🛡️ 檔案驗證 File Validation
+- **檔案類型/大小/空檔驗證** (Issue [#37](https://github.com/ohayowu314/dashboard_platform/issues/37), [77c8d85](https://github.com/ohayowu314/dashboard_platform/commit/77c8d8550bcea49ae21847e4ea2b2eff9f1bf1c6))  
+  parseDataFile 支援檢查檔案類型（CSV/JSON）、大小（10MB）、空檔等，並給予明確錯誤提示。  
+  _parseDataFile now validates file type (CSV/JSON), size (10MB), and empty files, with clear error messages._
+
+#### 🗃️ 資料表管理 Data Table Management
+- **防止重複表名建立** ([0f672ac](https://github.com/ohayowu314/dashboard_platform/commit/0f672ac7d9859b8e7a073f7cffff63af2e7c0da2), [572b5b9](https://github.com/ohayowu314/dashboard_platform/commit/572b5b9337bb6a83e5ed0e5ce4f40be7cf796128))  
+  後端於建立資料表時，若名稱重複，支援以下衝突解決方式: 自動更名(透過 `getNewTableName` 自動生成新名稱並建立資料表)、覆蓋模式(使用 `uploadMode: "replace"` 覆蓋既有資料表內容)。前端可透過設定 `uploadMode` 來指定所需的衝突解決方式。  
+  _When creating a database table, the backend supports the following conflict resolution mechanisms in case of duplicate names: Automatic Renaming(A new name is automatically generated using `getNewTableName`, and the table is created with the new name), Overwrite Mode (Existing table contents are overwritten by specifying `uploadMode: "replace"`). The frontend can specify the desired conflict resolution method by setting the `uploadMode` parameter._
+- **getNameFromFile 工具** ([e214c33](https://github.com/ohayowu314/dashboard_platform/commit/e214c331063d3cdb4f65bd680a875ae2a1be66a8))  
+  前端統一以去除副檔名的檔名作為資料表名稱，確保前後端一致。  
+  _Frontend uses filename without extension as the table name, ensuring consistency with backend._
+
+#### 🛠️ 其他 Others
+- **依賴升級** ([8b25ded](https://github.com/ohayowu314/dashboard_platform/commit/8b25dedd9e6853aaea4dfe324bbf2f228364eae9))  
+  使用 `npm audit fix` 檢查並修正 High 威脅依賴問題: tar-fs 套件升級至 2.1.4。  
+  _Upgraded tar-fs dependency via npm audit fix to resolve High threat vulnerabilities._
+- **型別與 API 統一** ([d9fffde](https://github.com/ohayowu314/dashboard_platform/commit/d9fffde0a4039ef32d98422a3c77bde330b97aa5))  
+  型別定義與 IPC API 介面同步調整，支援多檔案衝突查詢與上傳模式參數。  
+  _Type definitions and IPC API interfaces updated to support multi-file conflict checking and upload mode parameters._
+
+---
+
 ## [0.2.0](https://github.com/ohayowu314/dashboard_platform/compare/v0.1.0...v0.2.0) (2025-09-19)
 
 
@@ -36,6 +99,7 @@
 * **RightPanel**： Supports right panel title and collapsibility, and updates documentation. 支援標題、可折疊功能，並更新文件 ([#33](https://github.com/ohayowu314/dashboard_platform/issues/33), [a554f1b](https://github.com/ohayowu314/dashboard_platform/commit/a554f1bfec523f0dbabe9a34663801ad20cb2008), [f207263](https://github.com/ohayowu314/dashboard_platform/commit/f207263378f1f140ce0de8064fc2eb82fcdcb7a8))
 * **RightPanel**： improve RightPanel layout and add default text 改進佈局並新增預設文字 ([#34](https://github.com/ohayowu314/dashboard_platform/issues/34), [a8215b5](https://github.com/ohayowu314/dashboard_platform/commit/a8215b52709bcffcb98863aedf31da409b012397))
 
+---
 
 ## [0.1.0](https://github.com/ohayowu314/dashboard_platform/compare/v0.1.0-pre-alpha...v0.1.0) (2025-09-15)
 
@@ -53,6 +117,7 @@
 
 * Replace BrowserRouter with HashRouter for improved routing compatibility 將 BrowserRouter 替換為 HashRouter，以提高路由相容性 ([544cbb4](https://github.com/ohayowu314/dashboard_platform/commit/544cbb460e016ca4d494d06078e6a1cf5e97b624))
 
+---
 
 ## v0.1.0 pre-alpha（開發階段）
 版本狀態：Pre-alpha（功能尚未穩定，僅供開發測試）
