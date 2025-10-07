@@ -17,21 +17,38 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import { PageWrapper } from "../components/layout/PageWrapper";
 import { DataTableList } from "../components/DataTablesPage/DataTableList";
 import { UploadDataTableDialog } from "../components/DataTablesPage/UploadDataTableDialog";
+import { useUploadStore } from "../stores/uploadStore";
 import type { DataTableInfo } from "shared/types/dataTable";
 import type { CreateTableNavigateState, PageConfig } from "../types";
+import { UploadStatusPanel } from "../components/DataTablesPage/UploadStatusPanel"; // 新增元件
 
 export const DataTablesPage = () => {
   const [searchText, setSearchText] = useState("");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"card" | "list">("card");
-  const [tableInfos, setTableInfos] = useState<DataTableInfo[]>([]); // 真正從後端來的資料
+  const [tableInfos, setTableInfos] = useState<DataTableInfo[]>([]);
   const navigate = useNavigate();
-  console.log("DataTablesPage");
+
+  // 從 Zustand Store 獲取上傳狀態
+  const uploads = useUploadStore((state) => state.uploads);
+  const resetUploads = useUploadStore((state) => state.reset);
+
+  // 監聽 uploads 狀態的變化，並在有成功上傳時刷新列表
+  useEffect(() => {
+    console.log("Uploads state changed:", uploads);
+    if (uploads.some((u) => u.status === "success")) {
+      console.log("Detected successful upload, refreshing table infos...");
+      refreshTableInfos();
+    }
+  }, [uploads]);
 
   useEffect(() => {
-    // 載入後端資料表資訊
     refreshTableInfos();
-  }, []);
+    // 頁面初次載入時清空上傳狀態，避免上次的紀錄影響本次
+    return () => {
+      resetUploads();
+    };
+  }, [resetUploads]);
 
   const refreshTableInfos = () => {
     window.api.getAllTableInfos().then((tables) => {
@@ -48,7 +65,6 @@ export const DataTablesPage = () => {
     _event: React.MouseEvent<HTMLElement>,
     newViewMode: "card" | "list"
   ) => {
-    // 只有當新模式不為 null 時才更新狀態
     if (newViewMode !== null) {
       setViewMode(newViewMode);
     }
@@ -133,7 +149,7 @@ export const DataTablesPage = () => {
           </Grid>
         </Grid>
 
-        {/* 將 viewMode 作為 props 傳遞給 DataTableList */}
+        {/* 資料表格列表 */}
         <DataTableList
           dataTables={filteredDataTables}
           viewMode={viewMode}
@@ -147,6 +163,8 @@ export const DataTablesPage = () => {
         />
       </Box>
     ),
+    rightPanelContent: <UploadStatusPanel />, // 這裡使用新元件
+    rightPanelTitle: "上傳狀態",
   };
 
   return <PageWrapper {...pageConfig} />;

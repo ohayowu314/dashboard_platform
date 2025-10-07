@@ -2,6 +2,8 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Box, CircularProgress, Alert } from "@mui/material";
+import type { TableId } from "shared/types/dataTable.ts";
+import type { EditorMode } from "../types.tsx";
 import { PageWrapper } from "../components/layout/PageWrapper";
 import EditableTitle from "../components/common/EditableTitle";
 import ConfirmCancelButtons from "../components/common/ConfirmCancelButtons";
@@ -9,8 +11,6 @@ import DataTable from "../components/common/DataTable";
 import PageHeader from "../components/common/PageHeader";
 import { useTableEditor } from "../hooks/useTableEditor";
 import { useTableDataInitializer } from "../hooks/useTableDataInitializer.tsx";
-import type { EditorMode } from "src/types.tsx";
-import type { TableId } from "shared/types/dataTable.ts";
 
 export const DataTableEditorPage: React.FC = () => {
   const location = useLocation();

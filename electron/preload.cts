@@ -1,20 +1,22 @@
 console.log("Preload script loaded");
 import { contextBridge, ipcRenderer } from "electron";
-import type { Message } from "shared/types";
+import type { ConflictResult, Message, UploadMode } from "shared/types";
 import type {
   DataTableHeaderSchema,
   DataTableInfo,
   DataTableWithInfo,
   TableId,
+  UploadInputDataTableInfo,
 } from "shared/types/dataTable";
 import type { ChartInfo } from "shared/types/chart";
 
 contextBridge.exposeInMainWorld("api", {
   uploadTable: (
-    tableInfo: { name: string; description?: string },
-    content: DataTableHeaderSchema
+    tableInfo: UploadInputDataTableInfo,
+    content: DataTableHeaderSchema,
+    uploadMode: UploadMode = "create"
   ): Promise<DataTableInfo> =>
-    ipcRenderer.invoke("upload-table", { tableInfo, content }),
+    ipcRenderer.invoke("upload-table", { tableInfo, content, uploadMode }),
   getAllTableInfos: (): Promise<DataTableInfo[]> =>
     ipcRenderer.invoke("get-all-table-infos"),
   getTable: (id: TableId): Promise<DataTableWithInfo> =>
@@ -27,6 +29,10 @@ contextBridge.exposeInMainWorld("api", {
     ipcRenderer.invoke("update-table", { id, name, data }),
   deleteTable: (id: TableId): Promise<Message> =>
     ipcRenderer.invoke("delete-table", id),
+  checkTableConflict: (name: string): Promise<ConflictResult> =>
+    ipcRenderer.invoke("check-table-conflict", name),
+  checkTablesConflict: (names: string[]): Promise<ConflictResult[]> =>
+    ipcRenderer.invoke("check-tables-conflict", names),
   uploadChart: (
     chartInfo: { name: string; description?: string },
     config: unknown

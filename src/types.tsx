@@ -1,6 +1,6 @@
+// src/types.tsx
 import type { TableId } from "shared/types/dataTable";
 
-// src/types.tsx
 export interface TocItem {
   label: string;
   path: string;
@@ -38,3 +38,12 @@ export type DataTableNavigateState =
   | EditTableNavigateState
   | UploadTableNavigateState
   | null;
+
+export type FileConflictAction = "rename" | "replace" | "skip";
+
+export class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}

@@ -5,14 +5,53 @@ import type {
   DataTableWithInfo,
   TableId,
 } from "shared/types/dataTable";
+import { MAX_FILE_SIZE } from "./constants";
+import { ValidationError } from "./types";
+
+// 為了更清晰地傳遞標準 JSON 範例，我們定義一個包含範例的特定錯誤訊息
+export const STANDARD_JSON_EXAMPLE = `[
+    {
+        "欄位1": 1,
+        "欄位2": 2,
+        "欄位3": 3
+    },
+    {
+        "欄位1": 4,
+        "欄位2": 5,
+        "欄位3": 6
+    }
+]`;
 
 // 針對 PapaParse 的資料，定義一個更精確的型別
 interface PapaResultRow {
   [key: string]: string | number;
 }
 
+const isValueOrArray = (item: unknown): boolean => {
+  return typeof item !== "object" || item === null || Array.isArray(item);
+};
+
+export const isSameKeys = (obj1: object, obj2: object): boolean => {
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) return false;
+  return keys1.every((key) => keys2.includes(key));
+};
+
 export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
   return new Promise((resolve, reject) => {
+    if (!file) {
+      return reject(new Error("檔案不存在"));
+    }
+    if (!["text/csv", "application/json"].includes(file.type)) {
+      return reject(new Error("不支援的檔案類型"));
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return reject(new Error("檔案太大"));
+    }
+    if (file.size === 0) {
+      return reject(new Error("檔案為空"));
+    }
     if (file.type === "text/csv") {
       // 在 PapaParse 的 .parse 方法中，使用泛型來指定資料型別
       Papa.parse<PapaResultRow>(file, {
@@ -37,17 +76,34 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
           const data = JSON.parse(content);
 
           if (!Array.isArray(data) || data.length === 0) {
-            return reject(new Error("JSON 檔案格式不正確，應為陣列且不為空。"));
+            return reject(
+              new ValidationError(`JSON 檔案格式不正確，應為陣列且不為空。`)
+            );
           }
 
           const firstItem = data[0];
-          if (typeof firstItem !== "object" || firstItem === null) {
+          const isAnyValueOrArray = data.some((item) => isValueOrArray(item));
+          if (isAnyValueOrArray) {
             return reject(
-              new Error("JSON 檔案內容格式不正確，陣列元素應為物件。")
+              new ValidationError(
+                `JSON 檔案內容格式不正確，陣列元素應為非陣列的物件。`
+              )
             );
           }
 
           const headers = Object.keys(firstItem) as string[];
+
+          // 檢查所有物件是否有相同的鍵
+          const isConsistent = data.every((item) =>
+            isSameKeys(firstItem, item)
+          );
+          if (!isConsistent) {
+            return reject(
+              new ValidationError(
+                `JSON 檔案格式不正確，所有物件必須有相同的鍵。`
+              )
+            );
+          }
 
           // 使用 map 迴圈遍歷每個項目，並透過 headers 陣列的順序取得值
           const rows = data.map((item: { [key: string]: undefined }) => {
@@ -57,7 +113,7 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
           resolve({ headers, rows });
         } catch (error) {
           console.error(error);
-          reject(new Error("JSON 檔案解析失敗。"));
+          reject(new SyntaxError("JSON 檔案解析失敗。"));
         }
       };
       reader.onerror = () => {
@@ -74,4 +130,25 @@ export const getDataTableWithInfo = (
   tableId: TableId
 ): Promise<DataTableWithInfo> => {
   return window.api.getTable(tableId);
+};
+
+/**
+ * 從檔名中移除副檔名，作為所需名稱。
+ * 範例: "users.csv" -> "users"
+ * 範例: "data.v1.json" -> "data.v1"
+ * @param filename 包含副檔名的檔案名稱
+ * @returns 移除副檔名後的純淨名稱
+ */
+export const getNameFromFile = (filename: string): string => {
+  // 尋找最後一個點 ('.') 的位置
+  const lastDotIndex = filename.lastIndexOf(".");
+
+  // 如果沒有找到點，或者點是第一個字元 (例如 '.DS_Store' 這種情況，雖然不常見)，
+  // 則返回原始名稱。
+  if (lastDotIndex === -1 || lastDotIndex === 0) {
+    return filename;
+  }
+
+  // 返回從開頭到最後一個點之前的子字串
+  return filename.substring(0, lastDotIndex);
 };
