@@ -54,7 +54,7 @@ export const DataTableEditorPage: React.FC = () => {
       } else {
         console.log(`確認並儲存表格: ${tableName}`);
         const tableInfo = { name: tableName, description: "" };
-        await window.api.uploadTable(tableInfo, data);
+        await window.api.uploadTable(tableInfo, data, "create");
         console.log("儲存成功!");
       }
       navigate("/data-tables");
