@@ -7,7 +7,7 @@ import type {
   DataTableWithInfo,
   UploadInputDataTableInfo,
 } from "shared/types/dataTable";
-import type { Message, ConflictResult } from "shared/types";
+import type { Message, ConflictResult, UploadMode } from "shared/types";
 import type { ChartInfo } from "shared/types/chart";
 interface DataTableAPI {
   uploadTable: (

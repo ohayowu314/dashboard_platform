@@ -3,13 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - main
-      - dev
-      - "feat/**"
+      - '**'  # 任何分支都會觸發
   pull_request:
     branches:
-      - main
-      - dev
+      - '**'  # 所有目標分支的 PR 都會觸發
 
 jobs:
   build-and-check:
@@ -29,11 +26,9 @@ jobs:
 
       - name: Run Lint
         run: npm run lint
-        continue-on-error: ${{ github.ref != 'refs/heads/main' }} # feat/dev 允許警告
 
       - name: Type Check
         run: npm run type-check
-        continue-on-error: ${{ github.ref != 'refs/heads/main' }}
 
       - name: Run Tests
         run: npm test -- --coverage
@@ -42,3 +37,12 @@ jobs:
       - name: Run Security Audit
         run: npm audit --audit-level=moderate
         continue-on-error: false
+
+      # 額外提示：如果是在 main 分支，顯示「嚴格模式」
+      - name: Summary
+        run: |
+          if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
+            echo "✅ Strict mode: all checks required to pass."
+          else
+            echo "⚠️  Non-main branch: tests or audit may fail without blocking CI."
+          fi
