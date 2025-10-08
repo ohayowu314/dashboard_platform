@@ -121,9 +121,9 @@ export const UploadStatusBar: React.FC<UploadStatusBarProps> = ({
               </Typography>
             }
           />
-          {upload.status !== "success" && upload.status !== "failed" ? (
+          {(upload.status === "success" || upload.status === "failed") && (
             <RemoveUploadButton uploadId={upload.id} />
-          ) : null}
+          )}
         </>
       }
       detail={
