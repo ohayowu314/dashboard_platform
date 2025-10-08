@@ -10,14 +10,10 @@ interface Props {
   dataTables: DataTableInfo[];
   // 新增 viewMode 屬性
   viewMode: "card" | "list";
-  refreshTableInfos: () => void;
+  refresh: () => void;
 }
 
-export const DataTableList = ({
-  dataTables,
-  viewMode,
-  refreshTableInfos,
-}: Props) => {
+export const DataTableList = ({ dataTables, viewMode, refresh }: Props) => {
   const navigate = useNavigate();
 
   const handleTableClick = (tableId: TableId) => {
@@ -35,7 +31,7 @@ export const DataTableList = ({
     console.log(`對表格 ${id} 執行操作: ${action}`);
     if (action === "delete") {
       window.api.deleteTable(id);
-      refreshTableInfos();
+      refresh();
     }
   };
 

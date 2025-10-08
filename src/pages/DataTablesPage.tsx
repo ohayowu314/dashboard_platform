@@ -153,7 +153,7 @@ export const DataTablesPage = () => {
         <DataTableList
           dataTables={filteredDataTables}
           viewMode={viewMode}
-          refreshTableInfos={refreshTableInfos}
+          refresh={refreshTableInfos}
         />
 
         {/* 上傳資料表格對話框 */}
