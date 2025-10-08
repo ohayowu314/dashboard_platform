@@ -1,5 +1,6 @@
 // src/types.tsx
 import type { TableId } from "shared/types/dataTable";
+import { VALIDATION_ERROR } from "./constants";
 
 export interface TocItem {
   label: string;
@@ -44,6 +45,6 @@ export type FileConflictAction = "rename" | "replace" | "skip";
 export class ValidationError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "ValidationError";
+    this.name = VALIDATION_ERROR;
   }
 }
