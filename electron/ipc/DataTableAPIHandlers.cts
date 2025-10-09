@@ -5,9 +5,8 @@ import {
   DataTableHeaderSchema,
   DataTableWithInfo,
   TableId,
-  UploadInputDataTableInfo,
 } from "shared/types/dataTable";
-import { UploadMode } from "shared/types/index";
+import { UploadInputInfo, UploadMode } from "shared/types/index";
 
 export const DataTableAPIHandlers: Record<string, IpcMainListener> = {
   // 上傳資料表
@@ -18,7 +17,7 @@ export const DataTableAPIHandlers: Record<string, IpcMainListener> = {
       content,
       uploadMode = "create",
     }: {
-      tableInfo: UploadInputDataTableInfo;
+      tableInfo: UploadInputInfo;
       content: DataTableHeaderSchema;
       uploadMode: UploadMode;
     }
