@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.electron.tsbuildinfo",
+    "tsBuildInfoFile": "../node_modules/.tmp/tsconfig.electron.tsbuildinfo",
     // tell TypeScript to generate ESM Syntax
     "target": "ES2023",
     // tell TypeScript to require ESM Syntax as input (including .js file imports)
