@@ -1,18 +1,22 @@
 console.log("Preload script loaded");
 import { contextBridge, ipcRenderer } from "electron";
-import type { ConflictResult, Message, UploadMode } from "shared/types";
+import type {
+  ConflictResult,
+  Message,
+  UploadMode,
+  UploadInputInfo,
+} from "shared/types";
 import type {
   DataTableHeaderSchema,
   DataTableInfo,
   DataTableWithInfo,
   TableId,
-  UploadInputDataTableInfo,
 } from "shared/types/dataTable";
 import type { ChartInfo } from "shared/types/chart";
 
 contextBridge.exposeInMainWorld("api", {
   uploadTable: (
-    tableInfo: UploadInputDataTableInfo,
+    tableInfo: UploadInputInfo,
     content: DataTableHeaderSchema,
     uploadMode: UploadMode = "create"
   ): Promise<DataTableInfo> =>
