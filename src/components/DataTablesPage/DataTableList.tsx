@@ -36,7 +36,7 @@ export const DataTableList = ({ dataTables, viewMode, refresh }: Props) => {
   };
 
   // 將 DataTableInfo 轉換成 GenericItem
-  const genericItems: GenericItem[] = dataTables.map((table) => ({
+  const genericItems: GenericItem<TableId>[] = dataTables.map((table) => ({
     id: table.id,
     title: table.name,
     updated_at: table.updated_at,

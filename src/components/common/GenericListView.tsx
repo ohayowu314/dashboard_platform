@@ -14,28 +14,28 @@ import {
   Paper,
   Link,
 } from "@mui/material";
-import type { DataRecord, TableId } from "shared/types/dataTable";
+import type { DataRecord } from "shared/types/dataTable";
 
-export interface GenericItem {
-  id: TableId;
+export interface GenericItem<T> {
+  id: T;
   title: string;
   updated_at?: string;
   metadata?: DataRecord;
 }
 
-export interface GenericListViewProps {
-  items: GenericItem[];
+export interface GenericListViewProps<T> {
+  items: GenericItem<T>[];
   viewMode: "card" | "list";
-  onClickItem: (id: TableId) => void;
-  renderActions?: (id: TableId) => React.ReactNode;
+  onClickItem: (id: T) => void;
+  renderActions?: (id: T) => React.ReactNode;
 }
 
-export const GenericListView = ({
+export const GenericListView = <itemIdType extends React.Key>({
   items,
   viewMode,
   onClickItem,
   renderActions,
-}: GenericListViewProps) => {
+}: GenericListViewProps<itemIdType>) => {
   const renderList = () => (
     <TableContainer component={Paper}>
       <Table>
