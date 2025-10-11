@@ -1,6 +1,4 @@
 // src/components/DashboardsPage/UploadDashboardDialog.tsx
-import { useState, useMemo } from "react";
-import { RadioGroup, Radio, FormControlLabel, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { GenericUploadDialog } from "../common/GenericUploadDialog";
 import {
@@ -37,7 +35,6 @@ const handleDashboardUpload: UploadHandler<DashboardInfo> = async (
 };
 
 export const UploadDashboardDialog = ({ open, onClose }: Props) => {
-  const [uploadMode, setUploadMode] = useState<"mode1" | "mode2">("mode1");
   const navigate = useNavigate();
   const { startUploads } = useUploadStore();
 
@@ -64,57 +61,17 @@ export const UploadDashboardDialog = ({ open, onClose }: Props) => {
     return window.api.checkDashboardNamesConflict(dashboardNames);
   };
 
-  // 4. Dashboard 專屬的 Mode 選擇 UI 和過濾邏輯
-  const extraOptions = useMemo(
-    () => ({
-      ui: (
-        <>
-          <Typography variant="subtitle1" gutterBottom>
-            上傳模式
-          </Typography>
-          <RadioGroup
-            row
-            value={uploadMode}
-            onChange={(e) => setUploadMode(e.target.value as "mode1" | "mode2")}
-          >
-            <FormControlLabel
-              value="mode1"
-              control={<Radio />}
-              label="模式一：僅上傳資料內容"
-            />
-            <FormControlLabel
-              value="mode2"
-              control={<Radio />}
-              label="模式二：包含資訊與資料"
-            />
-          </RadioGroup>
-        </>
-      ),
-      fileFilter: (file: File, selectedMode: "mode1" | "mode2") =>
-        selectedMode === "mode1"
-          ? file.type === "text/csv" || file.type === "application/json"
-          : file.type === "application/json",
-      selectedMode: uploadMode,
-    }),
-    [uploadMode]
-  );
-
   return (
     <GenericUploadDialog
       open={open}
       onClose={onClose}
       title="上傳資料表格"
       resourceType="dashboard"
-      fileAccept={
-        uploadMode === "mode1"
-          ? "text/csv, application/json"
-          : "application/json"
-      }
+      fileAccept="application/json"
       isMultiFileUpload={true} // Dashboard 支援多檔案上傳
       checkConflict={checkConflictApi}
       onSingleFileConfirmed={handleSingleFileConfirmed}
       onMultiFilesConfirmed={handleMultiFilesConfirmed}
-      extraOptions={extraOptions}
     />
   );
 };
