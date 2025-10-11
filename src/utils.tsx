@@ -152,3 +152,35 @@ export const getNameFromFile = (filename: string): string => {
   // 返回從開頭到最後一個點之前的子字串
   return filename.substring(0, lastDotIndex);
 };
+
+export const parseDashboardFile = (file: File): Promise<object> => {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      return reject(new Error("檔案不存在"));
+    }
+    if (file.type !== "application/json") {
+      return reject(new Error("不支援的檔案類型"));
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return reject(new Error("檔案太大"));
+    }
+    if (file.size === 0) {
+      return reject(new Error("檔案為空"));
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      try {
+        const data = JSON.parse(content);
+        resolve(data);
+      } catch (error) {
+        console.error(error);
+        reject(new SyntaxError("JSON 檔案解析失敗。"));
+      }
+    };
+    reader.onerror = () => {
+      reject(new Error("檔案讀取失敗。"));
+    };
+    reader.readAsText(file);
+  });
+};
