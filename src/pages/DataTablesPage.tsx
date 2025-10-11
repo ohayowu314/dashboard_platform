@@ -8,7 +8,7 @@ import { UploadDataTableDialog } from "../components/DataTablesPage/UploadDataTa
 import { UploadStatusPanel } from "../components/DataTablesPage/UploadStatusPanel";
 import { useUploadStore } from "../stores/uploadStore";
 import type { DataTableInfo } from "shared/types/dataTable";
-import type { CreateTableNavigateState, PageConfig } from "../types";
+import type { CreateNavigateState, PageConfig } from "../types";
 
 export const DataTablesPage = () => {
   const [searchText, setSearchText] = useState("");
@@ -45,7 +45,7 @@ export const DataTablesPage = () => {
   );
 
   const handleNewTableClick = () => {
-    const state: CreateTableNavigateState = { editorMode: "create" };
+    const state: CreateNavigateState = { editorMode: "create" };
     navigate("/data-tables/edit", { state });
   };
 
