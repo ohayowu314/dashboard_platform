@@ -12,16 +12,18 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
-export type ActionType = "update" | "export" | "delete" | string;
 
-export interface GenericItemAction {
+export interface GenericItemAction<ActionType extends string = string> {
   key: ActionType;
   label: string;
 }
 
-export interface GenericItemActionsProps<T> {
+export interface GenericItemActionsProps<
+  T,
+  ActionType extends string = string,
+> {
   itemId: T;
-  actions: GenericItemAction[]; // e.g. [{ key: "update", label: "更新" }]
+  actions: GenericItemAction<ActionType>[]; // e.g. [{ key: "update", label: "更新" }]
   onAction: (action: ActionType, itemId: T) => void;
 
   /** 哪些行為需要確認對話框 */
@@ -36,14 +38,14 @@ export interface GenericItemActionsProps<T> {
   onOpenChange?: (isOpen: boolean) => void;
 }
 
-export const GenericItemActions = <itemIdType,>({
+export const GenericItemActions = <itemIdType, ActionType extends string>({
   itemId,
   actions,
   onAction,
   confirmActions = [],
   confirmMessages = {},
   onOpenChange,
-}: GenericItemActionsProps<itemIdType>) => {
+}: GenericItemActionsProps<itemIdType, ActionType>) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [pendingAction, setPendingAction] = useState<ActionType | null>(null);
 

@@ -16,13 +16,17 @@ export const DashboardList = ({ dashboards, viewMode, refresh }: Props) => {
 
   // 點擊項目名稱時導向展示頁
   const handleClickItem = (id: DashboardInfo["id"]) => {
+    console.log(`點擊了儀表板 ${id}，導向瀏覽頁`);
     navigate(`/dashboards/view/${id}`);
   };
 
   // 執行操作（更新、刪除等）
-  const handleAction = (action: string, id: DashboardInfo["id"]) => {
+  const handleAction = (
+    action: "update" | "export" | "delete",
+    id: DashboardInfo["id"]
+  ) => {
     console.log(`對儀表板 ${id} 執行操作: ${action}`);
-    if (action === "刪除") {
+    if (action === "delete") {
       //   window.api.deleteDashboard(id);
       refresh();
     }
@@ -34,7 +38,7 @@ export const DashboardList = ({ dashboards, viewMode, refresh }: Props) => {
     (d) => ({
       id: d.id,
       title: d.name,
-      subtitle: `更新時間：${d.updated_at}`,
+      updated_at: d.updated_at,
       metadata: {
         圖表數量: d.chartCount.toString(),
       },
