@@ -21,33 +21,46 @@ import WarningIcon from "@mui/icons-material/Error";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
-import { getNameFromFile } from "../../utils";
-import { useUploadStore } from "../../stores/uploadStore";
+import { getNameFromFile, parseDataFile } from "../../utils";
+import {
+  useUploadStore,
+  type GenericUploadInputStatus,
+  type UploadHandler,
+} from "../../stores/uploadStore";
 import { useDebounce } from "../../hooks/useDebounce";
 import type { FileConflictAction, UploadTableNavigateState } from "../../types";
 import type { ConflictResult } from "shared/types/index";
-
-interface FileStatus {
-  /** 包含副檔名的原始檔名，作為唯一 ID (例如: 'users.csv') */
-  id: string;
-  /** 移除副檔名後的純淨表格名稱 (例如: 'users') */
-  tableName: string;
-  /** 原始檔案物件 */
-  file: File;
-  /** 是否與資料庫現有表格名稱衝突 */
-  isConflict: boolean;
-  /** 使用者的衝突解決方案選擇 */
-  conflictAction: FileConflictAction;
-}
+import type { DataTableInfo } from "shared/types/dataTable";
 
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
+// 實作 Table 專屬的上傳處理函式 (傳入 Store)
+const handleTableUpload: UploadHandler<DataTableInfo> = async (
+  file,
+  resourceName,
+  uploadMode
+) => {
+  const parsedData = await parseDataFile(file); // 1. 解析檔案數據
+  const tableInfo = { name: resourceName, description: "" };
+
+  // 2. 呼叫後端 API 執行上傳
+  const dataTableInfo = await window.api.uploadTable(
+    tableInfo,
+    parsedData,
+    uploadMode
+  );
+
+  return dataTableInfo as DataTableInfo; // 類型斷言
+};
+
 export const UploadDataTableDialog = ({ open, onClose }: Props) => {
   const [uploadMode, setUploadMode] = useState<"mode1" | "mode2">("mode1");
-  const [filesStatus, setFilesStatus] = useState<FileStatus[]>([]);
+  const [filesStatus, setFilesStatus] = useState<GenericUploadInputStatus[]>(
+    []
+  );
   const [isDragOver, setIsDragOver] = useState(false);
   const navigate = useNavigate();
   const { startUploads } = useUploadStore();
@@ -68,8 +81,10 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
     [filesStatus]
   );
 
-  /** 預處理新的檔案列表，過濾無效檔案並建立 FileStatus 物件 */
-  const preprocessFiles = (files: FileList | null): FileStatus[] => {
+  /** 預處理新的檔案列表，過濾無效檔案並建立 GenericUploadInputStatus 物件 */
+  const preprocessFiles = (
+    files: FileList | null
+  ): GenericUploadInputStatus[] => {
     if (!files) {
       return [];
     }
@@ -80,7 +95,7 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
       .filter((file) => !existingFileIds.has(file.name)) // 避免名稱重複
       .map((file) => ({
         id: file.name, // 使用原始檔名作為 ID
-        tableName: getNameFromFile(file.name), // 提取純淨名稱
+        resourceName: getNameFromFile(file.name), // 提取純淨名稱
         file: file,
         isConflict: false, // 初始無衝突
         conflictAction: "rename" as FileConflictAction, // 預設操作
@@ -134,7 +149,7 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
   // 處理檔名重複自訂操作設置 (使用 id 進行匹配)
   const handleActionChange = (
     fileId: string,
-    conflictAction: FileStatus["conflictAction"]
+    conflictAction: GenericUploadInputStatus["conflictAction"]
   ) => {
     setFilesStatus(
       filesStatus.map((fileStatus) =>
@@ -160,7 +175,7 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
     } else {
       console.log("多個檔案上傳，開始非同步上傳流程並返回列表頁...");
       // 呼叫 Zustand Store 的 action 來開始上傳
-      startUploads(filesStatus);
+      startUploads(filesStatus, handleTableUpload);
       // 關閉對話框
       onClose();
       setFilesStatus([]);
@@ -172,8 +187,8 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
   useEffect(() => {
     // 檢查 debounce 後的狀態列表
     if (debouncedFilesStatus.length > 0) {
-      // 提取用於後端 SQL 檢查的純淨名稱列表 (tableName)
-      const tableNamesToCheck = debouncedFilesStatus.map((f) => f.tableName);
+      // 提取用於後端 SQL 檢查的純淨名稱列表 (resourceName)
+      const tableNamesToCheck = debouncedFilesStatus.map((f) => f.resourceName);
 
       // 呼叫後端 API 檢查衝突
       window.api
@@ -191,7 +206,7 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
               const conflictResult = conflictResults[i];
 
               // 再次檢查 name 確保順序沒亂（可選的安全檢查）
-              if (conflictResult.name !== status.tableName) {
+              if (conflictResult.name !== status.resourceName) {
                 console.error("Conflict check result name mismatch!");
                 return status;
               }
