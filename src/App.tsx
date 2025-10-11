@@ -15,6 +15,8 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { DataTableEditorPage } from "./pages/DataTableEditorPage";
 import { DataTablesPage } from "./pages/DataTablesPage";
 import theme from "./theme";
+import { DashboardEditorPage } from "./pages/DashboardEditorPage";
+import { DashboardViewPage } from "./pages/DashboardViewPage";
 
 function App() {
   if (typeof window === "undefined") {
@@ -34,6 +36,11 @@ function App() {
               <Route path="charts/view" element={<ChartViewPage />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="dashboards" element={<DashboardsPage />} />
+              <Route path="dashboards/edit" element={<DashboardEditorPage />} />
+              <Route
+                path="dashboards/view/:id"
+                element={<DashboardViewPage />}
+              />
               <Route
                 path="data-tables/edit"
                 element={<DataTableEditorPage />}
