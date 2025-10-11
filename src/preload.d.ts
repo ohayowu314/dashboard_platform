@@ -37,9 +37,25 @@ interface ChartAPI {
   ) => Promise<ChartInfo>;
   deleteChart: (id: number) => Promise<Message>;
 }
+interface DashboardAPI {
+  uploadDashboard: (
+    dashboardInfo: UploadInputInfo,
+    content: unknown,
+    uploadMode: UploadMode
+  ) => Promise<DataTableInfo>;
+  getAllDashboardInfos: () => Promise<DataTableInfo[]>;
+  checkDashboardNamesConflict: (names: string[]) => Promise<ConflictResult[]>;
+  getDashboard: (id: TableId) => Promise<DataTableWithInfo>;
+  deleteDashboard: (id: TableId) => Promise<Message>;
+  updateDashboard: (
+    id: TableId,
+    name: string,
+    data: unknown
+  ) => Promise<DataTableWithInfo>;
+}
 
 declare global {
   interface Window {
-    api: DataTableAPI & ChartAPI;
+    api: DataTableAPI & ChartAPI & DashboardAPI;
   }
 }

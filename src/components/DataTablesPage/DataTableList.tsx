@@ -27,7 +27,10 @@ export const DataTableList = ({ dataTables, viewMode, refresh }: Props) => {
     });
   };
 
-  const handleAction = (action: string, id: TableId) => {
+  const handleAction = (
+    action: "update" | "export" | "delete",
+    id: TableId
+  ) => {
     console.log(`對表格 ${id} 執行操作: ${action}`);
     if (action === "delete") {
       window.api.deleteTable(id);

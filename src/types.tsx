@@ -23,21 +23,21 @@ export interface PageConfig {
 }
 
 export type EditorMode = "create" | "edit" | "upload" | null;
-export interface CreateTableNavigateState {
+export interface CreateNavigateState {
   editorMode: "create";
 }
 export interface EditTableNavigateState {
   editorMode: "edit";
   tableId: TableId;
 }
-export interface UploadTableNavigateState {
+export interface UploadNavigateState {
   editorMode: "upload";
   file: File;
 }
 export type DataTableNavigateState =
-  | CreateTableNavigateState
+  | CreateNavigateState
   | EditTableNavigateState
-  | UploadTableNavigateState
+  | UploadNavigateState
   | null;
 
 export type FileConflictAction = "rename" | "replace" | "skip";
