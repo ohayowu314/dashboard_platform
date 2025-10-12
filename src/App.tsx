@@ -30,11 +30,14 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<HomePage />} />
-              <Route path="charts/edit" element={<ChartEditorPage />} />
+              <Route path="charts/edit/:id" element={<ChartEditorPage />} />
               <Route path="charts" element={<ChartsPage />} />
-              <Route path="charts/view" element={<ChartViewPage />} />
+              <Route path="charts/view/:id" element={<ChartViewPage />} />
               <Route path="dashboards" element={<DashboardsPage />} />
-              <Route path="dashboards/edit" element={<DashboardEditorPage />} />
+              <Route
+                path="dashboards/edit/:id"
+                element={<DashboardEditorPage />}
+              />
               <Route
                 path="dashboards/view/:id"
                 element={<DashboardViewPage />}

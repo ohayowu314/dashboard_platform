@@ -1,4 +1,4 @@
-// src/pages/DashboardViewPage.tsx (架構)
+// src/pages/DashboardViewPage.tsx
 import { PageWrapper } from "../components/layout/PageWrapper";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
@@ -8,9 +8,9 @@ export const DashboardViewPage = () => {
   const navigate = useNavigate();
 
   const handleEditClick = () => {
-    // 導航到編輯頁面，並帶入 tableId
-    navigate("/dashboards/edit", {
-      state: { editorMode: "edit", tableId: id },
+    // 導航到編輯頁面，並帶入 id
+    navigate(`/dashboards/edit/${id}`, {
+      state: { editorMode: "edit" },
     });
   };
 
