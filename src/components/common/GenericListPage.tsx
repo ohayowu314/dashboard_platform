@@ -2,7 +2,6 @@
 import {
   Box,
   Grid,
-  Typography,
   TextField,
   Button,
   ToggleButtonGroup,
@@ -13,6 +12,7 @@ import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import AddIcon from "@mui/icons-material/Add";
 import UploadIcon from "@mui/icons-material/Upload";
 import { useState } from "react";
+import { MainTitle } from "./MainTitle";
 
 export interface GenericListPageProps<T> {
   title: string;
@@ -63,12 +63,15 @@ export function GenericListPage<T>({
   return (
     <Box sx={{ p: 3 }}>
       <Grid container alignItems="center" spacing={2} sx={{ mb: 3 }}>
-        <Grid size={{ xs: 12, sm: 6 }}>
+        <Grid
+          size={{ xs: 12, sm: 6 }}
+          container
+          alignItems="center"
+          spacing={2}
+        >
           <Grid>
             {/* 標題 */}
-            <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-              {title}
-            </Typography>
+            <MainTitle title={title} />
           </Grid>
           <Grid>
             {/* 模式切換按鈕 */}
