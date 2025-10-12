@@ -43,7 +43,7 @@ export const DashboardsPage = () => {
 
   const handleNewDashboardClick = () => {
     const state = { editorMode: "create" };
-    navigate("/dashboards/edit", { state });
+    navigate("/dashboards/edit/new", { state });
   };
 
   // 根據搜尋關鍵字過濾資料

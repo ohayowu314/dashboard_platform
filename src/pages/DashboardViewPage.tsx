@@ -1,17 +1,34 @@
-// src/pages/DashboardViewPage.tsx (架構)
-import { PageWrapper } from "../components/layout/PageWrapper";
+// src/pages/DashboardViewPage.tsx
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
+import DownloadIcon from "@mui/icons-material/Download";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import { PageWrapper } from "../components/layout/PageWrapper";
+import PageHeader from "../components/common/PageHeader";
+import { MainTitle } from "../components/common/MainTitle";
 
 export const DashboardViewPage = () => {
   const { id } = useParams<{ id: string }>(); // 取得 URL 中的儀表板 ID
   const navigate = useNavigate();
 
   const handleEditClick = () => {
-    // 導航到編輯頁面，並帶入 tableId
-    navigate("/dashboards/edit", {
-      state: { editorMode: "edit", tableId: id },
+    // 導航到編輯頁面，並帶入 id
+    navigate(`/dashboards/edit/${id}`, {
+      state: { editorMode: "edit" },
     });
+  };
+
+  const handleExportClick = () => {
+    // // 例如：導出儀表板設定 JSON
+    // const blob = new Blob([JSON.stringify(dashboardData, null, 2)], {
+    //   type: "application/json",
+    // });
+    // const url = URL.createObjectURL(blob);
+    // const a = document.createElement("a");
+    // a.href = url;
+    // a.download = `dashboard-${id}.json`;
+    // a.click();
+    // URL.revokeObjectURL(url);
   };
 
   return (
@@ -21,22 +38,30 @@ export const DashboardViewPage = () => {
         { label: `儀表板 #${id} 瀏覽`, path: "" },
       ]}
       content={
-        <div style={{ padding: 20 }}>
-          <h2>儀表板 #{id} 瀏覽模式</h2>
-          <Button
-            variant="contained"
-            onClick={handleEditClick}
-            style={{ position: "absolute", top: 15, right: 30 }}
-          >
-            編輯
-          </Button>
-          {/* 統計圖表展示區塊 (可互動) */}
-          <div style={{ height: 800, border: "1px solid #ccc", marginTop: 20 }}>
-            <p style={{ textAlign: "center", lineHeight: "800px" }}>
-              圖表展示區塊 (可互動)
-            </p>
-          </div>
-        </div>
+        <Box sx={{ p: 3 }}>
+          <PageHeader
+            headerLeftContent={<MainTitle title={`儀表板 #${id} 瀏覽模式`} />}
+            headerRightContent={
+              <Box sx={{ display: "flex", gap: 1 }}>
+                {/* 匯出按鈕 */}
+                <Button
+                  variant="outlined"
+                  startIcon={<DownloadIcon />}
+                  onClick={handleExportClick}
+                >
+                  匯出
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<ModeEditIcon />}
+                  onClick={handleEditClick}
+                >
+                  編輯
+                </Button>
+              </Box>
+            }
+          />
+        </Box>
       }
     />
   );

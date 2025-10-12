@@ -11,7 +11,6 @@ import { DownloadPage } from "./pages/DownloadPage";
 import { TestingPage } from "./pages/TestingPage";
 import { ChartsPage } from "./pages/ChartsPage";
 import { ChartViewPage } from "./pages/ChartViewPage";
-import { DashboardPage } from "./pages/DashboardPage";
 import { DataTableEditorPage } from "./pages/DataTableEditorPage";
 import { DataTablesPage } from "./pages/DataTablesPage";
 import theme from "./theme";
@@ -31,12 +30,14 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<HomePage />} />
-              <Route path="charts/edit" element={<ChartEditorPage />} />
+              <Route path="charts/edit/:id" element={<ChartEditorPage />} />
               <Route path="charts" element={<ChartsPage />} />
-              <Route path="charts/view" element={<ChartViewPage />} />
-              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="charts/view/:id" element={<ChartViewPage />} />
               <Route path="dashboards" element={<DashboardsPage />} />
-              <Route path="dashboards/edit" element={<DashboardEditorPage />} />
+              <Route
+                path="dashboards/edit/:id"
+                element={<DashboardEditorPage />}
+              />
               <Route
                 path="dashboards/view/:id"
                 element={<DashboardViewPage />}
