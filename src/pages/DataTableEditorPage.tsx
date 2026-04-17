@@ -11,10 +11,12 @@ import DataTable from "../components/common/DataTable";
 import PageHeader from "../components/common/PageHeader";
 import { useTableEditor } from "../hooks/useTableEditor";
 import { useTableDataInitializer } from "../hooks/useTableDataInitializer.tsx";
+import { useToast } from "../hooks/useToast";
 
 export const DataTableEditorPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const editorMode: EditorMode = location.state?.editorMode || null;
   const tableId: TableId | undefined = location.state?.tableId;
@@ -24,7 +26,7 @@ export const DataTableEditorPage: React.FC = () => {
   const { loading, error, initialState } = useTableDataInitializer(
     editorMode,
     tableId,
-    file
+    file,
   );
 
   // 2. 將初始資料傳遞給 useTableEditor
@@ -37,30 +39,27 @@ export const DataTableEditorPage: React.FC = () => {
     handleCellChange,
   } = useTableEditor(
     initialState?.data || null,
-    initialState?.name || "未命名表格"
+    initialState?.name || "未命名表格",
   );
 
   // 3. 將儲存邏輯獨立出來
   const handleConfirm = async () => {
     if (!data || !tableName.trim() || error) {
-      alert("無法儲存，請檢查表格名稱和資料。");
+      toast.error("無法儲存，請檢查表格名稱和資料。");
       return;
     }
     try {
       if (initialState?.id) {
-        console.log(`確認並更新表格: ${tableName}`);
         await window.api.updateTable(initialState.id, tableName, data);
-        console.log("更新成功!");
+        toast.success("更新成功!");
       } else {
-        console.log(`確認並儲存表格: ${tableName}`);
         const tableInfo = { name: tableName, description: "" };
         await window.api.uploadTable(tableInfo, data, "create");
-        console.log("儲存成功!");
+        toast.success("儲存成功!");
       }
       navigate("/data-tables");
     } catch (e: unknown) {
-      console.error("儲存失敗:", e);
-      alert("儲存表格時發生錯誤。");
+      toast.error("儲存表格時發生錯誤。");
     }
   };
 

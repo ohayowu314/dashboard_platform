@@ -15,6 +15,7 @@ import { DataTablesPage } from "./pages/DataTablesPage";
 import theme from "./theme";
 import { DashboardEditorPage } from "./pages/DashboardEditorPage";
 import { DashboardViewPage } from "./pages/DashboardViewPage";
+import { GlobalToast } from "./components/common/GlobalToast";
 
 function App() {
   if (typeof window === "undefined") {
@@ -44,6 +45,7 @@ function App() {
             <Route path="testing" element={<TestingPage />} />
           </Route>
         </Routes>
+        <GlobalToast />
       </ThemeProvider>
     </HashRouter>
   );
