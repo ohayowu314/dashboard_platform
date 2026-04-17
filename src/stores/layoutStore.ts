@@ -10,6 +10,7 @@ export interface LayoutState extends Omit<PageConfig, "content" | "tocItems"> {
 
   rightPanelEnabled: boolean;
   setRightPanelEnabled: (enabled: boolean) => void;
+  toggleRightPanelEnabled: () => void;
 }
 
 export const useLayoutStore = create<LayoutState>((set) => ({
@@ -24,4 +25,6 @@ export const useLayoutStore = create<LayoutState>((set) => ({
 
   rightPanelEnabled: false,
   setRightPanelEnabled: (enabled) => set({ rightPanelEnabled: enabled }),
+  toggleRightPanelEnabled: () =>
+    set((state) => ({ rightPanelEnabled: !state.rightPanelEnabled })),
 }));
