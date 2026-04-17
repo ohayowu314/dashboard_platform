@@ -25,10 +25,7 @@ export interface GenericListPageProps<T> {
   onSearch?: (keyword: string) => void;
   onCreate?: () => void;
   onUpload?: () => void;
-  renderList: (
-    filteredItems: T[],
-    viewMode: "card" | "list"
-  ) => React.ReactNode;
+  renderList: (items: T[], viewMode: "card" | "list") => React.ReactNode;
 }
 
 export function GenericListPage<T>({
@@ -55,7 +52,7 @@ export function GenericListPage<T>({
 
   const handleViewModeChange = (
     _: React.MouseEvent<HTMLElement>,
-    mode: "card" | "list"
+    mode: "card" | "list",
   ) => {
     if (mode) setCurrentViewMode(mode);
   };
