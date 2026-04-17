@@ -5,7 +5,7 @@ import type {
   Message,
   UploadMode,
   UploadInputInfo,
-} from "shared/types";
+} from "../shared/types";
 import type {
   DataTableHeaderSchema,
   DataTableInfo,

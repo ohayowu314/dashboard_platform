@@ -3,7 +3,7 @@ import { PageWrapper } from "../components/layout/PageWrapper";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import type { UploadNavigateState, CreateNavigateState } from "../types";
 import { Box, Button } from "@mui/material";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
 import PageHeader from "../components/common/PageHeader";

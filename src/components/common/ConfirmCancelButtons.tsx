@@ -1,10 +1,9 @@
 // src/components/common/ActionButtons.tsx
 import React from "react";
 import { Button, Box } from "@mui/material";
-import {
-  Cancel as CancelIcon,
-  CheckCircleOutline as CheckCircleOutlineIcon,
-} from "@mui/icons-material";
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import CancelIcon from '@mui/icons-material/Cancel';
+
 
 interface ConfirmCancelButtonsProps {
   onConfirm: () => void;
@@ -33,7 +32,7 @@ const ConfirmCancelButtons: React.FC<ConfirmCancelButtonsProps> = ({
         variant={cancelVariant}
         startIcon={<CancelIcon />}
         onClick={onCancel}
-        // disabled={disabled}
+      // disabled={disabled}
       >
         {cancelText}
       </Button>

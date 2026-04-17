@@ -5,13 +5,14 @@
     "target": "ES2023",
     // tell TypeScript to require ESM Syntax as input (including .js file imports)
     "module": "commonjs",
+    "rootDir": "..",
     // define where to put generated JS
     "outDir": "../dist-electron",
     // ignore errors from dependencies
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": false,
@@ -24,8 +25,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "shared/types/*": ["../shared/types/*"]
+    }
   },
-  "extends": "../tsconfig.base.json",
   "include": ["./", "../shared"]
 }
