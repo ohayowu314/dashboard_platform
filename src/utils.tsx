@@ -138,8 +138,11 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
           }
 
           // 使用 map 迴圈遍歷每個項目，並透過 headers 陣列的順序取得值
-          const rows = data.map((item: { [key: string]: undefined }) => {
-            return headers.map((header) => String(item[header]));
+          const rows = data.map((item: Record<string, unknown>) => {
+            return headers.map((header) => {
+              const value = item[header];
+              return value === undefined ? "" : String(value);
+            });
           });
 
           resolve({ headers, rows });

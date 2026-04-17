@@ -38,14 +38,14 @@ export interface GenericItemActionsProps<
   onOpenChange?: (isOpen: boolean) => void;
 }
 
-export const GenericItemActions = <itemIdType, ActionType extends string>({
+export const GenericItemActions = <TId, ActionType extends string>({
   itemId,
   actions,
   onAction,
   confirmActions = [],
   confirmMessages = {},
   onOpenChange,
-}: GenericItemActionsProps<itemIdType, ActionType>) => {
+}: GenericItemActionsProps<TId, ActionType>) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [pendingAction, setPendingAction] = useState<ActionType | null>(null);
 
