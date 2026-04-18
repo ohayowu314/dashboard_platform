@@ -5,7 +5,7 @@ import { Box, CircularProgress, Alert } from "@mui/material";
 import type { TableId } from "shared/types/dataTable.ts";
 import type { EditorMode } from "../types.tsx";
 import { PageWrapper } from "../components/layout/PageWrapper";
-import EditableTitle from "../components/common/EditableTitle";
+import { PageTitle } from "../components/common/PageTitle";
 import ConfirmCancelButtons from "../components/common/ConfirmCancelButtons";
 import DataTable from "../components/common/DataTable";
 import PageHeader from "../components/common/PageHeader";
@@ -34,14 +34,7 @@ export const DataTableEditorPage: React.FC = () => {
 
   // 2. 將初始資料傳遞給 useTableEditor
   console.log("[DataTableEditorPage] 呼叫 useTableEditor 前, initialState:", !!initialState, "data:", !!initialState?.data, "name:", initialState?.name);
-  const {
-    tableName,
-    setTableName,
-    isEditingName,
-    setIsEditingName,
-    data,
-    handleCellChange,
-  } = useTableEditor(
+  const { tableName, setTableName, data, handleCellChange } = useTableEditor(
     initialState?.data || null,
     initialState?.name || "未命名表格",
   );
@@ -81,11 +74,10 @@ export const DataTableEditorPage: React.FC = () => {
   };
 
   const renderHeaderLeftContent = () => (
-    <EditableTitle
+    <PageTitle
       title={tableName}
       onTitleChange={setTableName}
-      isEditing={isEditingName}
-      onEditingChange={setIsEditingName}
+      editable={true}
       label="表格名稱"
       placeholder="請輸入表格名稱"
     />
