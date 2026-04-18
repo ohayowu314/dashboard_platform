@@ -12,7 +12,17 @@ import type {
   DataTableWithInfo,
   TableId,
 } from "shared/types/dataTable";
-import type { ChartInfo } from "shared/types/chart";
+import type {
+  ChartInfo,
+  ChartConfig,
+  ChartWithConfig,
+  ChartWithData,
+} from "shared/types/chart";
+import type {
+  DashboardInfo,
+  DashboardConfig,
+  DashboardWithConfig,
+} from "shared/types/dashboard";
 
 contextBridge.exposeInMainWorld("api", {
   uploadTable: (
@@ -37,12 +47,50 @@ contextBridge.exposeInMainWorld("api", {
     ipcRenderer.invoke("check-table-conflict", name),
   checkTablesConflict: (names: string[]): Promise<ConflictResult[]> =>
     ipcRenderer.invoke("check-tables-conflict", names),
+
+  getAllCharts: (): Promise<ChartInfo[]> =>
+    ipcRenderer.invoke("get-all-charts"),
+  getChart: (id: number): Promise<ChartWithData> =>
+    ipcRenderer.invoke("get-chart", id),
   uploadChart: (
-    chartInfo: { name: string; description?: string },
-    config: unknown
+    chartInfo: { name: string; description?: string; dataTableId?: number },
+    config: ChartConfig
   ): Promise<ChartInfo> =>
     ipcRenderer.invoke("upload-chart", { chartInfo, config }),
+  updateChart: (
+    id: number,
+    chartInfo: { name?: string; description?: string; dataTableId?: number },
+    config: ChartConfig
+  ): Promise<ChartInfo> =>
+    ipcRenderer.invoke("update-chart", { id, chartInfo, config }),
   deleteChart: (id: number): Promise<Message> =>
     ipcRenderer.invoke("delete-chart", id),
+
+  getAllDashboards: (): Promise<DashboardInfo[]> =>
+    ipcRenderer.invoke("get-all-dashboards"),
+  getDashboard: (id: number): Promise<DashboardWithConfig> =>
+    ipcRenderer.invoke("get-dashboard", id),
+  createDashboard: (
+    name: string,
+    description: string | undefined,
+    config: DashboardConfig
+  ): Promise<DashboardWithConfig> =>
+    ipcRenderer.invoke("create-dashboard", { name, description, config }),
+  updateDashboard: (
+    id: number,
+    name: string,
+    description: string | undefined,
+    config: DashboardConfig
+  ): Promise<DashboardWithConfig> =>
+    ipcRenderer.invoke("update-dashboard", {
+      id,
+      name,
+      description,
+      config,
+    }),
+  deleteDashboard: (id: number): Promise<Message> =>
+    ipcRenderer.invoke("delete-dashboard", id),
+  checkDashboardConflict: (name: string): Promise<ConflictResult> =>
+    ipcRenderer.invoke("check-dashboard-conflict", name),
 });
 console.log("Preload script end");

@@ -19,7 +19,7 @@ export const DashboardList = ({ dashboards, viewMode, refresh }: Props) => {
       getId={(d) => d.id}
       getTitle={(d) => d.name}
       getUpdatedAt={(d) => d.updated_at}
-      getMetadata={(d) => ({ 圖表數量: d.chartCount.toString() })}
+      getMetadata={(d) => ({ 描述: d.description || "-" })}
       onClick={(d) => navigate(`/dashboards/view/${d.id}`)}
       onDelete={async (d) => {
         await window.api.deleteDashboard(d.id);

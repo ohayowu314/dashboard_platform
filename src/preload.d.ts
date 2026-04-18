@@ -1,18 +1,28 @@
-// src/preload.d.ts
 export {};
 import type {
-  TableId,
-  DataTableHeaderSchema,
-  DataTableInfo,
-  DataTableWithInfo,
-} from "shared/types/dataTable";
-import type {
-  Message,
   ConflictResult,
+  Message,
   UploadMode,
   UploadInputInfo,
 } from "shared/types";
-import type { ChartInfo } from "shared/types/chart";
+import type {
+  DataTableHeaderSchema,
+  DataTableInfo,
+  DataTableWithInfo,
+  TableId,
+} from "shared/types/dataTable";
+import type {
+  ChartInfo,
+  ChartConfig,
+  ChartWithConfig,
+  ChartWithData,
+} from "shared/types/chart";
+import type {
+  DashboardInfo,
+  DashboardConfig,
+  DashboardWithConfig,
+} from "shared/types/dashboard";
+
 interface DataTableAPI {
   uploadTable: (
     tableInfo: UploadInputInfo,
@@ -20,38 +30,48 @@ interface DataTableAPI {
     uploadMode: UploadMode
   ) => Promise<DataTableInfo>;
   getAllTableInfos: () => Promise<DataTableInfo[]>;
-  checkTablesConflict: (names: string[]) => Promise<ConflictResult[]>;
   getTable: (id: TableId) => Promise<DataTableWithInfo>;
-  deleteTable: (id: TableId) => Promise<Message>;
   updateTable: (
     id: TableId,
     name: string,
     data: DataTableHeaderSchema
   ) => Promise<DataTableWithInfo>;
+  deleteTable: (id: TableId) => Promise<Message>;
+  checkTableConflict: (name: string) => Promise<ConflictResult>;
+  checkTablesConflict: (names: string[]) => Promise<ConflictResult[]>;
 }
 
 interface ChartAPI {
+  getAllCharts: () => Promise<ChartInfo[]>;
+  getChart: (id: number) => Promise<ChartWithData>;
   uploadChart: (
-    chartInfo: { name: string; description?: string },
-    config: unknown
+    chartInfo: { name: string; description?: string; dataTableId?: number },
+    config: ChartConfig
+  ) => Promise<ChartInfo>;
+  updateChart: (
+    id: number,
+    chartInfo: { name?: string; description?: string; dataTableId?: number },
+    config: ChartConfig
   ) => Promise<ChartInfo>;
   deleteChart: (id: number) => Promise<Message>;
 }
+
 interface DashboardAPI {
-  uploadDashboard: (
-    dashboardInfo: UploadInputInfo,
-    content: unknown,
-    uploadMode: UploadMode
-  ) => Promise<DataTableInfo>;
-  getAllDashboardInfos: () => Promise<DataTableInfo[]>;
-  checkDashboardNamesConflict: (names: string[]) => Promise<ConflictResult[]>;
-  getDashboard: (id: TableId) => Promise<DataTableWithInfo>;
-  deleteDashboard: (id: TableId) => Promise<Message>;
-  updateDashboard: (
-    id: TableId,
+  getAllDashboards: () => Promise<DashboardInfo[]>;
+  getDashboard: (id: number) => Promise<DashboardWithConfig>;
+  createDashboard: (
     name: string,
-    data: unknown
-  ) => Promise<DataTableWithInfo>;
+    description: string | undefined,
+    config: DashboardConfig
+  ) => Promise<DashboardWithConfig>;
+  updateDashboard: (
+    id: number,
+    name: string,
+    description: string | undefined,
+    config: DashboardConfig
+  ) => Promise<DashboardWithConfig>;
+  deleteDashboard: (id: number) => Promise<Message>;
+  checkDashboardConflict: (name: string) => Promise<ConflictResult>;
 }
 
 declare global {
