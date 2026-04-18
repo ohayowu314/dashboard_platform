@@ -1,13 +1,32 @@
 import chartService from "../services/ChartService.cjs";
 import { IpcMainListener } from "../types.cjs";
-import { ChartInfo } from "shared/types/chart";
+import type { ChartConfig } from "shared/types/chart";
+
+interface UploadChartInput {
+  chartInfo: { name: string; description?: string; dataTableId?: number };
+  config: ChartConfig;
+}
+
+interface UpdateChartInput {
+  id: number;
+  chartInfo: { name?: string; description?: string; dataTableId?: number };
+  config: ChartConfig;
+}
 
 export const ChartAPIHandlers: Record<string, IpcMainListener> = {
-  // 上傳圖表設定檔
+  "get-all-charts": () => chartService.getAllCharts(),
+
+  "get-chart": (_event, id: number) => chartService.getChartById(id),
+
   "upload-chart": (
     _event,
-    { chartInfo, config }: { chartInfo: ChartInfo; config: unknown }
+    { chartInfo, config }: UploadChartInput
   ) => chartService.uploadChart(chartInfo, config),
-  // 刪除圖表
+
+  "update-chart": (
+    _event,
+    { id, chartInfo, config }: UpdateChartInput
+  ) => chartService.updateChart(id, chartInfo, config),
+
   "delete-chart": (_event, id: number) => chartService.deleteChart(id),
 };

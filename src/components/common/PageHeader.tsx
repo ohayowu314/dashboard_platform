@@ -16,9 +16,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   return (
     <Grid
       container
-      alignItems="center"
-      justifyContent="space-between"
-      sx={{ mb: spacing }}
+      sx={{
+        mb: spacing,
+        alignItems: "center",
+        justifyContent: "space-between"
+      }}
     >
       <Grid size="grow">{leftContent}</Grid>
       <Grid>{rightContent}</Grid>

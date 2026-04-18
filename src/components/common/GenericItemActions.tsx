@@ -38,14 +38,14 @@ export interface GenericItemActionsProps<
   onOpenChange?: (isOpen: boolean) => void;
 }
 
-export const GenericItemActions = <itemIdType, ActionType extends string>({
+export const GenericItemActions = <TId, ActionType extends string>({
   itemId,
   actions,
   onAction,
   confirmActions = [],
   confirmMessages = {},
   onOpenChange,
-}: GenericItemActionsProps<itemIdType, ActionType>) => {
+}: GenericItemActionsProps<TId, ActionType>) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [pendingAction, setPendingAction] = useState<ActionType | null>(null);
 
@@ -76,13 +76,14 @@ export const GenericItemActions = <itemIdType, ActionType extends string>({
 
   const handleCancel = () => {
     setPendingAction(null);
+    handleMenuClose();
   };
 
   const currentConfirm = pendingAction
     ? (confirmMessages[pendingAction] ?? {
-        title: "確認操作",
-        content: "確定要執行這個操作嗎？此動作無法復原。",
-      })
+      title: "確認操作",
+      content: "確定要執行這個操作嗎？此動作無法復原。",
+    })
     : null;
 
   return (

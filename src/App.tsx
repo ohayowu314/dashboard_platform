@@ -1,7 +1,6 @@
 // src/App.tsx
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import { LayoutProvider } from "./context/LayoutProvider";
 import { Layout } from "./components/layout/Layout";
 import { HomePage } from "./pages/HomePage";
 import { UploadPage } from "./pages/UploadPage";
@@ -16,6 +15,7 @@ import { DataTablesPage } from "./pages/DataTablesPage";
 import theme from "./theme";
 import { DashboardEditorPage } from "./pages/DashboardEditorPage";
 import { DashboardViewPage } from "./pages/DashboardViewPage";
+import { GlobalToast } from "./components/common/GlobalToast";
 
 function App() {
   if (typeof window === "undefined") {
@@ -26,33 +26,26 @@ function App() {
       <ThemeProvider theme={theme}>
         {/* CssBaseline 提供了簡潔、一致的 CSS 基礎 */}
         <CssBaseline />
-        <LayoutProvider>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="charts/edit/:id" element={<ChartEditorPage />} />
-              <Route path="charts" element={<ChartsPage />} />
-              <Route path="charts/view/:id" element={<ChartViewPage />} />
-              <Route path="dashboards" element={<DashboardsPage />} />
-              <Route
-                path="dashboards/edit/:id"
-                element={<DashboardEditorPage />}
-              />
-              <Route
-                path="dashboards/view/:id"
-                element={<DashboardViewPage />}
-              />
-              <Route
-                path="data-tables/edit"
-                element={<DataTableEditorPage />}
-              />
-              <Route path="data-tables" element={<DataTablesPage />} />
-              <Route path="upload" element={<UploadPage />} />
-              <Route path="download" element={<DownloadPage />} />
-              <Route path="testing" element={<TestingPage />} />
-            </Route>
-          </Routes>
-        </LayoutProvider>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="charts/edit/:id" element={<ChartEditorPage />} />
+            <Route path="charts" element={<ChartsPage />} />
+            <Route path="charts/view/:id" element={<ChartViewPage />} />
+            <Route path="dashboards" element={<DashboardsPage />} />
+            <Route
+              path="dashboards/edit/:id"
+              element={<DashboardEditorPage />}
+            />
+            <Route path="dashboards/view/:id" element={<DashboardViewPage />} />
+            <Route path="data-tables/edit" element={<DataTableEditorPage />} />
+            <Route path="data-tables" element={<DataTablesPage />} />
+            <Route path="upload" element={<UploadPage />} />
+            <Route path="download" element={<DownloadPage />} />
+            <Route path="testing" element={<TestingPage />} />
+          </Route>
+        </Routes>
+        <GlobalToast />
       </ThemeProvider>
     </HashRouter>
   );

@@ -2,11 +2,11 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { FileConflictAction } from "../types";
-import type { FileInfo, UploadMode } from "shared/types/index";
+import type { UploadMode } from "shared/types/index";
 
-// 假設所有資源的 Info 類型都不同，我們使用一個泛型類型或 unknown
+// 通用化：允許任何類型的資源資訊
 // 成功上傳後後端返回的資訊類型
-type ResourceInfo = FileInfo;
+type ResourceInfo = unknown;
 
 // ----------------------------------------------------
 // 1. 通用化 Store 中每個上傳任務的狀態介面

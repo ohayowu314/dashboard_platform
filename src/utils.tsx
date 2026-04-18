@@ -7,6 +7,7 @@ import type {
 } from "shared/types/dataTable";
 import { MAX_FILE_SIZE } from "./constants";
 import { ValidationError } from "./types";
+import type { DashboardConfig } from "shared/types/dashboard";
 
 // 為了更清晰地傳遞標準 JSON 範例，我們定義一個包含範例的特定錯誤訊息
 export const STANDARD_JSON_EXAMPLE = `[
@@ -38,20 +39,52 @@ export const isSameKeys = (obj1: object, obj2: object): boolean => {
   return keys1.every((key) => keys2.includes(key));
 };
 
+export interface ValidationResult {
+  valid: boolean;
+  error?: string;
+}
+
+export const validateFile = (
+  file: File,
+  options: {
+    allowedTypes: string[];
+    maxSize?: number;
+  },
+): ValidationResult => {
+  if (!file) {
+    return { valid: false, error: "檔案不存在" };
+  }
+
+  const maxSize = options.maxSize ?? MAX_FILE_SIZE;
+  if (file.size > maxSize) {
+    return { valid: false, error: "檔案太大" };
+  }
+
+  if (file.size === 0) {
+    return { valid: false, error: "檔案為空" };
+  }
+
+  if (
+    options.allowedTypes.length > 0 &&
+    !options.allowedTypes.includes(file.type)
+  ) {
+    return { valid: false, error: "不支援的檔案類型" };
+  }
+
+  return { valid: true };
+};
+
 export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
   return new Promise((resolve, reject) => {
-    if (!file) {
-      return reject(new Error("檔案不存在"));
+    const validation = validateFile(file, {
+      allowedTypes: ["text/csv", "application/json"],
+      maxSize: MAX_FILE_SIZE,
+    });
+
+    if (!validation.valid) {
+      return reject(new Error(validation.error));
     }
-    if (!["text/csv", "application/json"].includes(file.type)) {
-      return reject(new Error("不支援的檔案類型"));
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      return reject(new Error("檔案太大"));
-    }
-    if (file.size === 0) {
-      return reject(new Error("檔案為空"));
-    }
+
     if (file.type === "text/csv") {
       // 在 PapaParse 的 .parse 方法中，使用泛型來指定資料型別
       Papa.parse<PapaResultRow>(file, {
@@ -77,7 +110,7 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
 
           if (!Array.isArray(data) || data.length === 0) {
             return reject(
-              new ValidationError(`JSON 檔案格式不正確，應為陣列且不為空。`)
+              new ValidationError(`JSON 檔案格式不正確，應為陣列且不為空。`),
             );
           }
 
@@ -86,8 +119,8 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
           if (isAnyValueOrArray) {
             return reject(
               new ValidationError(
-                `JSON 檔案內容格式不正確，陣列元素應為非陣列的物件。`
-              )
+                `JSON 檔案內容格式不正確，陣列元素應為非陣列的物件。`,
+              ),
             );
           }
 
@@ -95,19 +128,22 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
 
           // 檢查所有物件是否有相同的鍵
           const isConsistent = data.every((item) =>
-            isSameKeys(firstItem, item)
+            isSameKeys(firstItem, item),
           );
           if (!isConsistent) {
             return reject(
               new ValidationError(
-                `JSON 檔案格式不正確，所有物件必須有相同的鍵。`
-              )
+                `JSON 檔案格式不正確，所有物件必須有相同的鍵。`,
+              ),
             );
           }
 
           // 使用 map 迴圈遍歷每個項目，並透過 headers 陣列的順序取得值
-          const rows = data.map((item: { [key: string]: undefined }) => {
-            return headers.map((header) => String(item[header]));
+          const rows = data.map((item: Record<string, unknown>) => {
+            return headers.map((header) => {
+              const value = item[header];
+              return value === undefined ? "" : String(value);
+            });
           });
 
           resolve({ headers, rows });
@@ -127,7 +163,7 @@ export const parseDataFile = (file: File): Promise<DataTableHeaderSchema> => {
 };
 
 export const getDataTableWithInfo = (
-  tableId: TableId
+  tableId: TableId,
 ): Promise<DataTableWithInfo> => {
   return window.api.getTable(tableId);
 };
@@ -153,20 +189,17 @@ export const getNameFromFile = (filename: string): string => {
   return filename.substring(0, lastDotIndex);
 };
 
-export const parseDashboardFile = (file: File): Promise<object> => {
+export const parseDashboardFile = (file: File): Promise<DashboardConfig> => {
   return new Promise((resolve, reject) => {
-    if (!file) {
-      return reject(new Error("檔案不存在"));
+    const validation = validateFile(file, {
+      allowedTypes: ["application/json"],
+      maxSize: MAX_FILE_SIZE,
+    });
+
+    if (!validation.valid) {
+      return reject(new Error(validation.error));
     }
-    if (file.type !== "application/json") {
-      return reject(new Error("不支援的檔案類型"));
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      return reject(new Error("檔案太大"));
-    }
-    if (file.size === 0) {
-      return reject(new Error("檔案為空"));
-    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;

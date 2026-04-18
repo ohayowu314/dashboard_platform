@@ -20,6 +20,10 @@ export const DataTablesPage = () => {
   const uploads = useUploadStore((state) => state.uploads);
   const resetUploads = useUploadStore((state) => state.reset);
 
+  const refreshTableInfos = () => {
+    window.api.getAllTableInfos().then(setTableInfos);
+  };
+
   // 監聽 uploads 狀態的變化，並在有成功上傳時刷新列表
   useEffect(() => {
     console.log("Uploads state changed:", uploads);
@@ -34,10 +38,6 @@ export const DataTablesPage = () => {
     // 頁面初次載入時清空上傳狀態，避免上次的紀錄影響本次
     return () => resetUploads();
   }, [resetUploads]);
-
-  const refreshTableInfos = () => {
-    window.api.getAllTableInfos().then(setTableInfos);
-  };
 
   // 根據搜尋關鍵字過濾資料
   const filteredTables = tableInfos.filter((t) =>

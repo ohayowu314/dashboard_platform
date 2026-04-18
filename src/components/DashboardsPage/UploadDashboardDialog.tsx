@@ -8,39 +8,36 @@ import {
 } from "../../stores/uploadStore";
 import { parseDashboardFile } from "../../utils";
 import type { UploadNavigateState } from "../../types";
-import type { DashboardInfo } from "shared/types/dashboard";
+import type { DashboardWithConfig } from "shared/types/dashboard";
 
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
-// 實作 Dashboard 專屬的上傳處理函式 (傳入 Store)
-const handleDashboardUpload: UploadHandler<DashboardInfo> = async (
+const handleDashboardUpload: UploadHandler<DashboardWithConfig> = async (
   file,
   resourceName,
   uploadMode
 ) => {
-  const parsedDashboard = await parseDashboardFile(file); // 1. 解析檔案數據
-  const uploadInputInfo = { name: resourceName, description: "" };
+  const parsedDashboard = await parseDashboardFile(file);
+  const dashboardName = file.name.replace(/\.json$/, "");
 
-  // 2. 呼叫後端 API 執行上傳
-  const dashboardInfo = await window.api.uploadDashboard(
-    uploadInputInfo,
-    parsedDashboard,
-    uploadMode
+  const result = await window.api.createDashboard(
+    dashboardName,
+    "",
+    parsedDashboard
   );
 
-  return dashboardInfo as DashboardInfo; // 類型斷言
+  return result;
 };
 
 export const UploadDashboardDialog = ({ open, onClose }: Props) => {
   const navigate = useNavigate();
   const { startUploads } = useUploadStore();
 
-  // 1. 處理單一檔案確認：導航到編輯頁面
   const handleSingleFileConfirmed = (file: File) => {
-    console.log("單一檔案上傳，導航至上傳資料表格頁面...");
+    console.log("單一檔案上傳，導航至上傳儀表板頁面...");
     const state: UploadNavigateState = {
       editorMode: "upload",
       file: file,
@@ -48,7 +45,6 @@ export const UploadDashboardDialog = ({ open, onClose }: Props) => {
     navigate("/dashboards/edit", { state });
   };
 
-  // 2. 處理多檔案確認：呼叫 Store 的 action
   const handleMultiFilesConfirmed = (
     filesStatus: GenericUploadInputStatus[]
   ) => {
@@ -56,19 +52,22 @@ export const UploadDashboardDialog = ({ open, onClose }: Props) => {
     startUploads(filesStatus, handleDashboardUpload);
   };
 
-  // 3. Dashboard 專屬的衝突檢查 API 呼叫
   const checkConflictApi = (dashboardNames: string[]) => {
-    return window.api.checkDashboardNamesConflict(dashboardNames);
+    return Promise.all(
+      dashboardNames.map((name) =>
+        window.api.checkDashboardConflict(name)
+      )
+    );
   };
 
   return (
     <GenericUploadDialog
       open={open}
       onClose={onClose}
-      title="上傳資料表格"
+      title="上傳儀表板"
       resourceType="dashboard"
       fileAccept="application/json"
-      isMultiFileUpload={true} // Dashboard 支援多檔案上傳
+      isMultiFileUpload={true}
       checkConflict={checkConflictApi}
       onSingleFileConfirmed={handleSingleFileConfirmed}
       onMultiFilesConfirmed={handleMultiFilesConfirmed}

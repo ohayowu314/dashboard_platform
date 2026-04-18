@@ -1,7 +1,7 @@
 // src/pages/TestingPage.tsx
 import { Box, Typography } from "@mui/material";
 import { PageWrapper } from "../components/layout/PageWrapper";
-import { useLayoutContext } from "../context/useLayoutContext";
+import { useLayoutStore } from "../stores/layoutStore";
 import SimpleTable from "../components/common/SimpleTable";
 
 const sampleData = [
@@ -23,7 +23,9 @@ const sampleData = [
 ];
 
 export const TestingPage = () => {
-  const { toggleRightPanelEnabled } = useLayoutContext();
+  const toggleRightPanelEnabled = useLayoutStore(
+    (s) => s.toggleRightPanelEnabled,
+  );
   return (
     <PageWrapper
       breadcrumbItems={[

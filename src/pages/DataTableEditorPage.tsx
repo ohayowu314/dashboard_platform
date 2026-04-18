@@ -5,62 +5,58 @@ import { Box, CircularProgress, Alert } from "@mui/material";
 import type { TableId } from "shared/types/dataTable.ts";
 import type { EditorMode } from "../types.tsx";
 import { PageWrapper } from "../components/layout/PageWrapper";
-import EditableTitle from "../components/common/EditableTitle";
+import { PageTitle } from "../components/common/PageTitle";
 import ConfirmCancelButtons from "../components/common/ConfirmCancelButtons";
 import DataTable from "../components/common/DataTable";
 import PageHeader from "../components/common/PageHeader";
 import { useTableEditor } from "../hooks/useTableEditor";
 import { useTableDataInitializer } from "../hooks/useTableDataInitializer.tsx";
+import { useToast } from "../hooks/useToast";
 
 export const DataTableEditorPage: React.FC = () => {
+  console.log("[DataTableEditorPage] renders");
   const location = useLocation();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const editorMode: EditorMode = location.state?.editorMode || null;
   const tableId: TableId | undefined = location.state?.tableId;
   const file: File | null = location.state?.file || null;
+  console.log("[DataTableEditorPage] editorMode:", editorMode, "tableId:", tableId, "file:", file?.name);
 
   // 1. 使用新的 Hook 來統一處理資料初始化和載入狀態
+  console.log("[DataTableEditorPage] 呼叫 useTableDataInitializer 前");
   const { loading, error, initialState } = useTableDataInitializer(
     editorMode,
     tableId,
-    file
+    file,
   );
 
   // 2. 將初始資料傳遞給 useTableEditor
-  const {
-    tableName,
-    setTableName,
-    isEditingName,
-    setIsEditingName,
-    data,
-    handleCellChange,
-  } = useTableEditor(
+  console.log("[DataTableEditorPage] 呼叫 useTableEditor 前, initialState:", !!initialState, "data:", !!initialState?.data, "name:", initialState?.name);
+  const { tableName, setTableName, data, handleCellChange } = useTableEditor(
     initialState?.data || null,
-    initialState?.name || "未命名表格"
+    initialState?.name || "未命名表格",
   );
 
   // 3. 將儲存邏輯獨立出來
   const handleConfirm = async () => {
     if (!data || !tableName.trim() || error) {
-      alert("無法儲存，請檢查表格名稱和資料。");
+      toast.error("無法儲存，請檢查表格名稱和資料。");
       return;
     }
     try {
       if (initialState?.id) {
-        console.log(`確認並更新表格: ${tableName}`);
         await window.api.updateTable(initialState.id, tableName, data);
-        console.log("更新成功!");
+        toast.success("更新成功!");
       } else {
-        console.log(`確認並儲存表格: ${tableName}`);
         const tableInfo = { name: tableName, description: "" };
         await window.api.uploadTable(tableInfo, data, "create");
-        console.log("儲存成功!");
+        toast.success("儲存成功!");
       }
       navigate("/data-tables");
     } catch (e: unknown) {
-      console.error("儲存失敗:", e);
-      alert("儲存表格時發生錯誤。");
+      toast.error("儲存表格時發生錯誤。");
     }
   };
 
@@ -78,11 +74,10 @@ export const DataTableEditorPage: React.FC = () => {
   };
 
   const renderHeaderLeftContent = () => (
-    <EditableTitle
+    <PageTitle
       title={tableName}
       onTitleChange={setTableName}
-      isEditing={isEditingName}
-      onEditingChange={setIsEditingName}
+      editable={true}
       label="表格名稱"
       placeholder="請輸入表格名稱"
     />

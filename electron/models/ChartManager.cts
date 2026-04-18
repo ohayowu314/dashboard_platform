@@ -8,10 +8,12 @@ export const ChartManager = {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         description TEXT,
+        data_table_id INTEGER,
         config_path TEXT NOT NULL,
         preview_path TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (data_table_id) REFERENCES tables(id)
       )
     `);
   },
@@ -27,8 +29,14 @@ export const ChartManager = {
     chart: Omit<ChartInfo, "id" | "created_at" | "updated_at">
   ): ChartInfo => {
     const result = DatabaseManager.run(
-      "INSERT INTO charts (name, description, config_path, preview_path) VALUES (?, ?, ?, ?)",
-      [chart.name, chart.description, chart.config_path, chart.preview_path]
+      "INSERT INTO charts (name, description, data_table_id, config_path, preview_path) VALUES (?, ?, ?, ?, ?)",
+      [
+        chart.name,
+        chart.description,
+        chart.dataTableId ?? null,
+        chart.config_path,
+        chart.preview_path,
+      ]
     );
     return ChartManager.getChartById(result.lastInsertRowid as number)!;
   },
@@ -36,6 +44,7 @@ export const ChartManager = {
     id: number;
     name?: string;
     description?: string;
+    dataTableId?: number;
     config_path?: string;
     preview_path?: string;
   }): ChartInfo => {
@@ -48,6 +57,10 @@ export const ChartManager = {
     if (chart.description !== undefined) {
       fields.push("description = ?");
       values.push(chart.description);
+    }
+    if (chart.dataTableId !== undefined) {
+      fields.push("data_table_id = ?");
+      values.push(chart.dataTableId);
     }
     if (chart.config_path !== undefined) {
       fields.push("config_path = ?");

@@ -1,87 +1,251 @@
-// src/pages/DashboardEditorPage.tsx (架構)
-import { PageWrapper } from "../components/layout/PageWrapper";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import type { UploadNavigateState, CreateNavigateState } from "../types";
-import { Box, Button } from "@mui/material";
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+// src/pages/DashboardEditorPage.tsx
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Box, CircularProgress, Alert, TextField } from "@mui/material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
+import { PageWrapper } from "../components/layout/PageWrapper";
 import PageHeader from "../components/common/PageHeader";
 import { MainTitle } from "../components/common/MainTitle";
+import { ActionButtonGroup } from "../components/common/ActionButtonGroup";
+import { DashboardCanvas } from "../components/DashboardsPage/DashboardCanvas";
+import { BlockTypeSelector } from "../components/DashboardsPage/BlockTypeSelector";
+import type { DashboardConfig, DashboardBlock, BlockType, BlockConfigMap, BaseBlock } from "shared/types/dashboard";
 
 export const DashboardEditorPage = () => {
-  const { id } = useParams<{ id: string }>(); // 取得 URL 中的儀表板 ID
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const handleCancelClick = () => {
-    // 導航到編輯頁面，並帶入 id
-    navigate(`/dashboards/view/${id}`);
-  };
-  const handleSaveClick = () => {
-    // 導航到編輯頁面，並帶入 id
-    navigate(`/dashboards/view/${id}`);
-  };
-  const handleViewClick = () => {
-    // 導航到編輯頁面，並帶入 id
-    navigate(`/dashboards/view/${id}`);
+  const [config, setConfig] = useState<DashboardConfig | null>(null);
+  const [dashboardId, setDashboardId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showAddBlock, setShowAddBlock] = useState(false);
+
+  const isNew = id === "new";
+
+  useEffect(() => {
+    const initDashboard = async () => {
+      if (isNew) {
+        setConfig({
+          title: "新儀表板",
+          blocks: [],
+          settings: { columns: 12, rowHeight: 50 },
+        });
+        setLoading(false);
+      } else if (id) {
+        try {
+          const numericId = Number(id);
+          if (isNaN(numericId)) {
+            setError("無效的儀表板 ID");
+            setLoading(false);
+            return;
+          }
+          const dashboard = await window.api.getDashboard(numericId);
+          setConfig(dashboard.config);
+          setDashboardId(dashboard.info.id);
+        } catch (e) {
+          setError(e instanceof Error ? e.message : "載入失敗");
+        }
+        setLoading(false);
+      }
+    };
+    initDashboard();
+  }, [id, isNew]);
+
+  const handleSave = async () => {
+    if (!config) return;
+    setSaving(true);
+    try {
+      let result;
+      if (dashboardId) {
+        result = await window.api.updateDashboard(dashboardId, config.title, config.description, config);
+      } else {
+        result = await window.api.createDashboard(config.title, config.description, config);
+        setDashboardId(result.info.id);
+      }
+      navigate(`/dashboards/view/${result.info.id}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "儲存失敗");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const location = useLocation();
-  // 取得導航狀態，判斷是 'create' (點擊新增) 還是 'upload' (上傳後編輯)
-  const state = location.state as
-    | (UploadNavigateState | CreateNavigateState)
-    | undefined;
+  const handleCancel = () => {
+    const targetId = dashboardId || (isNew ? "1" : id);
+    navigate(`/dashboards/view/${targetId}`);
+  };
 
-  // 根據 state 決定初始內容
-  let initialContent = "從列表點擊編輯或上傳檔案後編輯";
-  if (state?.editorMode === "create") {
-    initialContent = "新的儀表板 (建立模式)";
-  } else if (state?.editorMode === "upload" && state.file) {
-    initialContent = `從檔案上傳的儀表板: ${state.file.name}`;
-    // 實際邏輯：讀取 state.file 內容並解析為儀表板結構
+  const handleBlocksChange = (blocks: DashboardBlock[]) => {
+    setConfig((prev) => (prev ? { ...prev, blocks } : null));
+  };
+
+  const handleDeleteBlock = (blockId: string) => {
+    setConfig((prev) => {
+      if (!prev) return null;
+      return { ...prev, blocks: prev.blocks.filter((b) => b.id !== blockId) };
+    });
+  };
+
+  const defaultConfigMap: {
+    [K in BlockType]: () => BlockConfigMap[K];
+  } = {
+    text: () => ({ content: "新文字區塊" }),
+    chart: () => ({ chartId: 0 }),
+    table: () => ({ dataTableId: 0 }),
+  };
+
+  const getDefaultBlockConfig = <T extends BlockType>(
+    type: T
+  ): BlockConfigMap[T] => {
+    return defaultConfigMap[type]();
+  };
+
+  const createBlock = <T extends BlockType>(type: T): BaseBlock<T> => {
+    return {
+      id: `block-${Date.now()}`,
+      type,
+      layout: {
+        x: 0,
+        y: Infinity,
+        w: type === "text" ? 6 : 4,
+        h: type === "text" ? 2 : 3,
+      },
+      config: getDefaultBlockConfig(type),
+    };
   }
-  console.log(initialContent);
 
-  // ... 編輯邏輯 (圖表拖拉、設定等)
+  const handleAddBlock = <T extends BlockType>(type: T) => {
+    const newBlock = createBlock(type) as DashboardBlock;
+    setConfig((prev) => {
+      if (!prev) return null;
+      return { ...prev, blocks: [...prev.blocks, newBlock] };
+    });
+    setShowAddBlock(false);
+  };
+
+  const handleTitleChange = (newTitle: string) => {
+    setConfig((prev) => (prev ? { ...prev, title: newTitle } : null));
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setConfig((prev) => (prev ? { ...prev, description: e.target.value } : null));
+  };
+
+  if (loading) {
+    return (
+      <PageWrapper
+        breadcrumbItems={[
+          { label: "儀表板管理", path: "/dashboards" },
+          { label: "載入中...", path: "" },
+        ]}
+        content={
+          <Box sx={{ p: 3, display: "flex", justifyContent: "center" }}>
+            <CircularProgress />
+          </Box>
+        }
+      />
+    );
+  }
+
+  if (error && !config) {
+    return (
+      <PageWrapper
+        breadcrumbItems={[
+          { label: "儀表板管理", path: "/dashboards" },
+          { label: "錯誤", path: "" },
+        ]}
+        content={
+          <Box sx={{ p: 3 }}>
+            <Alert severity="error">{error}</Alert>
+          </Box>
+        }
+      />
+    );
+  }
+
+  if (!config) return null;
 
   return (
     <PageWrapper
       breadcrumbItems={[
         { label: "儀表板管理", path: "/dashboards" },
-        { label: "編輯儀表板", path: "" },
+        { label: isNew ? "新增儀表板" : "編輯儀表板", path: "" },
       ]}
       content={
         <Box sx={{ p: 3 }}>
           <PageHeader
-            headerLeftContent={<MainTitle title={`儀表板 #${id} 編輯模式`} />}
-            headerRightContent={
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<CancelIcon />}
-                  onClick={handleCancelClick}
-                >
-                  取消
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<SaveIcon />}
-                  onClick={handleSaveClick}
-                >
-                  儲存
-                </Button>
-                <Button
-                  variant="contained"
-                  startIcon={<CheckCircleOutlineIcon />}
-                  onClick={handleViewClick}
-                >
-                  確定
-                </Button>
+            headerLeftContent={
+              <Box>
+                <MainTitle
+                  title={config.title}
+                  editable
+                  onTitleChange={handleTitleChange}
+                />
+                <TextField
+                  variant="standard"
+                  value={config.description || ""}
+                  onChange={handleDescriptionChange}
+                  size="small"
+                  fullWidth
+                  placeholder="新增描述..."
+                  sx={{ mt: 1 }}
+                />
               </Box>
             }
+            headerRightContent={
+              <ActionButtonGroup
+                actions={[
+                  {
+                    key: "cancel",
+                    label: "取消",
+                    variant: "outlined",
+                    startIcon: <CancelIcon />,
+                    onClick: handleCancel,
+                  },
+                  {
+                    key: "save",
+                    label: "儲存",
+                    variant: "outlined",
+                    startIcon: <SaveIcon />,
+                    onClick: handleSave,
+                    disabled: saving,
+                  },
+                  {
+                    key: "confirm",
+                    label: "完成",
+                    variant: "contained",
+                    startIcon: <CheckCircleOutlineIcon />,
+                    onClick: handleSave,
+                    disabled: saving,
+                  },
+                ]}
+              />
+            }
+          />
+          <Box sx={{ mt: 2, minHeight: 500 }}>
+            <DashboardCanvas
+              config={config}
+              isEditing={true}
+              onBlocksChange={handleBlocksChange}
+              onDeleteBlock={handleDeleteBlock}
+              onViewChart={(chartId) => navigate(`/charts/edit/${chartId}`)}
+              onAddBlock={() => setShowAddBlock(true)}
+            />
+          </Box>
+
+          <BlockTypeSelector
+            open={showAddBlock}
+            onSelect={handleAddBlock}
+            onClose={() => setShowAddBlock(false)}
           />
         </Box>
       }
     />
   );
 };
+
+export default DashboardEditorPage;
