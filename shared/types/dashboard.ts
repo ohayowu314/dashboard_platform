@@ -12,15 +12,17 @@ export interface DashboardInfo {
 }
 export type DashboardId = DashboardInfo["id"];
 
-export type BlockType = "text" | "chart" | "table";
+export type BlockType = keyof BlockConfigMap;
 export type BlockId = string;
-
-export interface DashboardBlock {
+export type BaseBlock<T extends BlockType> = {
   id: BlockId;
-  type: BlockType;
+  type: T;
   layout: BlockLayout;
-  config: BlockConfig;
-}
+  config: BlockConfigMap[T];
+};
+export type DashboardBlock = {
+  [K in BlockType]: BaseBlock<K>;
+}[BlockType];
 
 export interface BlockLayout {
   x: number;
@@ -33,8 +35,12 @@ export interface BlockLayout {
   maxH?: number;
   static?: boolean;
 }
-
-export type BlockConfig = TextBlockConfig | ChartBlockConfig | TableBlockConfig;
+export type BlockConfigMap = {
+  text: TextBlockConfig;
+  chart: ChartBlockConfig;
+  table: TableBlockConfig;
+};
+export type BlockConfig = BlockConfigMap[BlockType];
 
 export interface TextBlockConfig {
   content: string;

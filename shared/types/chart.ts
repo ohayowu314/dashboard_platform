@@ -12,7 +12,7 @@ export interface ChartInfo {
 }
 export type ChartId = ChartInfo["id"];
 export type ChartName = ChartInfo["name"];
-export type ChartTypeName =
+export type ChartType =
   | "bar"
   | "line"
   | "pie"
@@ -22,7 +22,7 @@ export type ChartTypeName =
 
 export interface ChartConfig {
   title: string;
-  type: ChartTypeName;
+  type: ChartType;
   xAxis: string;
   yAxis: string | string[];
   series?: string[];
@@ -38,25 +38,12 @@ export interface ChartOptions {
   stacking?: boolean;
 }
 
-export interface ChartWithConfig {
+export interface ChartInfoWithConfig {
   info: ChartInfo;
   config: ChartConfig;
 }
 
-export interface ChartWithPreview extends ChartWithConfig {
-  previewPath?: string;
-}
-
-export interface ChartWithData extends ChartWithConfig {
+export interface ChartWithData extends ChartInfoWithConfig {
   data: Record<string, unknown>[];
 }
 
-export interface ChartWithDataAndPreview extends ChartWithData {
-  previewPath?: string;
-}
-
-export type ChartType =
-  | ChartWithConfig
-  | ChartWithData
-  | ChartWithPreview
-  | ChartWithDataAndPreview;
