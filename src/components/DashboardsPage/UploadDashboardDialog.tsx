@@ -8,14 +8,14 @@ import {
 } from "../../stores/uploadStore";
 import { parseDashboardFile } from "../../utils";
 import type { UploadNavigateState } from "../../types";
-import type { DashboardConfig } from "shared/types/dashboard";
+import type { DashboardWithConfig } from "shared/types/dashboard";
 
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
-const handleDashboardUpload: UploadHandler<DashboardConfig> = async (
+const handleDashboardUpload: UploadHandler<DashboardWithConfig> = async (
   file,
   resourceName,
   uploadMode
@@ -26,10 +26,10 @@ const handleDashboardUpload: UploadHandler<DashboardConfig> = async (
   const result = await window.api.createDashboard(
     dashboardName,
     "",
-    parsedDashboard as DashboardConfig
+    parsedDashboard
   );
 
-  return result.config;
+  return result;
 };
 
 export const UploadDashboardDialog = ({ open, onClose }: Props) => {
@@ -37,7 +37,7 @@ export const UploadDashboardDialog = ({ open, onClose }: Props) => {
   const { startUploads } = useUploadStore();
 
   const handleSingleFileConfirmed = (file: File) => {
-    console.log("單一檔案上傳，導航至上傳資料表格頁面...");
+    console.log("單一檔案上傳，導航至上傳儀表板頁面...");
     const state: UploadNavigateState = {
       editorMode: "upload",
       file: file,

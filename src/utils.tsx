@@ -7,6 +7,7 @@ import type {
 } from "shared/types/dataTable";
 import { MAX_FILE_SIZE } from "./constants";
 import { ValidationError } from "./types";
+import type { DashboardConfig } from "shared/types/dashboard";
 
 // 為了更清晰地傳遞標準 JSON 範例，我們定義一個包含範例的特定錯誤訊息
 export const STANDARD_JSON_EXAMPLE = `[
@@ -188,7 +189,7 @@ export const getNameFromFile = (filename: string): string => {
   return filename.substring(0, lastDotIndex);
 };
 
-export const parseDashboardFile = (file: File): Promise<object> => {
+export const parseDashboardFile = (file: File): Promise<DashboardConfig> => {
   return new Promise((resolve, reject) => {
     const validation = validateFile(file, {
       allowedTypes: ["application/json"],

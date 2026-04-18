@@ -1,27 +1,25 @@
-export {};
 import type {
   ConflictResult,
   Message,
   UploadMode,
   UploadInputInfo,
-} from "shared/types";
+} from "../shared/types";
 import type {
   DataTableHeaderSchema,
   DataTableInfo,
   DataTableWithInfo,
   TableId,
-} from "shared/types/dataTable";
+} from "../shared/types/dataTable";
 import type {
   ChartInfo,
   ChartConfig,
-  ChartWithConfig,
   ChartWithData,
-} from "shared/types/chart";
+} from "../shared/types/chart";
 import type {
   DashboardInfo,
   DashboardConfig,
   DashboardWithConfig,
-} from "shared/types/dashboard";
+} from "../shared/types/dashboard";
 
 interface DataTableAPI {
   uploadTable: (
