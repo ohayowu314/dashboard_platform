@@ -76,13 +76,14 @@ export const GenericItemActions = <itemIdType, ActionType extends string>({
 
   const handleCancel = () => {
     setPendingAction(null);
+    handleMenuClose();
   };
 
   const currentConfirm = pendingAction
     ? (confirmMessages[pendingAction] ?? {
-        title: "確認操作",
-        content: "確定要執行這個操作嗎？此動作無法復原。",
-      })
+      title: "確認操作",
+      content: "確定要執行這個操作嗎？此動作無法復原。",
+    })
     : null;
 
   return (
