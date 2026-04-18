@@ -5,7 +5,7 @@ import { PageWrapper } from "../components/layout/PageWrapper";
 import { GenericListPage } from "../components/common/GenericListPage";
 import { DashboardList } from "../components/DashboardsPage/DashboardList";
 import { UploadDashboardDialog } from "../components/DashboardsPage/UploadDashboardDialog";
-import type { PageConfig } from "src/types";
+import type { PageConfig } from "../../src/types";
 import type { DashboardInfo } from "shared/types/dashboard";
 
 export const DashboardsPage = () => {

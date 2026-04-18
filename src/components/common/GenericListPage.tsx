@@ -59,11 +59,11 @@ export function GenericListPage<T>({
 
   return (
     <Box sx={{ p: 3 }}>
-      <Grid container alignItems="center" spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={2} sx={{ mb: 3, alignItems: "center" }}>
         <Grid
           size={{ xs: 12, sm: 6 }}
           container
-          alignItems="center"
+          sx={{ alignItems: "center" }}
           spacing={2}
         >
           <Grid>
@@ -91,7 +91,7 @@ export function GenericListPage<T>({
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6 }}>
-          <Grid container justifyContent="flex-end" spacing={1}>
+          <Grid container sx={{ justifyContent: "flex-end" }} spacing={1}>
             {searchable /* 搜尋框 */ && (
               <Grid>
                 <TextField

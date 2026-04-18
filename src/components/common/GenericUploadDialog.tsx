@@ -87,7 +87,7 @@ export const GenericUploadDialog = <SelectedModeType extends string = string>({
     // 檔案類型過濾
     const filterFn = extraOptions?.fileFilter
       ? (file: File) =>
-          extraOptions.fileFilter!(file, extraOptions.selectedMode)
+        extraOptions.fileFilter!(file, extraOptions.selectedMode)
       : (file: File) => fileAccept.includes(file.type);
 
     return fileArray
@@ -225,7 +225,7 @@ export const GenericUploadDialog = <SelectedModeType extends string = string>({
       </IconButton>
       <DialogContent dividers>
         {/* 額外選項 UI (例如 DataTable 的 Upload Mode Selection 1/2) */}
-        {extraOptions && <Box mb={2}>{extraOptions.ui}</Box>}
+        {extraOptions && <Box sx={{ mb: 2 }} >{extraOptions.ui}</Box>}
 
         <Typography
           variant="subtitle1"
