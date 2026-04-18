@@ -15,7 +15,6 @@ import type {
 import type {
   ChartInfo,
   ChartConfig,
-  ChartWithConfig,
   ChartWithData,
 } from "shared/types/chart";
 import type {

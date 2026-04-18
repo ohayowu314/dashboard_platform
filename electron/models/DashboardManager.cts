@@ -1,4 +1,4 @@
-import type { DashboardInfo, DashboardConfig } from "shared/types/dashboard";
+import type { DashboardInfo } from "shared/types/dashboard";
 import { DatabaseManager } from "./DatabaseManager.cjs";
 
 export const DashboardManager = {

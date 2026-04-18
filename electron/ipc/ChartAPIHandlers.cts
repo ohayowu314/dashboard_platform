@@ -1,6 +1,6 @@
 import chartService from "../services/ChartService.cjs";
 import { IpcMainListener } from "../types.cjs";
-import type { ChartInfo, ChartConfig } from "shared/types/chart";
+import type { ChartConfig } from "shared/types/chart";
 
 interface UploadChartInput {
   chartInfo: { name: string; description?: string; dataTableId?: number };
