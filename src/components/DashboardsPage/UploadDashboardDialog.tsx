@@ -17,8 +17,8 @@ interface Props {
 
 const handleDashboardUpload: UploadHandler<DashboardWithConfig> = async (
   file,
-  resourceName,
-  uploadMode
+  _resourceName,
+  _uploadMode
 ) => {
   const parsedDashboard = await parseDashboardFile(file);
   const dashboardName = file.name.replace(/\.json$/, "");

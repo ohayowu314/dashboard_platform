@@ -4,50 +4,91 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import type { DashboardBlock } from "shared/types/dashboard";
+import type { BlockType, BlockConfigMap, DashboardBlock } from "shared/types/dashboard";
+import { TextBlockEditor } from "./blockEditors/TextBlockEditor";
+import { ChartBlockEditor } from "./blockEditors/ChartBlockEditor";
+import { TableBlockEditor } from "./blockEditors/TableBlockEditor";
 
-interface DashboardBlockWrapperProps {
+interface DashboardBlockWrapperProps<T extends BlockType = BlockType> {
   block: DashboardBlock;
   isEditing?: boolean;
+  isBlockEditing?: boolean;
   onDelete?: () => void;
   onViewChart?: () => void;
+  onConfigChange?: (newConfig: BlockConfigMap[T]) => void;
+  onEditingChange?: (isBlockEditing: boolean) => void;
   children: React.ReactNode;
 }
 
 export const DashboardBlockWrapper = ({
   block,
   isEditing = false,
+  isBlockEditing = false,
   onDelete,
   onViewChart,
+  onConfigChange,
+  onEditingChange,
   children,
 }: DashboardBlockWrapperProps) => {
-  const [isBlockEditing, setIsBlockEditing] = useState(false);
+  const [internalEditing, setInternalEditing] = useState(false);
+
+  const isCurrentlyEditing = isBlockEditing || internalEditing;
 
   const handleEdit = () => {
-    setIsBlockEditing(!isBlockEditing);
+    setInternalEditing(true);
+    onEditingChange?.(true);
   };
 
   const handleBack = () => {
-    setIsBlockEditing(false);
+    setInternalEditing(false);
+    onEditingChange?.(false);
   };
 
+
   const renderContent = () => {
-    if (isBlockEditing) {
-      return (
-        <Box
-          sx={{
-            p: 2,
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "text.secondary",
-          }}
-        >
-          區塊編輯表單 (待實作)
-        </Box>
-      );
+    if (isCurrentlyEditing) {
+      switch (block.type) {
+        case "text":
+          return (
+            <TextBlockEditor
+              config={block.config}
+              onSave={(config) => {
+                onConfigChange?.(config); // ✅ config = TextBlockConfig
+                handleBack();
+              }}
+              onCancel={handleBack}
+            />
+          );
+
+        case "chart":
+          return (
+            <ChartBlockEditor
+              config={block.config}
+              onSave={(config) => {
+                onConfigChange?.(config); // ✅ ChartBlockConfig
+                handleBack();
+              }}
+              onCancel={handleBack}
+            />
+          );
+
+        case "table":
+          return (
+            <TableBlockEditor
+              config={block.config}
+              onSave={(config) => {
+                onConfigChange?.(config); // ✅ TableBlockConfig
+                handleBack();
+              }}
+              onCancel={handleBack}
+            />
+          );
+
+        default:
+          return null;
+      }
     }
+
     return children;
   };
 
@@ -62,7 +103,7 @@ export const DashboardBlockWrapper = ({
         },
       }}
     >
-      {isBlockEditing && (
+      {isCurrentlyEditing && (
         <IconButton
           onClick={handleBack}
           sx={{
@@ -104,7 +145,7 @@ export const DashboardBlockWrapper = ({
           </Tooltip>
         )}
 
-        {isEditing && !isBlockEditing && (
+        {isEditing && !isCurrentlyEditing && (
           <Tooltip title="編輯">
             <IconButton
               size="small"
@@ -119,7 +160,7 @@ export const DashboardBlockWrapper = ({
           </Tooltip>
         )}
 
-        {isEditing && !isBlockEditing && (
+        {isEditing && !isCurrentlyEditing && (
           <Tooltip title="刪除">
             <IconButton
               size="small"
@@ -137,7 +178,7 @@ export const DashboardBlockWrapper = ({
 
       <Box sx={{ width: "100%", height: "100%" }}>{renderContent()}</Box>
 
-      {isEditing && !isBlockEditing && (
+      {isEditing && !isCurrentlyEditing && (
         <Box
           sx={{
             position: "absolute",

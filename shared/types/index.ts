@@ -7,7 +7,7 @@ export interface ConflictResult {
 }
 
 export type UploadMode = "create" | "replace";
-export type FileId = string | number;
+export type FileId = number;
 export interface FileInfo {
   id: FileId;
   name: string;
@@ -22,10 +22,10 @@ export type UploadInputInfo = Pick<FileInfo, "name" | "description">;
 export type Result<T, E> = Ok<T, E> | Err<T, E>;
 export class Ok<T, _> {
   readonly type = "ok" as const;
-  constructor(public value: T) {}
+  constructor(public value: T) { }
 }
 
 export class Err<_, E> {
   readonly type = "err" as const;
-  constructor(public error: E) {}
+  constructor(public error: E) { }
 }

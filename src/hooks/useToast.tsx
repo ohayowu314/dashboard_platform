@@ -1,5 +1,5 @@
 // src/hooks/useToast.tsx
-import { useToastStore, type ToastSeverity } from "../stores/toastStore";
+import { useToastStore } from "../stores/toastStore";
 
 export const useToast = () => {
   const { open, message, severity, showToast, closeToast } = useToastStore();
