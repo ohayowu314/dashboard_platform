@@ -237,7 +237,7 @@ export const DashboardEditorPage = () => {
               isEditing={true}
               onBlocksChange={handleBlocksChange}
               onDeleteBlock={handleDeleteBlock}
-              onViewChart={(chartId) => navigate(`/charts/edit/${chartId}`)}
+              onViewChart={(chartId) => navigate(`/charts/edit/${chartId}`, { state: { returnTo: `/dashboards/edit/${id}` } })}
               onAddBlock={() => setShowAddBlock(true)}
             />
           </Box>

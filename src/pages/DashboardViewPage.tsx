@@ -50,7 +50,7 @@ export const DashboardViewPage = () => {
   };
 
   const handleViewChart = (chartId: number) => {
-    navigate(`/charts/edit/${chartId}`);
+    navigate(`/charts/edit/${chartId}`, { state: { returnTo: `/dashboards/edit/${id}` } });
   };
 
   if (loading) {
