@@ -42,16 +42,18 @@ export type BlockConfigMap = {
 };
 export type BlockConfig = BlockConfigMap[BlockType];
 
-export interface TextBlockConfig {
-  content: string;
-  style?: TextBlockStyle;
-}
-
-export interface TextBlockStyle {
+export interface TextStyleConfig {
   fontSize?: number;
   fontWeight?: "normal" | "bold";
   textAlign?: "left" | "center" | "right";
   color?: string;
+}
+
+export interface TextBlockConfig {
+  title: string;
+  titleStyle?: TextStyleConfig;
+  content: string;
+  contentStyle?: TextStyleConfig;
 }
 
 export interface ChartBlockConfig {

@@ -93,7 +93,12 @@ export const DashboardEditorPage = () => {
   const defaultConfigMap: {
     [K in BlockType]: () => BlockConfigMap[K];
   } = {
-    text: () => ({ content: "新文字區塊" }),
+    text: () => ({
+      title: "新文字區塊",
+      titleStyle: { fontSize: 18, fontWeight: "bold", textAlign: "left", color: "#000000" },
+      content: "",
+      contentStyle: { fontSize: 14, fontWeight: "normal", textAlign: "left", color: "#333333" },
+    }),
     chart: () => ({ chartId: 0 }),
     table: () => ({ dataTableId: 0 }),
   };
