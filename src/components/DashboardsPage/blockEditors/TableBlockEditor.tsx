@@ -30,6 +30,7 @@ export const TableBlockEditor = ({
   onCancel,
 }: TableBlockEditorProps) => {
   const [localConfig, setLocalConfig] = useState<TableBlockConfig>(config);
+  const [editedColumns, setEditedColumns] = useState<string[]>(config.columns || []);
   const [tables, setTables] = useState<DataTableInfo[]>([]);
   const [tableHeaders, setTableHeaders] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,25 +51,20 @@ export const TableBlockEditor = ({
   }, []);
 
   useEffect(() => {
-    const fetchHeaders = async () => {
-      if (!localConfig.dataTableId) {
-        setTableHeaders([]);
-        return;
-      }
+    if (!localConfig.dataTableId) {
+      setTableHeaders([]);
+      return;
+    }
 
-      setLoadingHeaders(true);
+    setLoadingHeaders(true);
+    const fetchHeaders = async () => {
       try {
         const result = await window.api.getTable(localConfig.dataTableId);
         setTableHeaders(result.data.headers);
-        // Reset columns if they don't exist in new table
-        const newColumns = localConfig.columns?.filter((col) =>
+        const validColumns = (config.columns || []).filter((col) =>
           result.data.headers.includes(col)
         );
-        if (newColumns && newColumns.length > 0) {
-          setLocalConfig((prev) => ({ ...prev, columns: newColumns }));
-        } else {
-          setLocalConfig((prev) => ({ ...prev, columns: undefined }));
-        }
+        setEditedColumns(validColumns);
       } catch (e) {
         console.error("Failed to fetch table:", e);
         setTableHeaders([]);
@@ -78,41 +74,28 @@ export const TableBlockEditor = ({
     };
 
     fetchHeaders();
-  }, [localConfig.dataTableId, localConfig.columns]);
+  }, [localConfig.dataTableId]);
 
   const handleSave = () => {
-    onSave(localConfig);
+    onSave({ ...localConfig, columns: editedColumns });
   };
 
   const selectedTable = tables.find((t) => t.id === localConfig.dataTableId);
 
   const handleColumnToggle = (header: string) => {
-    const currentColumns = localConfig.columns || [];
-    if (currentColumns.includes(header)) {
-      setLocalConfig((prev) => ({
-        ...prev,
-        columns: prev.columns?.filter((c) => c !== header),
-      }));
+    if (editedColumns.includes(header)) {
+      setEditedColumns((prev) => prev.filter((c) => c !== header));
     } else {
-      setLocalConfig((prev) => ({
-        ...prev,
-        columns: [...(prev.columns || []), header],
-      }));
+      setEditedColumns((prev) => [...prev, header]);
     }
   };
 
   const handleSelectAll = () => {
-    setLocalConfig((prev) => ({
-      ...prev,
-      columns: [...tableHeaders],
-    }));
+    setEditedColumns([...tableHeaders]);
   };
 
   const handleClearAll = () => {
-    setLocalConfig((prev) => ({
-      ...prev,
-      columns: [],
-    }));
+    setEditedColumns([]);
   };
 
   return (
@@ -147,8 +130,9 @@ export const TableBlockEditor = ({
               setLocalConfig((prev) => ({
                 ...prev,
                 dataTableId: newValue?.id || 0,
-                columns: undefined,
               }));
+              setEditedColumns([]);
+              setTableHeaders([]);
             }}
             renderInput={(params) => (
               <TextField {...params} label="選擇資料表" size="small" sx={{ mb: 2 }} />
@@ -203,7 +187,7 @@ export const TableBlockEditor = ({
                       control={
                         <Checkbox
                           size="small"
-                          checked={(localConfig.columns || tableHeaders).includes(header)}
+                          checked={editedColumns.includes(header)}
                           onChange={() => handleColumnToggle(header)}
                         />
                       }

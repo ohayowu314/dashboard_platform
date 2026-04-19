@@ -125,9 +125,10 @@ export const TableBlock = ({ config }: TableBlockProps) => {
             ) : (
               sortedRows.map((row, rowIndex) => (
                 <TableRow key={rowIndex}>
-                  {displayColumns.map((_, colIndex) => (
-                    <TableCell key={colIndex}>{row[colIndex]}</TableCell>
-                  ))}
+                  {displayColumns.map((col) => {
+                  const colIdx = headers.indexOf(col);
+                  return <TableCell key={col}>{row[colIdx]}</TableCell>;
+                })}
                 </TableRow>
               ))
             )}
