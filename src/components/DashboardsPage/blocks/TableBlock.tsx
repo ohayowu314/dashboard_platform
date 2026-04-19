@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Table,
@@ -13,7 +13,7 @@ import {
   Alert,
 } from "@mui/material";
 import type { TableBlockConfig } from "shared/types/dashboard";
-import type { DataTableWithInfo } from "shared/types/dataTable";
+import { useTable } from "../../../hooks/queries/dataTable";
 
 interface TableBlockProps {
   config: TableBlockConfig;
@@ -24,27 +24,9 @@ type Order = "asc" | "desc";
 export const TableBlock = ({ config }: TableBlockProps) => {
   const { dataTableId, columns, sortable = true } = config;
 
-  const [data, setData] = useState<DataTableWithInfo | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error } = useTable(dataTableId);
   const [orderBy, setOrderBy] = useState<string>("");
   const [order, setOrder] = useState<Order>("asc");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await window.api.getTable(dataTableId);
-        setData(result);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "載入失敗");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [dataTableId]);
 
   const handleSort = (property: string) => {
     if (!sortable) return;
@@ -53,7 +35,7 @@ export const TableBlock = ({ config }: TableBlockProps) => {
     setOrderBy(property);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
         <CircularProgress size={24} />
@@ -64,7 +46,7 @@ export const TableBlock = ({ config }: TableBlockProps) => {
   if (error || !data) {
     return (
       <Box sx={{ p: 1 }}>
-        <Alert severity="error">{error || "無法載入資料"}</Alert>
+        <Alert severity="error">{error instanceof Error ? error.message : "無法載入資料"}</Alert>
       </Box>
     );
   }

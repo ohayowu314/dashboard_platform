@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   TextField,
@@ -12,7 +12,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import type { ChartBlockConfig } from "shared/types/dashboard";
-import type { ChartInfo } from "shared/types/chart";
+import { useAllCharts } from "../../../hooks/queries/chart";
 
 interface ChartBlockEditorProps {
   config: ChartBlockConfig;
@@ -26,28 +26,14 @@ export const ChartBlockEditor = ({
   onCancel,
 }: ChartBlockEditorProps) => {
   const [localConfig, setLocalConfig] = useState<ChartBlockConfig>(config);
-  const [charts, setCharts] = useState<ChartInfo[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCharts = async () => {
-      try {
-        const result = await window.api.getAllCharts();
-        setCharts(result);
-      } catch (e) {
-        console.error("Failed to fetch charts:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCharts();
-  }, []);
+  const { data: charts, isLoading } = useAllCharts();
 
   const handleSave = () => {
     onSave(localConfig);
   };
 
-  const selectedChart = charts.find((c) => c.id === localConfig.chartId);
+  const selectedChart = charts?.find((c) => c.id === localConfig.chartId);
 
   return (
     <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", overflow: "auto" }}>
@@ -66,7 +52,7 @@ export const ChartBlockEditor = ({
         </Box>
       </Box>
 
-      {loading ? (
+      {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={24} />
         </Box>
@@ -74,7 +60,7 @@ export const ChartBlockEditor = ({
         <>
           {/* 選擇圖表 */}
           <Autocomplete
-            options={charts}
+            options={charts || []}
             getOptionLabel={(option) => option.name}
             value={selectedChart || null}
             onChange={(_, newValue) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   TextField,
@@ -16,7 +16,7 @@ import {
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import type { TableBlockConfig } from "shared/types/dashboard";
-import type { DataTableInfo } from "shared/types/dataTable";
+import { useAllTableInfos, useTable } from "../../../hooks/queries/dataTable";
 
 interface TableBlockEditorProps {
   config: TableBlockConfig;
@@ -31,56 +31,21 @@ export const TableBlockEditor = ({
 }: TableBlockEditorProps) => {
   const [localConfig, setLocalConfig] = useState<TableBlockConfig>(config);
   const [editedColumns, setEditedColumns] = useState<string[]>(config.columns || []);
-  const [tables, setTables] = useState<DataTableInfo[]>([]);
-  const [tableHeaders, setTableHeaders] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingHeaders, setLoadingHeaders] = useState(false);
 
-  useEffect(() => {
-    const fetchTables = async () => {
-      try {
-        const result = await window.api.getAllTableInfos();
-        setTables(result);
-      } catch (e) {
-        console.error("Failed to fetch tables:", e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTables();
-  }, []);
+  const { data: tables, isLoading: loadingTables } = useAllTableInfos();
+  const { data: tableData, isLoading: loadingHeaders } = useTable(
+    localConfig.dataTableId > 0 ? localConfig.dataTableId : 0,
+    { enabled: localConfig.dataTableId > 0 }
+  );
 
-  useEffect(() => {
-    if (!localConfig.dataTableId) {
-      setTableHeaders([]);
-      return;
-    }
-
-    setLoadingHeaders(true);
-    const fetchHeaders = async () => {
-      try {
-        const result = await window.api.getTable(localConfig.dataTableId);
-        setTableHeaders(result.data.headers);
-        const validColumns = (config.columns || []).filter((col) =>
-          result.data.headers.includes(col)
-        );
-        setEditedColumns(validColumns);
-      } catch (e) {
-        console.error("Failed to fetch table:", e);
-        setTableHeaders([]);
-      } finally {
-        setLoadingHeaders(false);
-      }
-    };
-
-    fetchHeaders();
-  }, [localConfig.dataTableId]);
+  const tableHeaders = tableData?.data.headers || [];
 
   const handleSave = () => {
-    onSave({ ...localConfig, columns: editedColumns });
+    const finalColumns = editedColumns.length > 0 ? editedColumns : tableHeaders;
+    onSave({ ...localConfig, columns: finalColumns });
   };
 
-  const selectedTable = tables.find((t) => t.id === localConfig.dataTableId);
+  const selectedTable = tables?.find((t) => t.id === localConfig.dataTableId);
 
   const handleColumnToggle = (header: string) => {
     if (editedColumns.includes(header)) {
@@ -115,7 +80,7 @@ export const TableBlockEditor = ({
         </Box>
       </Box>
 
-      {loading ? (
+      {loadingTables ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={24} />
         </Box>
@@ -123,7 +88,7 @@ export const TableBlockEditor = ({
         <>
           {/* 選擇資料表 */}
           <Autocomplete
-            options={tables}
+            options={tables || []}
             getOptionLabel={(option) => option.name}
             value={selectedTable || null}
             onChange={(_, newValue) => {
@@ -132,7 +97,6 @@ export const TableBlockEditor = ({
                 dataTableId: newValue?.id || 0,
               }));
               setEditedColumns([]);
-              setTableHeaders([]);
             }}
             renderInput={(params) => (
               <TextField {...params} label="選擇資料表" size="small" sx={{ mb: 2 }} />

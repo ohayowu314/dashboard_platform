@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Box,
   CircularProgress,
@@ -24,14 +23,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import type {
-  ChartBlockConfig, ChartBlockOptions
-} from "shared/types/dashboard";
-import type {
-  ChartConfig,
-  ChartWithData,
-  ChartType,
-} from "shared/types/chart";
+import type { ChartBlockConfig, ChartBlockOptions } from "shared/types/dashboard";
+import type { ChartConfig, ChartType } from "shared/types/chart";
+import { useChart } from "../../../hooks/queries/chart";
 
 interface ChartBlockProps {
   config: ChartBlockConfig;
@@ -242,32 +236,12 @@ const getChartComponent = (
   }
 };
 
-export const ChartBlock = ({
-  config,
-}: ChartBlockProps) => {
+export const ChartBlock = ({ config }: ChartBlockProps) => {
   const { chartId, title, options } = config;
 
-  const [chartData, setChartData] = useState<ChartWithData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: chartData, isLoading, error } = useChart(chartId);
 
-  useEffect(() => {
-    const fetchChartData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await window.api.getChart(chartId);
-        setChartData(result);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "載入失敗");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchChartData();
-  }, [chartId]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Box
         sx={{
@@ -285,7 +259,9 @@ export const ChartBlock = ({
   if (error || !chartData) {
     return (
       <Box sx={{ p: 1 }}>
-        <Alert severity="error">{error || "無法載入圖表"}</Alert>
+        <Alert severity="error">
+          {error instanceof Error ? error.message : "無法載入圖表"}
+        </Alert>
       </Box>
     );
   }

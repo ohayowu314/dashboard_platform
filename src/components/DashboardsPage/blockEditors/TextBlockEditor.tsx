@@ -79,11 +79,11 @@ const StyleEditor = ({ label, icon, style, onStyleChange }: StyleEditorProps) =>
     <Box sx={{ mb: 2 }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
         {icon}
-        <Typography variant="body2" fontWeight="medium" sx={{ ml: 1 }}>
+        <Typography variant="body2" sx={{ fontWeight: "medium", ml: 1 }}>
           {label}
         </Typography>
       </Box>
-      
+
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: 3 }}>
         {/* 字體大小 */}
         <IconButton size="small" onClick={() => handleFontSizeChange(-1)} sx={{ border: "1px solid", borderColor: "divider" }}>
@@ -184,7 +184,7 @@ export const TextBlockEditor = ({
     <Box sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", overflow: "auto" }}>
       {/* 標題列 */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-        <Typography variant="subtitle2" fontWeight="bold">編輯文字區塊</Typography>
+        <Typography variant="subtitle2" sx={{ fontWeight: "medium" }}>編輯文字區塊</Typography>
         <Box>
           <IconButton size="small" onClick={onCancel} sx={{ mr: 1 }}><CloseIcon fontSize="small" /></IconButton>
           <IconButton size="small" onClick={handleSave} color="primary"><CheckIcon fontSize="small" /></IconButton>
