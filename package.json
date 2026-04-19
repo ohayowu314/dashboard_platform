@@ -19,9 +19,12 @@
     "preview": "vite preview",
     "transpile:electron": "tsc --project electron/tsconfig.json",
     "prebuild:electron": "npm run transpile:electron && npm run build",
-    "dist:mac": "run-s prebuild:electron \"electron-builder --mac --arm64\"",
-    "dist:win": "run-s prebuild:electron \"electron-builder --win --x64\"",
-    "dist:linux": "run-s prebuild:electron \"electron-builder --linux --x64\""
+    "build:mac": "electron-builder --mac --arm64",
+    "build:win": "electron-builder --win --x64",
+    "build:linux": "electron-builder --linux --x64",
+    "dist:mac": "run-s prebuild:electron build:mac",
+    "dist:win": "run-s prebuild:electron build:win",
+    "dist:linux": "run-s prebuild:electron build:linux"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
