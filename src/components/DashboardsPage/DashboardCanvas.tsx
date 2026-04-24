@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Box, Fab, Tooltip } from "@mui/material";
 import { Responsive, useContainerWidth, type LayoutItem, type ResizeHandleAxis } from "react-grid-layout";
 import { DashboardBlockWrapper } from "./DashboardBlockWrapper";
@@ -13,44 +13,41 @@ interface DashboardCanvasProps {
   isEditing?: boolean;
   onBlocksChange?: (blocks: DashboardBlock[]) => void;
   onDeleteBlock?: (blockId: string) => void;
-  onViewChart?: (chartId: number) => void;
+  onEditBlock?: (blockId: string) => void;
   onAddBlock?: () => void;
 }
 
 const availableHandles: ResizeHandleAxis[] = ["s", "w", "e", "n", "sw", "nw", "se", "ne"];
+
 export const DashboardCanvas = ({
   config,
   isEditing = false,
   onBlocksChange,
   onDeleteBlock,
-  onViewChart,
+  onEditBlock,
   onAddBlock,
 }: DashboardCanvasProps) => {
   const { width, containerRef, mounted } = useContainerWidth();
   const { blocks, settings } = config;
-  const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
 
   const cols = settings?.columns ?? 12;
   const rowHeight = settings?.rowHeight ?? 50;
 
   const layout: LayoutItem[] = useMemo(() => {
-    return blocks.map((block) => {
-      const isBlockEditing = editingBlockId === block.id;
-      return {
-        i: block.id,
-        x: block.layout.x,
-        y: block.layout.y,
-        w: block.layout.w,
-        h: block.layout.h,
-        minW: block.layout.minW,
-        maxW: block.layout.maxW,
-        minH: block.layout.minH,
-        maxH: block.layout.maxH,
-        static: !isEditing || isBlockEditing,
-        resizeHandles: availableHandles,
-      };
-    });
-  }, [blocks, isEditing, editingBlockId]);
+    return blocks.map((block) => ({
+      i: block.id,
+      x: block.layout.x,
+      y: block.layout.y,
+      w: block.layout.w,
+      h: block.layout.h,
+      minW: block.layout.minW,
+      maxW: block.layout.maxW,
+      minH: block.layout.minH,
+      maxH: block.layout.maxH,
+      static: !isEditing,
+      resizeHandles: availableHandles,
+    }));
+  }, [blocks, isEditing]);
 
   const handleLayoutChange = (newLayout: readonly LayoutItem[]) => {
     if (!onBlocksChange) return;
@@ -73,12 +70,6 @@ export const DashboardCanvas = ({
     });
 
     onBlocksChange(updatedBlocks);
-  };
-
-  const handleViewChart = (block: DashboardBlock) => {
-    if (block.type === "chart") {
-      onViewChart?.(block.config.chartId);
-    }
   };
 
   if (!mounted) {
@@ -119,23 +110,8 @@ export const DashboardCanvas = ({
             <DashboardBlockWrapper
               block={block}
               isEditing={isEditing}
-              isBlockEditing={editingBlockId === block.id}
               onDelete={() => onDeleteBlock?.(block.id)}
-              onViewChart={() => handleViewChart(block)}
-              onConfigChange={(newConfig) => {
-                const updated = blocks.map((b) => {
-                  if (b.id !== block.id) return b;
-                  return {
-                    ...b,
-                    config: newConfig,
-                  } as DashboardBlock;
-                }
-                );
-                onBlocksChange?.(updated);
-              }}
-              onEditingChange={(isEditing) => {
-                setEditingBlockId(isEditing ? block.id : null);
-              }}
+              onEdit={() => onEditBlock?.(block.id)}
             >
               <BlockRenderer block={block} />
             </DashboardBlockWrapper>

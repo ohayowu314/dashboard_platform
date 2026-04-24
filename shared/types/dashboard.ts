@@ -1,3 +1,5 @@
+import type { ChartType, ChartDisplayOptions } from "./chart";
+
 export type SupportedFileType = "json";
 export type FileType = SupportedFileType | "unknown";
 
@@ -12,18 +14,6 @@ export interface DashboardInfo {
 }
 export type DashboardId = DashboardInfo["id"];
 
-export type BlockType = keyof BlockConfigMap;
-export type BlockId = string;
-export type BaseBlock<T extends BlockType> = {
-  id: BlockId;
-  type: T;
-  layout: BlockLayout;
-  config: BlockConfigMap[T];
-};
-export type DashboardBlock = {
-  [K in BlockType]: BaseBlock<K>;
-}[BlockType];
-
 export interface BlockLayout {
   x: number;
   y: number;
@@ -35,45 +25,35 @@ export interface BlockLayout {
   maxH?: number;
   static?: boolean;
 }
-export type BlockConfigMap = {
-  text: TextBlockConfig;
-  chart: ChartBlockConfig;
-  table: TableBlockConfig;
-};
-export type BlockConfig = BlockConfigMap[BlockType];
 
-export interface TextStyleConfig {
-  fontSize?: number;
-  fontWeight?: "normal" | "bold";
-  textAlign?: "left" | "center" | "right";
-  color?: string;
-}
-
-export interface TextBlockConfig {
-  title: string;
-  titleStyle?: TextStyleConfig;
-  content: string;
-  contentStyle?: TextStyleConfig;
-}
-
-export interface ChartBlockConfig {
-  chartId: number;
+export interface BaseChartBlockConfig {
+  id: string;
   title?: string;
-  options?: ChartBlockOptions;
-}
-
-export interface ChartBlockOptions {
-  showLegend?: boolean;
-  showTooltip?: boolean;
-  animation?: boolean;
-}
-
-export interface TableBlockConfig {
+  description?: string;
   dataTableId: number;
+}
+
+export interface TableChartBlockConfig extends BaseChartBlockConfig {
+  chartType: "table";
   columns?: string[];
   pageSize?: number;
   sortable?: boolean;
   filterable?: boolean;
+}
+
+export interface ChartChartBlockConfig extends BaseChartBlockConfig {
+  chartType: Exclude<ChartType, "table">;
+  xAxis: string;
+  yAxis: string | string[];
+  options?: ChartDisplayOptions;
+}
+
+export type ChartBlockConfig = TableChartBlockConfig | ChartChartBlockConfig;
+
+export interface DashboardBlock {
+  id: string;
+  layout: BlockLayout;
+  config: ChartBlockConfig;
 }
 
 export interface DashboardConfig {

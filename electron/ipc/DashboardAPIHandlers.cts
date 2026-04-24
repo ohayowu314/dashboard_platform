@@ -26,6 +26,15 @@ export const DashboardAPIHandlers: Record<string, IpcMainListener> = {
   "get-dashboard": (_event, id: number) =>
     dashboardService.getDashboardById(id),
 
+  "get-dashboard-draft": (_event, id: number) =>
+    dashboardService.getDashboardDraft(id),
+
+  "save-dashboard-draft": (_event, { id, config }: { id: number; config: DashboardConfig }) =>
+    dashboardService.saveDashboardDraft(id, config),
+
+  "delete-dashboard-draft": (_event, id: number) =>
+    dashboardService.deleteDashboardDraft(id),
+
   "update-dashboard": (
     _event,
     { id, name, description, config }: UpdateDashboardInput

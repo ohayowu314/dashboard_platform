@@ -22,9 +22,19 @@ export const DashboardsPage = () => {
     refreshDashboardInfos();
   }, []);
 
-  const handleNewDashboardClick = () => {
-    const state = { editorMode: "create" };
-    navigate("/dashboards/edit/new", { state });
+  const handleNewDashboardClick = async () => {
+    const defaultName = `未命名儀表板_${Date.now()}`;
+    const defaultConfig = {
+      title: "新儀表板",
+      blocks: [],
+      settings: { columns: 12, rowHeight: 50 },
+    };
+    try {
+      const result = await window.api.createDashboard(defaultName, "", defaultConfig);
+      navigate(`/dashboards/edit/${result.info.id}`, { state: { isNew: true } });
+    } catch (e) {
+      console.error("建立儀表板失敗", e);
+    }
   };
 
   // 根據搜尋關鍵字過濾資料

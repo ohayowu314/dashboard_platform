@@ -15,6 +15,19 @@ export const FileManager = {
   fileExists: (filePath: string) => {
     return fs.existsSync(filePath);
   },
+  exists: (filePath: string) => {
+    return fs.existsSync(filePath);
+  },
+
+  // 取得資料夾路徑
+  getDirectoryPath: (filePath: string) => {
+    return path.dirname(filePath);
+  },
+
+  // 組合路徑
+  joinPaths: (...paths: string[]) => {
+    return path.join(...paths);
+  },
 
   // 檢查資料夾是否存在
   directoryExists: (directoryPath: string) => {
@@ -51,6 +64,13 @@ export const FileManager = {
   deleteFile: (filePath: string) => {
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
+    }
+  },
+
+  // 刪除資料夾
+  deleteDirectory: (directoryPath: string) => {
+    if (fs.existsSync(directoryPath)) {
+      fs.rmSync(directoryPath, { recursive: true, force: true });
     }
   },
 

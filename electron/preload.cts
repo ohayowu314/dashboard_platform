@@ -13,11 +13,6 @@ import type {
   TableId,
 } from "shared/types/dataTable";
 import type {
-  ChartInfo,
-  ChartConfig,
-  ChartWithData,
-} from "shared/types/chart";
-import type {
   DashboardInfo,
   DashboardConfig,
   DashboardWithConfig,
@@ -47,28 +42,16 @@ contextBridge.exposeInMainWorld("api", {
   checkTablesConflict: (names: string[]): Promise<ConflictResult[]> =>
     ipcRenderer.invoke("check-tables-conflict", names),
 
-  getAllCharts: (): Promise<ChartInfo[]> =>
-    ipcRenderer.invoke("get-all-charts"),
-  getChart: (id: number): Promise<ChartWithData> =>
-    ipcRenderer.invoke("get-chart", id),
-  uploadChart: (
-    chartInfo: { name: string; description?: string; dataTableId?: number },
-    config: ChartConfig
-  ): Promise<ChartInfo> =>
-    ipcRenderer.invoke("upload-chart", { chartInfo, config }),
-  updateChart: (
-    id: number,
-    chartInfo: { name?: string; description?: string; dataTableId?: number },
-    config: ChartConfig
-  ): Promise<ChartInfo> =>
-    ipcRenderer.invoke("update-chart", { id, chartInfo, config }),
-  deleteChart: (id: number): Promise<Message> =>
-    ipcRenderer.invoke("delete-chart", id),
-
   getAllDashboards: (): Promise<DashboardInfo[]> =>
     ipcRenderer.invoke("get-all-dashboards"),
   getDashboard: (id: number): Promise<DashboardWithConfig> =>
     ipcRenderer.invoke("get-dashboard", id),
+  getDashboardDraft: (id: number): Promise<DashboardWithConfig> =>
+    ipcRenderer.invoke("get-dashboard-draft", id),
+  saveDashboardDraft: (id: number, config: DashboardConfig): Promise<void> =>
+    ipcRenderer.invoke("save-dashboard-draft", { id, config }),
+  deleteDashboardDraft: (id: number): Promise<void> =>
+    ipcRenderer.invoke("delete-dashboard-draft", id),
   createDashboard: (
     name: string,
     description: string | undefined,
