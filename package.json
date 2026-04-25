@@ -1,7 +1,7 @@
 {
   "name": "dashboard-platform",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "description": "Dashboard Platform Application",
   "author": "Jack Wu <mailto:48574669+ohayowu314@users.noreply.github.com>",
@@ -19,15 +19,19 @@
     "preview": "vite preview",
     "transpile:electron": "tsc --project electron/tsconfig.json",
     "prebuild:electron": "npm run transpile:electron && npm run build",
-    "dist:mac": "run-s prebuild:electron \"electron-builder --mac --arm64\"",
-    "dist:win": "run-s prebuild:electron \"electron-builder --win --x64\"",
-    "dist:linux": "run-s prebuild:electron \"electron-builder --linux --x64\""
+    "build:mac": "electron-builder --mac --arm64",
+    "build:win": "electron-builder --win --x64",
+    "build:linux": "electron-builder --linux --x64",
+    "dist:mac": "run-s prebuild:electron build:mac",
+    "dist:win": "run-s prebuild:electron build:win",
+    "dist:linux": "run-s prebuild:electron build:linux"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.0.0",
     "@mui/material": "^9.0.0",
+    "@tanstack/react-query": "^5.99.1",
     "better-sqlite3": "^12.9.0",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
@@ -38,7 +42,6 @@
     "react-hook-form": "^7.72.1",
     "react-router-dom": "^7.14.1",
     "recharts": "^3.8.1",
-    "uuid": "^13.0.0",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"
   },

@@ -1,18 +1,5 @@
-import type { TableId } from "./dataTable";
-
-export interface ChartInfo {
-  id: number;
-  name: string;
-  description?: string;
-  dataTableId?: TableId;
-  config_path: string;
-  preview_path?: string;
-  created_at: string;
-  updated_at: string;
-}
-export type ChartId = ChartInfo["id"];
-export type ChartName = ChartInfo["name"];
 export type ChartType =
+  | "table"
   | "bar"
   | "line"
   | "pie"
@@ -20,16 +7,7 @@ export type ChartType =
   | "histogram"
   | "area";
 
-export interface ChartConfig {
-  title: string;
-  type: ChartType;
-  xAxis: string;
-  yAxis: string | string[];
-  series?: string[];
-  options?: ChartOptions;
-}
-
-export interface ChartOptions {
+export interface ChartDisplayOptions {
   colors?: string[];
   showLegend?: boolean;
   showTooltip?: boolean;
@@ -38,12 +16,7 @@ export interface ChartOptions {
   stacking?: boolean;
 }
 
-export interface ChartInfoWithConfig {
-  info: ChartInfo;
-  config: ChartConfig;
-}
-
-export interface ChartWithData extends ChartInfoWithConfig {
+export interface ChartWithData {
   data: Record<string, unknown>[];
 }
 

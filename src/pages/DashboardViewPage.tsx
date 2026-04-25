@@ -49,10 +49,6 @@ export const DashboardViewPage = () => {
     console.log("Export dashboard");
   };
 
-  const handleViewChart = (chartId: number) => {
-    navigate(`/charts/edit/${chartId}`);
-  };
-
   if (loading) {
     return (
       <PageWrapper
@@ -146,7 +142,6 @@ export const DashboardViewPage = () => {
               <DashboardCanvas
                 config={config}
                 isEditing={false}
-                onViewChart={handleViewChart}
               />
             )}
           </Box>

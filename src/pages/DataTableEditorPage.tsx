@@ -56,7 +56,7 @@ export const DataTableEditorPage: React.FC = () => {
       }
       navigate("/data-tables");
     } catch (e: unknown) {
-      toast.error("儲存表格時發生錯誤。");
+      toast.error(`儲存失敗: ${(e as Error).message}`);
     }
   };
 

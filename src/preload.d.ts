@@ -11,11 +11,6 @@ import type {
   TableId,
 } from "../shared/types/dataTable";
 import type {
-  ChartInfo,
-  ChartConfig,
-  ChartWithData,
-} from "../shared/types/chart";
-import type {
   DashboardInfo,
   DashboardConfig,
   DashboardWithConfig,
@@ -39,24 +34,12 @@ interface DataTableAPI {
   checkTablesConflict: (names: string[]) => Promise<ConflictResult[]>;
 }
 
-interface ChartAPI {
-  getAllCharts: () => Promise<ChartInfo[]>;
-  getChart: (id: number) => Promise<ChartWithData>;
-  uploadChart: (
-    chartInfo: { name: string; description?: string; dataTableId?: number },
-    config: ChartConfig
-  ) => Promise<ChartInfo>;
-  updateChart: (
-    id: number,
-    chartInfo: { name?: string; description?: string; dataTableId?: number },
-    config: ChartConfig
-  ) => Promise<ChartInfo>;
-  deleteChart: (id: number) => Promise<Message>;
-}
-
 interface DashboardAPI {
   getAllDashboards: () => Promise<DashboardInfo[]>;
   getDashboard: (id: number) => Promise<DashboardWithConfig>;
+  getDashboardDraft: (id: number) => Promise<DashboardWithConfig>;
+  saveDashboardDraft: (id: number, config: DashboardConfig) => Promise<void>;
+  deleteDashboardDraft: (id: number) => Promise<void>;
   createDashboard: (
     name: string,
     description: string | undefined,
@@ -74,6 +57,6 @@ interface DashboardAPI {
 
 declare global {
   interface Window {
-    api: DataTableAPI & ChartAPI & DashboardAPI;
+    api: DataTableAPI & DashboardAPI;
   }
 }

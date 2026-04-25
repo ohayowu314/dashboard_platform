@@ -22,7 +22,6 @@ export default defineConfig({
           // 3. 分割常用、穩定工具模組
           const commonLibs = [
             "recharts",
-            "uuid",
             "zod",
             "zustand",
             "file-saver",

@@ -5,7 +5,7 @@
     "dist-react",
     "public"
   ],
-  "icon": "public/icon.ico",
+  "icon": "public/snake.png",
   "mac": {
     "target": "dmg"
   },

@@ -13,17 +13,18 @@ interface DashboardCanvasProps {
   isEditing?: boolean;
   onBlocksChange?: (blocks: DashboardBlock[]) => void;
   onDeleteBlock?: (blockId: string) => void;
-  onViewChart?: (chartId: number) => void;
+  onEditBlock?: (blockId: string) => void;
   onAddBlock?: () => void;
 }
 
 const availableHandles: ResizeHandleAxis[] = ["s", "w", "e", "n", "sw", "nw", "se", "ne"];
+
 export const DashboardCanvas = ({
   config,
   isEditing = false,
   onBlocksChange,
   onDeleteBlock,
-  onViewChart,
+  onEditBlock,
   onAddBlock,
 }: DashboardCanvasProps) => {
   const { width, containerRef, mounted } = useContainerWidth();
@@ -71,12 +72,6 @@ export const DashboardCanvas = ({
     onBlocksChange(updatedBlocks);
   };
 
-  const handleViewChart = (block: DashboardBlock) => {
-    if (block.type === "chart") {
-      onViewChart?.(block.config.chartId);
-    }
-  };
-
   if (!mounted) {
     return (
       <Box
@@ -116,7 +111,7 @@ export const DashboardCanvas = ({
               block={block}
               isEditing={isEditing}
               onDelete={() => onDeleteBlock?.(block.id)}
-              onViewChart={() => handleViewChart(block)}
+              onEdit={() => onEditBlock?.(block.id)}
             >
               <BlockRenderer block={block} />
             </DashboardBlockWrapper>
