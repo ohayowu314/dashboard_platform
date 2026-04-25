@@ -1,7 +1,7 @@
 {
   "name": "dashboard-platform",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "description": "Dashboard Platform Application",
   "author": "Jack Wu <mailto:48574669+ohayowu314@users.noreply.github.com>",
