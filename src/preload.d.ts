@@ -1,41 +1,62 @@
-// src/preload.d.ts
-export {};
 import type {
-  TableId,
+  ConflictResult,
+  Message,
+  UploadMode,
+  UploadInputInfo,
+} from "../shared/types";
+import type {
   DataTableHeaderSchema,
   DataTableInfo,
   DataTableWithInfo,
-  UploadInputDataTableInfo,
-} from "shared/types/dataTable";
-import type { Message, ConflictResult, UploadMode } from "shared/types";
-import type { ChartInfo } from "shared/types/chart";
+  TableId,
+} from "../shared/types/dataTable";
+import type {
+  DashboardInfo,
+  DashboardConfig,
+  DashboardWithConfig,
+} from "../shared/types/dashboard";
+
 interface DataTableAPI {
   uploadTable: (
-    tableInfo: UploadInputDataTableInfo,
+    tableInfo: UploadInputInfo,
     content: DataTableHeaderSchema,
     uploadMode: UploadMode
   ) => Promise<DataTableInfo>;
   getAllTableInfos: () => Promise<DataTableInfo[]>;
-  checkTablesConflict: (names: string[]) => Promise<ConflictResult[]>;
   getTable: (id: TableId) => Promise<DataTableWithInfo>;
-  deleteTable: (id: TableId) => Promise<Message>;
   updateTable: (
     id: TableId,
     name: string,
     data: DataTableHeaderSchema
   ) => Promise<DataTableWithInfo>;
+  deleteTable: (id: TableId) => Promise<Message>;
+  checkTableConflict: (name: string) => Promise<ConflictResult>;
+  checkTablesConflict: (names: string[]) => Promise<ConflictResult[]>;
 }
 
-interface ChartAPI {
-  uploadChart: (
-    chartInfo: { name: string; description?: string },
-    config: unknown
-  ) => Promise<ChartInfo>;
-  deleteChart: (id: number) => Promise<Message>;
+interface DashboardAPI {
+  getAllDashboards: () => Promise<DashboardInfo[]>;
+  getDashboard: (id: number) => Promise<DashboardWithConfig>;
+  getDashboardDraft: (id: number) => Promise<DashboardWithConfig>;
+  saveDashboardDraft: (id: number, config: DashboardConfig) => Promise<void>;
+  deleteDashboardDraft: (id: number) => Promise<void>;
+  createDashboard: (
+    name: string,
+    description: string | undefined,
+    config: DashboardConfig
+  ) => Promise<DashboardWithConfig>;
+  updateDashboard: (
+    id: number,
+    name: string,
+    description: string | undefined,
+    config: DashboardConfig
+  ) => Promise<DashboardWithConfig>;
+  deleteDashboard: (id: number) => Promise<Message>;
+  checkDashboardConflict: (name: string) => Promise<ConflictResult>;
 }
 
 declare global {
   interface Window {
-    api: DataTableAPI & ChartAPI;
+    api: DataTableAPI & DashboardAPI;
   }
 }

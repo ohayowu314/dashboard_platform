@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - '**'  # 任何分支都會觸發
+      - "**" # 任何分支都會觸發
   pull_request:
     branches:
-      - '**'  # 所有目標分支的 PR 都會觸發
+      - "**" # 所有目標分支的 PR 都會觸發
 
 jobs:
   build-and-check:

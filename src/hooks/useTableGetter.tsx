@@ -1,5 +1,6 @@
 // src/hooks/useTableGetter.ts
-import { useState, useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import { useAsyncOperation } from "./internal/useAsyncOperation";
 import { getDataTableWithInfo } from "../utils";
 import type {
   DataTableHeaderSchema,
@@ -15,40 +16,26 @@ interface useTableGetterReturn {
 }
 
 export const useTableGetter = (
-  tableId: TableId | undefined
+  tableId: TableId | undefined,
 ): useTableGetterReturn => {
-  const [loading, setLoading] = useState(true);
-  const [info, setInfo] = useState<DataTableInfo | null>(null);
-  const [data, setData] = useState<DataTableHeaderSchema | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const gettingDataTable = async () => {
-      if (!tableId) {
-        setError("無表格資料。請返回資料表格列表頁重新選擇。");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const dataTableWithInfo = await getDataTableWithInfo(tableId);
-        setInfo(dataTableWithInfo.info);
-        setData(dataTableWithInfo.data);
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          setError(e.message);
-        } else {
-          setError("取得表格時發生未知錯誤");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    gettingDataTable();
+  console.log("[useTableGetter] 進入 hook, tableId:", tableId);
+  const fetcher = useCallback(() => {
+    if (!tableId) return Promise.resolve(null);
+    return getDataTableWithInfo(tableId);
   }, [tableId]);
 
-  return { loading, info, data, error };
+  const { loading, data: dataTableWithInfo, error, execute } = useAsyncOperation(fetcher, null);
+
+
+  useEffect(() => {
+    console.log("[useTableGetter] useEffect 觸發, tableId:", tableId);
+    if (tableId) {
+      execute();
+    }
+  }, [tableId, execute]);
+
+  const displayError =
+    !tableId && !loading ? "無表格資料。請返回資料表格列表頁重新選擇。" : error;
+  console.log("[useTableGetter] getDataTableWithInfo 完成, info:", dataTableWithInfo?.info, "data:", !!dataTableWithInfo?.data);
+  return { loading, info: dataTableWithInfo?.info || null, data: dataTableWithInfo?.data || null, error: displayError };
 };

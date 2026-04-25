@@ -4,7 +4,7 @@ import logoImage from "../../assets/snake.jpg"; // 根據實際路徑調整
 
 const Logo = () => {
   return (
-    <Typography variant="h6" fontWeight="bold">
+    <Typography variant="h6" sx={{ fontWeight: "bold" }} >
       <img
         src={logoImage}
         alt="Logo"

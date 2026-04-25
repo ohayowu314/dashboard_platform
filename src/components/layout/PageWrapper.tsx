@@ -1,6 +1,6 @@
 // src/components/layout/PageWrapper.tsx
 import { useEffect } from "react";
-import { useLayoutContext } from "../../context/useLayoutContext";
+import { useLayoutStore } from "../../stores/layoutStore";
 import type { PageConfig } from "../../types";
 
 export const PageWrapper = ({
@@ -14,7 +14,7 @@ export const PageWrapper = ({
     setRightPanelTitle,
     setRightPanelContent,
     setRightPanelEnabled,
-  } = useLayoutContext();
+  } = useLayoutStore();
 
   useEffect(() => {
     setBreadcrumbItems(breadcrumbItems);
