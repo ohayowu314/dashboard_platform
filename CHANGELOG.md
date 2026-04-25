@@ -4,6 +4,48 @@
 
 ---
 
+## [0.3.0](https://github.com/ohayowu314/dashboard_platform/compare/v0.2.1...v0.3.0) (2026-04-24)
+此版本為重大架構重構，核心聚焦於儀表板區塊系統的統一、引入編輯草稿機制，並全面廢止獨立圖表功能。
+
+### ⚡ BREAKING CHANGES 重大變更
+- **廢除獨立圖表實體 (Abolished Independent Charts)**  
+  不再支援單獨建立、儲存或管理圖表。所有圖表現在皆作為「儀表板區塊」存在。
+  - 移除 `/charts` 相關路由與側邊欄入口。
+  - 移除 `ChartService` 與 `ChartManager` 後端模組。
+  - 資料庫中不再建立 `charts` 資料表。
+- **儀表板區塊系統重構 (Block System Refactoring)**  
+  表格與圖表現在統一為 `ChartBlock`，透過 `chartType`（含 `"table"`）區分顯示類型。
+- **引入編輯草稿機制 (Draft System)**  
+  編輯流程現在基於 `draft.json` 檔案。
+  - 進入編輯器時自動建立草稿。
+  - 任何變更即時（Debounced）儲存至草稿，防止重新整理或斷電導致進度遺失。
+  - 僅在點擊「儲存」或「完成」時才會將草稿合併至正式 `config.json`。
+
+---
+
+### ✨ Features 新功能
+
+#### 📊 儀表板管理 Dashboard Management
+- **全版三欄式區塊編輯器**  
+  新增專用的區塊編輯頁面（左側資料配置、中間即時預覽、右側屬性設定），取代原本的彈窗編輯器。
+  _New three-column block editor with live preview, replacing the legacy modal-based editing._
+- **自動儲存草稿 (Auto-save to Draft)**  
+  實現了防抖（Debounce）自動儲存功能，確保編輯過程中的每一項調整皆持久化在硬碟上。
+  _Implemented debounced auto-saving to `draft.json` for both dashboard and block edits._
+- **增強型區塊包裝器**  
+  優化了區塊的佈局調整與內容渲染邏輯，支援表格與多種圖表類型的無縫切換。
+  _Enhanced block wrapper for seamless switching between tables and various chart types._
+
+#### ⚙️ 後端與系統 Backend & System
+- **草稿 API 暴露**  
+  新增 `getDashboardDraft`, `saveDashboardDraft`, `deleteDashboardDraft` 等 IPC 介面。
+  _Exposed new IPC interfaces for draft management._
+- **FileManager 工具集擴充**  
+  新增目錄遞迴刪除 `deleteDirectory` 與路徑處理工具，優化儀表板刪除時的清理邏輯。
+  _Extended `FileManager` with recursive directory deletion and path utility methods._
+
+---
+
 ## [0.2.1](https://github.com/ohayowu314/dashboard_platform/compare/v0.2.0...v0.2.1) (2025-10-03)
 此版本重構上傳流程，加入多檔案與衝突解決，改善使用者體驗與穩定性。
 
