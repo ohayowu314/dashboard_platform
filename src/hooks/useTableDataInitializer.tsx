@@ -21,7 +21,6 @@ export const useTableDataInitializer = (
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [initialState, setInitialState] = useState<DataTableState | null>(null);
-  const [initialized, setInitialized] = useState(false);
 
   const {
     loading: tableGettedLoading,
@@ -37,18 +36,14 @@ export const useTableDataInitializer = (
   } = useFileParser(file);
 
   useEffect(() => {
-    if (initialized) {
-      console.log("[useTableDataInitializer] 已初始化過，跳過");
-      return;
-    }
-    console.log("[useTableDataInitializer] useEffect 觸發, editorMode:", editorMode, "initialized:", initialized);
+    console.log("[useTableDataInitializer] useEffect 觸發, editorMode:", editorMode);
 
     if (editorMode === "edit" && tableId && !tableGettedLoading) {
       console.log("[useTableDataInitializer] edit 模式處理, tableGettedInfo:", tableGettedInfo, "tableGettedData:", !!tableGettedData, "tableGettedError:", tableGettedError);
       if (tableGettedError) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setError(tableGettedError);
         setLoading(false);
-        setInitialized(true);
         return;
       }
       setInitialState({
@@ -57,13 +52,11 @@ export const useTableDataInitializer = (
         id: tableId,
       });
       setLoading(false);
-      setInitialized(true);
     } else if (editorMode === "upload" && file && !fileParsedLoading) {
       console.log("[useTableDataInitializer] upload 模式處理, fileParsedError:", fileParsedError, "fileParsedData:", !!fileParsedData);
       if (fileParsedError) {
         setError(fileParsedError);
         setLoading(false);
-        setInitialized(true);
         return;
       }
       setInitialState({
@@ -72,7 +65,6 @@ export const useTableDataInitializer = (
         id: null,
       });
       setLoading(false);
-      setInitialized(true);
     } else if (editorMode === "create") {
       console.log("[useTableDataInitializer] create 模式處理");
       setInitialState({
@@ -81,9 +73,8 @@ export const useTableDataInitializer = (
         id: null,
       });
       setLoading(false);
-      setInitialized(true);
     }
-  }, [editorMode, tableId, file, tableGettedLoading, fileParsedLoading, tableGettedData, tableGettedInfo, tableGettedError, fileParsedData, fileParsedError, initialized]);
+  }, [editorMode, tableId, file, tableGettedLoading, fileParsedLoading, tableGettedData, tableGettedInfo, tableGettedError, fileParsedData, fileParsedError]);
 
   console.log("[useTableDataInitializer] 返回, loading:", loading, "error:", error, "initialState:", !!initialState);
   return { loading, error, initialState };

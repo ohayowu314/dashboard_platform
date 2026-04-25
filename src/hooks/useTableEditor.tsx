@@ -1,5 +1,5 @@
 // src/hooks/useTableEditor.tsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type {
   DataTableHeaderSchema,
   DataTableHeader,
@@ -26,19 +26,20 @@ export const useTableEditor = (
   initialName: string
 ): UseTableEditorReturn => {
   console.log("[useTableEditor] 進入 hook, initialData:", !!initialData, "initialName:", initialName);
-  const [tableName, setTableName] = useState(initialName);
+  const [tableName, setTableName] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
-  const [data, setData] = useState<DataTableHeaderSchema | null>(initialData);
+  const [data, setData] = useState<DataTableHeaderSchema | null>(null);
 
-  useEffect(() => {
-    console.log("[useTableEditor] data useEffect 觸發, initialData:", !!initialData);
-    setData(initialData);
-  }, [initialData]);
-
-  useEffect(() => {
-    console.log("[useTableEditor] name useEffect 觸發, initialName:", initialName);
+  const [prevTableName, setPrevTableName] = useState(initialName);
+  const [prevData, setPrevData] = useState<DataTableHeaderSchema | null>(initialData);
+  if (initialName !== prevTableName) {
+    setPrevTableName(initialName);
     setTableName(initialName);
-  }, [initialName]);
+  }
+  if (JSON.stringify(initialData) !== JSON.stringify(prevData)) {
+    setPrevData(initialData);
+    setData(initialData);
+  }
 
   const updateData = (newData: DataTableHeaderSchema | null) => {
     console.log("[useTableEditor] updateData 呼叫, newData:", !!newData);
@@ -52,9 +53,12 @@ export const useTableEditor = (
   ) => {
     console.log("[useTableEditor] handleCellChange, rowIndex:", rowIndex, "colIndex:", colIndex, "newValue:", newValue);
     if (!data) return;
-    const newData = { ...data };
-    newData.rows[rowIndex][colIndex] = newValue;
-    setData(newData);
+    const newRows = data.rows.map((row, rIdx) =>
+      rIdx === rowIndex
+        ? row.map((cell, cIdx) => (cIdx === colIndex ? newValue : cell))
+        : row
+    );
+    setData({ ...data, rows: newRows });
   };
 
   const handleHeaderChange = (colIndex: number, newHeader: DataTableHeader) => {

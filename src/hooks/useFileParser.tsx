@@ -1,5 +1,5 @@
 // src/hooks/useFileParser.ts
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useAsyncOperation } from "./internal/useAsyncOperation";
 import { parseDataFile } from "../utils";
 import type { DataTableHeaderSchema } from "shared/types/dataTable";
@@ -14,11 +14,10 @@ export const useFileParser = (
   file: File | null | undefined,
 ): UseFileParserReturn => {
   console.log("[useFileParser] 進入 hook, file:", file?.name);
-  const fetcher = file
-    ? () => parseDataFile(file)
-    : () => {
-      return Promise.resolve(null);
-    };
+  const fetcher = useCallback(() => {
+    if (!file) return Promise.resolve(null);
+    return parseDataFile(file);
+  }, [file]);
 
   const { loading, data, error, execute } = useAsyncOperation(fetcher, null);
 
@@ -27,7 +26,7 @@ export const useFileParser = (
     if (file) {
       execute();
     }
-  }, [file]);
+  }, [file, execute]);
 
   const displayError =
     !file && !loading ? "無檔案資料。請返回資料表格列表頁重新上傳。" : error;
