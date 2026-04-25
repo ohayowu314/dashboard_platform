@@ -1,5 +1,5 @@
 // src/hooks/useTableGetter.ts
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useAsyncOperation } from "./internal/useAsyncOperation";
 import { getDataTableWithInfo } from "../utils";
 import type {
@@ -19,9 +19,10 @@ export const useTableGetter = (
   tableId: TableId | undefined,
 ): useTableGetterReturn => {
   console.log("[useTableGetter] 進入 hook, tableId:", tableId);
-  const fetcher = tableId
-    ? () => getDataTableWithInfo(tableId)
-    : () => Promise.resolve(null);
+  const fetcher = useCallback(() => {
+    if (!tableId) return Promise.resolve(null);
+    return getDataTableWithInfo(tableId);
+  }, [tableId]);
 
   const { loading, data: dataTableWithInfo, error, execute } = useAsyncOperation(fetcher, null);
 
@@ -31,7 +32,7 @@ export const useTableGetter = (
     if (tableId) {
       execute();
     }
-  }, [tableId]);
+  }, [tableId, execute]);
 
   const displayError =
     !tableId && !loading ? "無表格資料。請返回資料表格列表頁重新選擇。" : error;
