@@ -11,6 +11,12 @@ import { MainTitle } from "../components/common/MainTitle";
 import { ActionButtonGroup } from "../components/common/ActionButtonGroup";
 import { DashboardCanvas } from "../components/DashboardsPage/DashboardCanvas";
 import type { DashboardConfig, ChartBlockConfig } from "shared/types/dashboard";
+import { 
+  useDashboardDraft, 
+  useSaveDashboardDraft, 
+  useDeleteDashboardDraft, 
+  useUpdateDashboard 
+} from "../hooks/queries/dashboard";
 
 const defaultChartConfig: ChartBlockConfig = {
   id: "",
@@ -22,56 +28,46 @@ const defaultChartConfig: ChartBlockConfig = {
 
 export const DashboardEditorPage = () => {
   const { id } = useParams<{ id: string }>();
+  const numericId = Number(id);
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { data: dashboardDraft, isLoading, error: fetchError } = useDashboardDraft(numericId);
+  const { mutateAsync: saveDraft } = useSaveDashboardDraft();
+  const { mutateAsync: deleteDraft } = useDeleteDashboardDraft();
+  const { mutateAsync: updateDashboard } = useUpdateDashboard();
+
   const [config, setConfig] = useState<DashboardConfig | null>(null);
-  const [dashboardId, setDashboardId] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const returnTo: string | null = (location.state?.returnTo || null);
   const isNew = !!location.state?.isNew;
 
-  useEffect(() => {
-    const initDashboard = async () => {
-      if (id) {
-        try {
-          const numericId = Number(id);
-          if (isNaN(numericId)) {
-            setError("無效的儀表板 ID");
-            setLoading(false);
-            return;
-          }
-          // 讀取草稿 (如果沒有草稿，後端會自動從 config.json 建立)
-          const dashboard = await window.api.getDashboardDraft(numericId);
-          setConfig(dashboard.config);
-          setDashboardId(dashboard.info.id);
-        } catch (e) {
-          setError(e instanceof Error ? e.message : "載入失敗");
-        }
-        setLoading(false);
-      }
-    };
-    initDashboard();
-  }, [id, returnTo]);
+  // 初始化 config：如果在渲染期間發現 config 為空且草稿已載入，則直接設定
+  if (config === null && dashboardDraft) {
+    setConfig(dashboardDraft.config);
+  }
 
   // 當任何設定改變時，自動儲存到草稿
   useEffect(() => {
-    if (config && dashboardId && !loading && !saving) {
+    if (config && numericId && !isLoading && !saving) {
       const timer = setTimeout(() => {
-        window.api.saveDashboardDraft(dashboardId, config);
+        saveDraft({ id: numericId, config });
       }, 500); // 500ms debounce
       return () => clearTimeout(timer);
     }
-  }, [config, dashboardId, loading, saving]);
+  }, [config, numericId, isLoading, saving, saveDraft]);
 
   const handleSave = async () => {
-    if (!config || !dashboardId) return;
+    if (!config || !numericId) return;
     setSaving(true);
     try {
-      // 儲存按鈕：更新正式設定，並保留草稿
-      await window.api.updateDashboard(dashboardId, config.title, config.description, config);
+      await updateDashboard({ 
+        id: numericId, 
+        title: config.title, 
+        description: config.description, 
+        config 
+      });
     } catch (e) {
       setError(e instanceof Error ? e.message : "儲存失敗");
     } finally {
@@ -80,13 +76,17 @@ export const DashboardEditorPage = () => {
   };
 
   const handleFinish = async () => {
-    if (!config || !dashboardId) return;
+    if (!config || !numericId) return;
     setSaving(true);
     try {
-      // 完成按鈕：更新正式設定並刪除草稿
-      await window.api.updateDashboard(dashboardId, config.title, config.description, config);
-      await window.api.deleteDashboardDraft(dashboardId);
-      navigate(returnTo || `/dashboards/view/${dashboardId}`);
+      await updateDashboard({ 
+        id: numericId, 
+        title: config.title, 
+        description: config.description, 
+        config 
+      });
+      await deleteDraft(numericId);
+      navigate(returnTo || `/dashboards/view/${numericId}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "完成失敗");
     } finally {
@@ -95,10 +95,9 @@ export const DashboardEditorPage = () => {
   };
 
   const handleCancel = async () => {
-    if (dashboardId) {
-      // 取消按鈕：刪除草稿
-      await window.api.deleteDashboardDraft(dashboardId);
-      navigate(returnTo || `/dashboards/view/${dashboardId}`);
+    if (numericId) {
+      await deleteDraft(numericId);
+      navigate(returnTo || `/dashboards/view/${numericId}`);
     } else {
       navigate("/dashboards");
     }
@@ -116,7 +115,6 @@ export const DashboardEditorPage = () => {
   };
 
   const handleEditBlock = (blockId: string) => {
-    // 進入區塊編輯器，不需要傳遞 state config，因為它會自己讀取 draft.json
     navigate(`/dashboards/edit/${id}/blocks/${blockId}/edit`, {
       state: { returnTo: `/dashboards/edit/${id}` },
     });
@@ -143,7 +141,7 @@ export const DashboardEditorPage = () => {
     setConfig((prev) => (prev ? { ...prev, description: e.target.value } : null));
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageWrapper
         breadcrumbItems={[
@@ -159,7 +157,9 @@ export const DashboardEditorPage = () => {
     );
   }
 
-  if (error && !config) {
+  const finalError = fetchError ? (fetchError instanceof Error ? fetchError.message : "載入失敗") : error;
+
+  if (finalError && !config) {
     return (
       <PageWrapper
         breadcrumbItems={[
@@ -168,7 +168,7 @@ export const DashboardEditorPage = () => {
         ]}
         content={
           <Box sx={{ p: 3 }}>
-            <Alert severity="error">{error}</Alert>
+            <Alert severity="error">{finalError}</Alert>
           </Box>
         }
       />

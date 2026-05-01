@@ -74,5 +74,12 @@ contextBridge.exposeInMainWorld("api", {
     ipcRenderer.invoke("delete-dashboard", id),
   checkDashboardConflict: (name: string): Promise<ConflictResult> =>
     ipcRenderer.invoke("check-dashboard-conflict", name),
+
+  getSystemConfig: (key: string): Promise<string | undefined> =>
+    ipcRenderer.invoke("get-system-config", key),
+  setSystemConfig: (key: string, value: string): Promise<void> =>
+    ipcRenderer.invoke("set-system-config", { key, value }),
+  deleteSystemConfig: (key: string): Promise<void> =>
+    ipcRenderer.invoke("delete-system-config", key),
 });
 console.log("Preload script end");

@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import { DashboardAPIHandlers } from "./DashboardAPIHandlers.cjs";
 import { DataTableAPIHandlers } from "./DataTableAPIHandlers.cjs";
+import { SystemAPIHandlers } from "./SystemAPIHandlers.cjs";
 import { IpcMainListener } from "../types.cjs";
 
 function registerIpcHandlers(handlers: Record<string, IpcMainListener>) {
@@ -21,5 +22,6 @@ export const APIModule = {
   init: () => {
     registerIpcHandlers(DataTableAPIHandlers);
     registerIpcHandlers(DashboardAPIHandlers);
+    registerIpcHandlers(SystemAPIHandlers);
   },
 };

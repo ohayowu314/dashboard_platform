@@ -7,22 +7,18 @@ import { DataTableList } from "../components/DataTablesPage/DataTableList";
 import { UploadDataTableDialog } from "../components/DataTablesPage/UploadDataTableDialog";
 import { UploadStatusPanel } from "../components/DataTablesPage/UploadStatusPanel";
 import { useUploadStore } from "../stores/uploadStore";
-import type { DataTableInfo } from "shared/types/dataTable";
+import { useAllTableInfos } from "../hooks/queries/dataTable";
 import type { CreateNavigateState, PageConfig } from "../types";
 
 export const DataTablesPage = () => {
   const [searchText, setSearchText] = useState("");
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [tableInfos, setTableInfos] = useState<DataTableInfo[]>([]);
+  const { data: tableInfos = [], refetch: refreshTableInfos } = useAllTableInfos();
   const navigate = useNavigate();
 
   // 從 Zustand Store 獲取上傳狀態
   const uploads = useUploadStore((state) => state.uploads);
   const resetUploads = useUploadStore((state) => state.reset);
-
-  const refreshTableInfos = () => {
-    window.api.getAllTableInfos().then(setTableInfos);
-  };
 
   // 監聽 uploads 狀態的變化，並在有成功上傳時刷新列表
   useEffect(() => {
@@ -31,10 +27,9 @@ export const DataTablesPage = () => {
       console.log("Detected successful upload, refreshing table infos...");
       refreshTableInfos();
     }
-  }, [uploads]);
+  }, [uploads, refreshTableInfos]);
 
   useEffect(() => {
-    refreshTableInfos();
     // 頁面初次載入時清空上傳狀態，避免上次的紀錄影響本次
     return () => resetUploads();
   }, [resetUploads]);

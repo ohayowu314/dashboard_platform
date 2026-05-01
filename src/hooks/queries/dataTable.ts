@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { DataTableHeaderSchema } from "shared/types/dataTable";
+import type { UploadMode } from "shared/types/index";
 
 export const dataTableKeys = {
   all: ["dataTables"] as const,
@@ -23,16 +24,18 @@ export const useTable = (
     enabled: options?.enabled ?? !!id,
   });
 
-export const useCreateDataTable = () => {
+export const useUploadTable = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       tableInfo,
       content,
+      mode = "create",
     }: {
       tableInfo: { name: string; description?: string };
       content: DataTableHeaderSchema;
-    }) => window.api.uploadTable(tableInfo, content, "create"),
+      mode?: UploadMode;
+    }) => window.api.uploadTable(tableInfo, content, mode),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dataTableKeys.lists() });
     },
@@ -65,5 +68,11 @@ export const useDeleteDataTable = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dataTableKeys.lists() });
     },
+  });
+};
+
+export const useCheckTablesConflict = () => {
+  return useMutation({
+    mutationFn: (names: string[]) => window.api.checkTablesConflict(names),
   });
 };

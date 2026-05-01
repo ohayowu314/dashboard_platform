@@ -1,5 +1,5 @@
 // ChartEditorPage - 區塊 config 編輯入口頁面
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
@@ -44,8 +44,9 @@ import {
 } from "recharts";
 import { PageWrapper } from "../components/layout/PageWrapper";
 import type { ChartType } from "shared/types/chart";
-import type { ChartBlockConfig, ChartChartBlockConfig, TableChartBlockConfig, DashboardWithConfig } from "shared/types/dashboard";
+import type { ChartBlockConfig, ChartChartBlockConfig, TableChartBlockConfig } from "shared/types/dashboard";
 import { useAllTableInfos, useTable } from "../hooks/queries/dataTable";
+import { useDashboardDraft, useSaveDashboardDraft } from "../hooks/queries/dashboard";
 
 const CHART_COLORS = [
   "#8884d8",
@@ -181,34 +182,25 @@ const renderChart = (
 
 export const ChartEditorPage = () => {
   const { id, blockId } = useParams<{ id: string; blockId: string }>();
+  const numericId = Number(id);
   const navigate = useNavigate();
   const location = useLocation();
 
   const state = location.state as { returnTo?: string };
   const returnTo = state?.returnTo || `/dashboards/edit/${id}`;
 
-  const [fullDashboard, setFullDashboard] = useState<DashboardWithConfig | null>(null);
-  const [config, setConfig] = useState<ChartBlockConfig | null>(null);
-  const [loadingDraft, setLoadingDraft] = useState(true);
+  const { data: fullDashboard, isLoading: loadingDraft } = useDashboardDraft(numericId);
+  const { mutateAsync: saveDraft } = useSaveDashboardDraft();
 
-  useEffect(() => {
-    const loadDraft = async () => {
-      if (id) {
-        try {
-          const dashboard = await window.api.getDashboardDraft(Number(id));
-          setFullDashboard(dashboard);
-          const block = dashboard.config.blocks.find((b) => b.id === blockId);
-          if (block) {
-            setConfig(block.config);
-          }
-        } catch (e) {
-          console.error("載入草稿失敗", e);
-        }
-        setLoadingDraft(false);
-      }
-    };
-    loadDraft();
-  }, [id, blockId]);
+  const [config, setConfig] = useState<ChartBlockConfig | null>(null);
+
+  // 初始化 config：如果在渲染期間發現 config 為空且草稿已載入，則從中提取對應區塊的設定
+  if (config === null && fullDashboard && blockId) {
+    const block = fullDashboard.config.blocks.find((b) => b.id === blockId);
+    if (block) {
+      setConfig(block.config);
+    }
+  }
 
   const { data: tables, isLoading: loadingTables } = useAllTableInfos();
   const { data: tableData, isLoading: loadingTableData } = useTable(
@@ -216,11 +208,11 @@ export const ChartEditorPage = () => {
     { enabled: (config?.dataTableId || 0) > 0 }
   );
 
-  const headers = tableData?.data.headers || [];
-  const tableRows = tableData?.data.rows || [];
-
   const chartData = useMemo(() => {
-    if (!tableRows.length || !config) return [];
+    if (!tableData || !config) return [];
+    const headers = tableData.data.headers;
+    const tableRows = tableData.data.rows;
+
     return tableRows.map((row) => {
       const obj: Record<string, unknown> = {};
       headers.forEach((h, i) => {
@@ -228,7 +220,9 @@ export const ChartEditorPage = () => {
       });
       return obj;
     });
-  }, [tableRows, headers]);
+  }, [tableData, config]);
+
+  const headers = tableData?.data.headers || [];
 
   if (loadingDraft) {
     return (
@@ -260,8 +254,8 @@ export const ChartEditorPage = () => {
     const updatedConfig = { ...fullDashboard.config, blocks: updatedBlocks };
 
     // 儲存至草稿
-    await window.api.saveDashboardDraft(fullDashboard.info.id, updatedConfig);
-    
+    await saveDraft({ id: numericId, config: updatedConfig });
+
     // 返回儀表板編輯頁面
     navigate(returnTo);
   };

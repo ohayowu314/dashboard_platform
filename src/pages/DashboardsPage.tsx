@@ -1,26 +1,19 @@
 // src/pages/DashboardsPage.tsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageWrapper } from "../components/layout/PageWrapper";
 import { GenericListPage } from "../components/common/GenericListPage";
 import { DashboardList } from "../components/DashboardsPage/DashboardList";
 import { UploadDashboardDialog } from "../components/DashboardsPage/UploadDashboardDialog";
 import type { PageConfig } from "../../src/types";
-import type { DashboardInfo } from "shared/types/dashboard";
+import { useAllDashboards, useCreateDashboard } from "../hooks/queries/dashboard";
 
 export const DashboardsPage = () => {
   const [searchText, setSearchText] = useState("");
-  const [dashboardInfos, setDashboardInfos] = useState<DashboardInfo[]>([]);
+  const { data: dashboardInfos = [], refetch } = useAllDashboards();
+  const { mutateAsync: createDashboard } = useCreateDashboard();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const navigate = useNavigate();
-
-  const refreshDashboardInfos = () => {
-    window.api.getAllDashboards().then(setDashboardInfos);
-  };
-
-  useEffect(() => {
-    refreshDashboardInfos();
-  }, []);
 
   const handleNewDashboardClick = async () => {
     const defaultName = `未命名儀表板_${Date.now()}`;
@@ -30,7 +23,11 @@ export const DashboardsPage = () => {
       settings: { columns: 12, rowHeight: 50 },
     };
     try {
-      const result = await window.api.createDashboard(defaultName, "", defaultConfig);
+      const result = await createDashboard({
+        title: defaultName,
+        description: "",
+        config: defaultConfig,
+      });
       navigate(`/dashboards/edit/${result.info.id}`, { state: { isNew: true } });
     } catch (e) {
       console.error("建立儀表板失敗", e);
@@ -61,7 +58,7 @@ export const DashboardsPage = () => {
             <DashboardList
               dashboards={items}
               viewMode={viewMode}
-              refresh={refreshDashboardInfos}
+              refresh={refetch}
             />
           )}
         />
