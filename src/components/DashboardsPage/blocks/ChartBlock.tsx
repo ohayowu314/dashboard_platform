@@ -33,7 +33,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import type { ChartBlockConfig, ChartChartBlockConfig, TableChartBlockConfig } from "shared/types/dashboard";
-import type { ChartType } from "shared/types/chart";
+import type { ChartType } from "shared/types/dashboard";
 import { useTable } from "../../../hooks/queries/dataTable";
 
 const CHART_COLORS = [

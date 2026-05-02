@@ -43,8 +43,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { PageWrapper } from "../components/layout/PageWrapper";
-import type { ChartType } from "shared/types/chart";
-import type { ChartBlockConfig, ChartChartBlockConfig, TableChartBlockConfig } from "shared/types/dashboard";
+import type { ChartType, ChartBlockConfig, ChartChartBlockConfig, TableChartBlockConfig } from "shared/types/dashboard";
 import { useAllTableInfos, useTable } from "../hooks/queries/dataTable";
 import { useDashboardDraft, useSaveDashboardDraft } from "../hooks/queries/dashboard";
 
