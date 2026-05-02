@@ -98,8 +98,20 @@ export const useDeleteDashboard = () => {
   });
 };
 
-export const useCheckDashboardConflict = () => {
-  return useMutation({
-    mutationFn: (name: string) => window.api.checkDashboardConflict(name),
+export const useDashboardConflict = (name: string, options?: { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: [...dashboardKeys.all, "conflict", name],
+    queryFn: () => window.api.checkDashboardConflict(name),
+    enabled: options?.enabled !== false && !!name,
+    staleTime: 1000 * 60 * 5, // 5 分鐘內視為有效
+  });
+};
+
+export const useDashboardsConflict = (names: string[], options?: { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: [...dashboardKeys.all, "conflicts", names],
+    queryFn: () => Promise.all(names.map((name) => window.api.checkDashboardConflict(name))),
+    enabled: options?.enabled !== false && names.length > 0,
+    staleTime: 1000 * 60 * 5,
   });
 };

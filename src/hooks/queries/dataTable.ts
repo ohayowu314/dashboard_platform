@@ -71,8 +71,11 @@ export const useDeleteDataTable = () => {
   });
 };
 
-export const useCheckTablesConflict = () => {
-  return useMutation({
-    mutationFn: (names: string[]) => window.api.checkTablesConflict(names),
+export const useTablesConflict = (names: string[], options?: { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: [...dataTableKeys.all, "conflicts", names],
+    queryFn: () => window.api.checkTablesConflict(names),
+    enabled: options?.enabled !== false && names.length > 0,
+    staleTime: 1000 * 60 * 5, // 5 分鐘內視為有效
   });
 };

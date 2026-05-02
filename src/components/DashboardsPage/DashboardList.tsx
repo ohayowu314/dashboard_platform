@@ -4,6 +4,7 @@ import { GenericEntityList } from "../common/GenericEntityList";
 import type { DashboardInfo } from "shared/types/dashboard";
 import { useSetSystemConfig, SYSTEM_CONFIG_KEYS } from "../../hooks/queries/systemConfig";
 import { useToast } from "../../hooks/useToast";
+import { useDeleteDashboard } from "../../hooks/queries/dashboard";
 
 interface Props {
   dashboards: DashboardInfo[];
@@ -14,6 +15,7 @@ interface Props {
 export const DashboardList = ({ dashboards, viewMode, refresh }: Props) => {
   const navigate = useNavigate();
   const { mutate: setConfig } = useSetSystemConfig();
+  const { mutate: deleteDashboard } = useDeleteDashboard();
   const { success } = useToast();
 
   const handleCustomAction = (action: string, dashboard: DashboardInfo) => {
@@ -36,7 +38,7 @@ export const DashboardList = ({ dashboards, viewMode, refresh }: Props) => {
       getMetadata={(d) => ({ 描述: d.description || "-" })}
       onClick={(d) => navigate(`/dashboards/view/${d.id}`)}
       onDelete={async (d) => {
-        await window.api.deleteDashboard(d.id);
+        deleteDashboard(d.id);
         refresh();
       }}
       onCustomAction={handleCustomAction}
