@@ -2,9 +2,8 @@
 import { useState, useEffect } from "react";
 import type { DataTableHeaderSchema, TableId } from "shared/types/dataTable";
 import type { EditorMode } from "../types";
-import { useFileParser } from "./useFileParser";
 import { useTableGetter } from "./useTableGetter";
-import { getNameFromFile } from "../utils";
+import { getNameFromFile, parseDataFile } from "../utils";
 
 export interface DataTableState {
   data: DataTableHeaderSchema | null;
@@ -29,52 +28,47 @@ export const useTableDataInitializer = (
     error: tableGettedError,
   } = useTableGetter(tableId);
 
-  const {
-    loading: fileParsedLoading,
-    data: fileParsedData,
-    error: fileParsedError,
-  } = useFileParser(file);
-
   useEffect(() => {
     console.log("[useTableDataInitializer] useEffect 觸發, editorMode:", editorMode);
-
-    if (editorMode === "edit" && tableId && !tableGettedLoading) {
-      console.log("[useTableDataInitializer] edit 模式處理, tableGettedInfo:", tableGettedInfo, "tableGettedData:", !!tableGettedData, "tableGettedError:", tableGettedError);
-      if (tableGettedError) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setError(tableGettedError);
+    async function init() {
+      setLoading(true);
+      try {
+        if (editorMode === "edit" && tableId) {
+          console.log("[useTableDataInitializer] edit 模式處理, tableGettedInfo:", tableGettedInfo, "tableGettedData:", !!tableGettedData, "tableGettedError:", tableGettedError);
+          if (tableGettedLoading) return;
+          if (tableGettedError) {
+            setError(tableGettedError);
+          } else {
+            setInitialState({
+              data: tableGettedData,
+              name: tableGettedInfo?.name || "未命名表格",
+              id: tableId,
+            });
+          }
+        } else if (editorMode === "upload" && file) {
+          console.log("[useTableDataInitializer] upload 模式處理, file:", file);
+          const parsedData = await parseDataFile(file);
+          setInitialState({
+            data: parsedData,
+            name: getNameFromFile(file.name),
+            id: null,
+          });
+        } else if (editorMode === "create") {
+          console.log("[useTableDataInitializer] create 模式處理");
+          setInitialState({
+            data: { headers: ["Column 1"], rows: [[]] },
+            name: "未命名表格",
+            id: null,
+          });
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "載入失敗");
+      } finally {
         setLoading(false);
-        return;
       }
-      setInitialState({
-        data: tableGettedData,
-        name: tableGettedInfo?.name || "未命名表格",
-        id: tableId,
-      });
-      setLoading(false);
-    } else if (editorMode === "upload" && file && !fileParsedLoading) {
-      console.log("[useTableDataInitializer] upload 模式處理, fileParsedError:", fileParsedError, "fileParsedData:", !!fileParsedData);
-      if (fileParsedError) {
-        setError(fileParsedError);
-        setLoading(false);
-        return;
-      }
-      setInitialState({
-        data: fileParsedData,
-        name: file ? getNameFromFile(file.name) : "未命名表格",
-        id: null,
-      });
-      setLoading(false);
-    } else if (editorMode === "create") {
-      console.log("[useTableDataInitializer] create 模式處理");
-      setInitialState({
-        data: { headers: ["Column 1"], rows: [[]] },
-        name: "未命名表格",
-        id: null,
-      });
-      setLoading(false);
     }
-  }, [editorMode, tableId, file, tableGettedLoading, fileParsedLoading, tableGettedData, tableGettedInfo, tableGettedError, fileParsedData, fileParsedError]);
+    init();
+  }, [editorMode, tableId, file, tableGettedLoading, tableGettedData, tableGettedInfo, tableGettedError]);
 
   console.log("[useTableDataInitializer] 返回, loading:", loading, "error:", error, "initialState:", !!initialState);
   return { loading, error, initialState };
