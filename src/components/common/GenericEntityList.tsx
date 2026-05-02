@@ -14,6 +14,7 @@ export interface GenericEntityListProps<T> {
   onDelete?: (item: T) => Promise<void>;
   onExport?: (item: T) => void;
   onUpdate?: (item: T) => void;
+  onCustomAction?: (action: string, item: T) => void;
   actions?: { key: string; label: string }[];
   deleteConfirmTitle?: string;
   deleteConfirmContent?: string;
@@ -31,6 +32,7 @@ export function GenericEntityList<T>({
   onDelete,
   onExport,
   onUpdate,
+  onCustomAction,
   actions = [
     { key: "update", label: "更新" },
     { key: "export", label: "匯出" },
@@ -70,6 +72,9 @@ export function GenericEntityList<T>({
       case "update":
         onUpdate?.(item);
         break;
+      default:
+        onCustomAction?.(action, item);
+        break;
     }
   };
 
@@ -95,11 +100,11 @@ export function GenericEntityList<T>({
               confirmMessages={
                 hasDeleteAction
                   ? {
-                      delete: {
-                        title: deleteConfirmTitle,
-                        content: deleteConfirmContent,
-                      },
-                    }
+                    delete: {
+                      title: deleteConfirmTitle,
+                      content: deleteConfirmContent,
+                    },
+                  }
                   : undefined
               }
             />

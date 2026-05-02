@@ -1,5 +1,4 @@
 // src/pages/DashboardViewPage.tsx
-import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Box, CircularProgress, Alert, Typography } from "@mui/material";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -9,34 +8,14 @@ import PageHeader from "../components/common/PageHeader";
 import { MainTitle } from "../components/common/MainTitle";
 import { ActionButtonGroup } from "../components/common/ActionButtonGroup";
 import { DashboardCanvas } from "../components/DashboardsPage/DashboardCanvas";
-import type { DashboardWithConfig } from "shared/types/dashboard";
+import { useDashboard } from "../hooks/queries/dashboard";
 
 export const DashboardViewPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [dashboard, setDashboard] = useState<DashboardWithConfig | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const numericId = Number(id);
 
-  useEffect(() => {
-    const fetchDashboard = async () => {
-      try {
-        const numericId = Number(id);
-        if (isNaN(numericId)) {
-          setError("無效的儀表板 ID");
-          setLoading(false);
-          return;
-        }
-        const result = await window.api.getDashboard(numericId);
-        setDashboard(result);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "載入失敗");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchDashboard();
-  }, [id]);
+  const { data: dashboard, isLoading, error } = useDashboard(numericId);
 
   const handleEditClick = () => {
     navigate(`/dashboards/edit/${id}`, {
@@ -49,7 +28,7 @@ export const DashboardViewPage = () => {
     console.log("Export dashboard");
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageWrapper
         breadcrumbItems={[
@@ -74,7 +53,7 @@ export const DashboardViewPage = () => {
         ]}
         content={
           <Box sx={{ p: 3 }}>
-            <Alert severity="error">{error || "無法載入儀表板"}</Alert>
+            <Alert severity="error">{error instanceof Error ? error.message : "無法載入儀表板"}</Alert>
           </Box>
         }
       />

@@ -1,5 +1,6 @@
 import { FileManager } from "../models/FileManager.cjs";
 import { DashboardManager } from "../models/DashboardManager.cjs";
+import { SystemConfigManager } from "../models/SystemConfigManager.cjs";
 import {
   DashboardInfo,
   DashboardConfig,
@@ -155,6 +156,12 @@ export const deleteDashboard = (
   const dashboard = DashboardManager.getDashboardById(id);
   if (!dashboard) {
     throw new Error("儀表板不存在");
+  }
+
+  // 檢查是否為預設儀表板，如果是則清理配置
+  const defaultId = SystemConfigManager.getConfig("defaultDashboardId");
+  if (defaultId === id.toString()) {
+    SystemConfigManager.deleteConfig("defaultDashboardId");
   }
 
   // 取得儀表板目錄並刪除整個目錄

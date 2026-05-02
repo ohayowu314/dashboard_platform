@@ -55,8 +55,14 @@ interface DashboardAPI {
   checkDashboardConflict: (name: string) => Promise<ConflictResult>;
 }
 
+interface SystemConfigAPI {
+  getSystemConfig: (key: string) => Promise<string | null>;
+  setSystemConfig: (key: string, value: string) => Promise<void>;
+  deleteSystemConfig: (key: string) => Promise<void>;
+}
+
 declare global {
   interface Window {
-    api: DataTableAPI & DashboardAPI;
+    api: DataTableAPI & DashboardAPI & SystemConfigAPI;
   }
 }
