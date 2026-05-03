@@ -4,6 +4,43 @@
 
 ---
 
+## [0.4.0-alpha](https://github.com/ohayowu314/dashboard_platform/compare/v0.3.0...v0.4.0-alpha) (2026-05-03)
+此版本聚焦於首頁導航體驗的自動化、系統配置持久化，以及歷史架構的大規模清理。
+
+### ✨ Features 新功能
+
+#### 🏠 首頁與導航 Home & Navigation (Issue #63)
+- **首頁動態導入邏輯 (Dynamic Home Entry)**
+  - 根據系統狀態自動切換「引導模式」與「效率模式」。
+  - **引導模式 (Onboarding Mode)**：若系統無任何儀表板，顯示歡迎頁面與快速開始指引。
+  - **效率模式 (Efficiency Mode)**：若已有儀表板，自動跳轉至預設或首個儀表板的瀏覽模式 (View Mode)。
+- **預設儀表板持久化 (Default Dashboard Persistence)**
+  - 實作 `defaultDashboardId` 的後端儲存機制，讓使用者能設定首頁預設載入的內容。
+  - 具備自動降級 (Fallback) 機制，若預設 ID 失效將自動載入清單首位。
+
+#### ⚙️ 系統配置 System Configuration
+- **SystemConfigManager**
+  - 新增專用的配置管理模組，支援全域設定的持久化儲存。
+  - 暴露 IPC 介面供前端讀取與寫入系統配置。
+
+---
+
+### 🗑️ Removals & Cleanup 移除與清理 (Issue #65)
+- **徹底廢止舊版圖表系統**
+  - 移除 `ChartService`、`ChartManager` 等歷史遺留模組與相關 IPC 註冊。
+  - 刪除 `useFileParser.tsx` 及其相關連的過時邏輯。
+- **型別清理**
+  - 移除 `shared/types` 中已廢棄的圖表相關結構定義（如 `chart.ts`, `chart.js`）。
+
+---
+
+### 📉 Evaluated & Abandoned 評估後放棄 (Issue #64)
+- **UI 載入體驗標準化 (Skeleton Screens)**
+  - 原計畫全站引入骨架屏以取代 `CircularProgress`。
+  - **放棄原因**：經實測，骨架屏渲染時間過長，且在快速切換時產生的視覺閃爍過於突兀，未達預期的流暢感，決定維持現有載入機制並尋求其他優化方案。
+
+---
+
 ## [0.3.0](https://github.com/ohayowu314/dashboard_platform/compare/v0.2.1...v0.3.0) (2026-04-24)
 此版本為重大架構重構，核心聚焦於儀表板區塊系統的統一、引入編輯草稿機制，並全面廢止獨立圖表功能。
 
