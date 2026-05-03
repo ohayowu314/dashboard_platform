@@ -5,6 +5,7 @@ export const dashboardKeys = {
   all: ["dashboards"] as const,
   lists: () => [...dashboardKeys.all, "list"] as const,
   details: (id: number) => [...dashboardKeys.all, "detail", id] as const,
+  drafts: (id: number) => [...dashboardKeys.all, "draft", id] as const,
 };
 
 export const useAllDashboards = () =>
@@ -19,6 +20,34 @@ export const useDashboard = (id: number) =>
     queryFn: () => window.api.getDashboard(id),
     enabled: !!id,
   });
+
+export const useDashboardDraft = (id: number) =>
+  useQuery({
+    queryKey: dashboardKeys.drafts(id),
+    queryFn: () => window.api.getDashboardDraft(id),
+    enabled: !!id,
+  });
+
+export const useSaveDashboardDraft = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, config }: { id: number; config: DashboardConfig }) =>
+      window.api.saveDashboardDraft(id, config),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.drafts(id) });
+    },
+  });
+};
+
+export const useDeleteDashboardDraft = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => window.api.deleteDashboardDraft(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.drafts(id) });
+    },
+  });
+};
 
 export const useCreateDashboard = () => {
   const queryClient = useQueryClient();
@@ -66,5 +95,23 @@ export const useDeleteDashboard = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dashboardKeys.lists() });
     },
+  });
+};
+
+export const useDashboardConflict = (name: string, options?: { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: [...dashboardKeys.all, "conflict", name],
+    queryFn: () => window.api.checkDashboardConflict(name),
+    enabled: options?.enabled !== false && !!name,
+    staleTime: 1000 * 60 * 5, // 5 分鐘內視為有效
+  });
+};
+
+export const useDashboardsConflict = (names: string[], options?: { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: [...dashboardKeys.all, "conflicts", names],
+    queryFn: () => Promise.all(names.map((name) => window.api.checkDashboardConflict(name))),
+    enabled: options?.enabled !== false && names.length > 0,
+    staleTime: 1000 * 60 * 5,
   });
 };

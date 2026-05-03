@@ -132,7 +132,7 @@ export const DataTableManager = {
   getNewTableName(originalName: string): string {
     // 步驟 1: 建立查詢參數
     // \_\ 是字面上的底線，因為 LIKE 中的 '_' 是單個字符萬用字元。
-    const patternPrefix = originalName + "\\_";
+    const patternPrefix = originalName + "/_";
 
     // 建立 SQL 查詢
     // 我們使用 WHERE name GLOB... 來更好地匹配起始字符並檢查數字結尾
@@ -143,7 +143,7 @@ export const DataTableManager = {
         WHERE 
           name = @originalName 
           OR 
-          name LIKE @patternPrefix || '%'
+          name LIKE @patternPrefix || '%' ESCAPE '/'
     `;
 
     // 步驟 2: 執行查詢並獲取所有潛在衝突的名稱

@@ -1,4 +1,5 @@
 // src/components/DashboardsPage/UploadDashboardDialog.tsx
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GenericUploadDialog } from "../common/GenericUploadDialog";
 import {
@@ -9,12 +10,17 @@ import {
 import { parseDashboardFile } from "../../utils";
 import type { UploadNavigateState } from "../../types";
 import type { DashboardWithConfig } from "shared/types/dashboard";
+import { useDashboardsConflict } from "../../hooks/queries/dashboard";
 
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
+/**
+ * 儀表板上傳處理函式。
+ * 注意：因位於組件外部且用於 Zustand Store 的非同步流程中，故直接調用 window.api（符合 GEMINI.md 規範例外）。
+ */
 const handleDashboardUpload: UploadHandler<DashboardWithConfig> = async (
   file,
   _resourceName,
@@ -35,6 +41,10 @@ const handleDashboardUpload: UploadHandler<DashboardWithConfig> = async (
 export const UploadDashboardDialog = ({ open, onClose }: Props) => {
   const navigate = useNavigate();
   const { startUploads } = useUploadStore();
+  const [namesToCheck, setNamesToCheck] = useState<string[]>([]);
+
+  // 使用宣告式 Hook 進行衝突檢查
+  const { data: conflictResults, isLoading: isCheckingConflict } = useDashboardsConflict(namesToCheck);
 
   const handleSingleFileConfirmed = (file: File) => {
     console.log("單一檔案上傳，導航至上傳儀表板頁面...");
@@ -52,14 +62,6 @@ export const UploadDashboardDialog = ({ open, onClose }: Props) => {
     startUploads(filesStatus, handleDashboardUpload);
   };
 
-  const checkConflictApi = (dashboardNames: string[]) => {
-    return Promise.all(
-      dashboardNames.map((name) =>
-        window.api.checkDashboardConflict(name)
-      )
-    );
-  };
-
   return (
     <GenericUploadDialog
       open={open}
@@ -68,7 +70,9 @@ export const UploadDashboardDialog = ({ open, onClose }: Props) => {
       resourceType="dashboard"
       fileAccept="application/json"
       isMultiFileUpload={true}
-      checkConflict={checkConflictApi}
+      onNamesChange={setNamesToCheck}
+      conflictResults={conflictResults}
+      isCheckingConflict={isCheckingConflict}
       onSingleFileConfirmed={handleSingleFileConfirmed}
       onMultiFilesConfirmed={handleMultiFilesConfirmed}
     />

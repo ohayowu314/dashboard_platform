@@ -11,13 +11,14 @@ import {
 import { parseDataFile } from "../../utils";
 import type { UploadNavigateState } from "../../types";
 import type { DataTableInfo } from "shared/types/dataTable";
+import { useTablesConflict } from "../../hooks/queries/dataTable";
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-}
+interface Props { open: boolean; onClose: () => void; }
 
-// 實作 Table 專屬的上傳處理函式 (傳入 Store)
+/**
+ * 資料表格上傳處理函式。
+ * 注意：因位於組件外部且用於 Zustand Store 的流程中，故直接調用 window.api（符合 GEMINI.md 規範例外）。
+ */
 const handleTableUpload: UploadHandler<DataTableInfo> = async (
   file,
   resourceName,
@@ -40,6 +41,10 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
   const [uploadMode, setUploadMode] = useState<"mode1" | "mode2">("mode1");
   const navigate = useNavigate();
   const { startUploads } = useUploadStore();
+  const [namesToCheck, setNamesToCheck] = useState<string[]>([]);
+
+  // 使用宣告式 Hook 進行衝突檢查
+  const { data: conflictResults, isLoading: isCheckingConflict } = useTablesConflict(namesToCheck);
 
   // 1. 處理單一檔案確認：導航到編輯頁面
   const handleSingleFileConfirmed = (file: File) => {
@@ -57,11 +62,6 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
   ) => {
     console.log("多個檔案上傳，開始非同步上傳流程並返回列表頁...");
     startUploads(filesStatus, handleTableUpload);
-  };
-
-  // 3. Table 專屬的衝突檢查 API 呼叫
-  const checkConflictApi = (tableNames: string[]) => {
-    return window.api.checkTablesConflict(tableNames);
   };
 
   // 4. Table 專屬的 Mode 選擇 UI 和過濾邏輯
@@ -111,7 +111,9 @@ export const UploadDataTableDialog = ({ open, onClose }: Props) => {
           : "application/json"
       }
       isMultiFileUpload={true} // DataTable 支援多檔案上傳
-      checkConflict={checkConflictApi}
+      onNamesChange={setNamesToCheck}
+      conflictResults={conflictResults}
+      isCheckingConflict={isCheckingConflict}
       onSingleFileConfirmed={handleSingleFileConfirmed}
       onMultiFilesConfirmed={handleMultiFilesConfirmed}
       extraOptions={extraOptions}

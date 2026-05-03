@@ -12,6 +12,7 @@ import {
   FormControl,
   Select,
   MenuItem,
+  LinearProgress,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import WarningIcon from "@mui/icons-material/Error";
@@ -36,8 +37,12 @@ interface Props<SelectedModeType extends string = string> {
   fileAccept: string;
   // 單檔案/多檔案上傳模式
   isMultiFileUpload: boolean;
-  // 檢查衝突的 API 呼叫函式 (由各資源元件提供)
-  checkConflict: (names: string[]) => Promise<ConflictResult[]>;
+  // (New) 通知父組件需要檢查的名稱列表
+  onNamesChange?: (names: string[]) => void;
+  // (New) 由父組件傳入的衝突檢查結果
+  conflictResults?: ConflictResult[];
+  // (New) 是否正在檢查中
+  isCheckingConflict?: boolean;
   // 處理單一檔案上傳完成並導航的邏輯 (例如：跳轉到編輯頁面)
   onSingleFileConfirmed: (file: File) => void;
   // 處理多檔案上傳 (例如：呼叫 Store 的 startUploads) 的邏輯
@@ -54,10 +59,12 @@ export const GenericUploadDialog = <SelectedModeType extends string = string>({
   open,
   onClose,
   title,
-  resourceType,
+  resourceType: _resourceType,
   fileAccept,
   isMultiFileUpload,
-  checkConflict,
+  onNamesChange,
+  conflictResults,
+  isCheckingConflict = false,
   onSingleFileConfirmed,
   onMultiFilesConfirmed,
   extraOptions,
@@ -66,8 +73,7 @@ export const GenericUploadDialog = <SelectedModeType extends string = string>({
     []
   );
   const [isDragOver, setIsDragOver] = useState(false);
-  // 使用 useDebounce 監聽 filesStatus 的變化，確保穩定後才檢查
-  // 由於 filesStatus 包含了 File 物件（非原始型別），所以當檔案被加入時，filesStatus 會是新的陣列
+  // 使用 useDebounce 監聽 filesStatus 的變化，確保穩定後才觸發外部檢查
   const debouncedFilesStatus = useDebounce(filesStatus, 300);
 
   // 獲取目前已選擇的檔案 ID (即原始檔名)
@@ -75,6 +81,31 @@ export const GenericUploadDialog = <SelectedModeType extends string = string>({
     () => new Set(filesStatus.map((f) => f.id)),
     [filesStatus]
   );
+
+  // 當 debouncedFilesStatus 改變時，通知父組件
+  useEffect(() => {
+    if (onNamesChange) {
+      const names = debouncedFilesStatus.map((f) => f.resourceName);
+      onNamesChange(names);
+    }
+  }, [debouncedFilesStatus, onNamesChange]);
+
+  // 狀態同步：在渲染期間根據傳入的 conflictResults 更新 filesStatus
+  const [prevConflictResults, setPrevConflictResults] = useState<ConflictResult[] | undefined>(undefined);
+  if (conflictResults !== prevConflictResults) {
+    setPrevConflictResults(conflictResults);
+    if (conflictResults && conflictResults.length === filesStatus.length) {
+      setFilesStatus((prevStatus) =>
+        prevStatus.map((status, i) => {
+          const result = conflictResults[i];
+          if (result && result.name === status.resourceName) {
+            return { ...status, isConflict: result.isConflict };
+          }
+          return status;
+        })
+      );
+    }
+  }
 
   /** 預處理新的檔案列表，過濾無效檔案並建立 FileStatus 物件 */
   const preprocessFiles = (
@@ -164,47 +195,6 @@ export const GenericUploadDialog = <SelectedModeType extends string = string>({
     setFilesStatus([]);
   };
 
-  // --- 衝突檢查邏輯 ---
-  useEffect(() => {
-    // 檢查 debounce 後的狀態列表
-    if (debouncedFilesStatus.length > 0) {
-      // 提取用於檢查的純淨名稱列表 (resourceName)
-      const resourceNamesToCheck = debouncedFilesStatus.map(
-        (f) => f.resourceName
-      );
-
-      // 呼叫衝突檢查函數
-      checkConflict(resourceNamesToCheck)
-        .then((conflictResults: ConflictResult[]) => {
-          // *** 檢查結果與輸入順序必須一致 ***
-          if (conflictResults.length !== debouncedFilesStatus.length) {
-            console.error("Conflict check result length mismatch!");
-            return;
-          }
-          // 根據衝突結果更新狀態
-          setFilesStatus((prevStatus) =>
-            // 由於 debouncedFilesStatus 順序是穩定的，我們可以按索引進行更新
-            prevStatus.map((status, i) => {
-              const conflictResult = conflictResults[i];
-
-              // 再次檢查 name 確保順序沒亂（可選的安全檢查）
-              if (conflictResult.name !== status.resourceName) {
-                console.error("Conflict check result name mismatch!");
-                return status;
-              }
-
-              // 更新衝突狀態，保留使用者已做的 action 選擇
-              return { ...status, isConflict: conflictResult.isConflict };
-            })
-          );
-        })
-        .catch((error) => {
-          // 處理錯誤情況，例如顯示錯誤訊息
-          console.error(`Error checking ${resourceType} conflicts:`, error);
-        });
-    }
-  }, [debouncedFilesStatus, resourceType, checkConflict]);
-
   // 確保 disabled 狀態基於 filesStatus
   const isConfirmDisabled = filesStatus.length === 0;
 
@@ -253,9 +243,22 @@ export const GenericUploadDialog = <SelectedModeType extends string = string>({
             cursor: "pointer",
             bgcolor: isDragOver ? "action.hover" : "#f9f9f9",
             transition: "all 0.3s ease-in-out",
+            position: "relative",
+            overflow: "hidden",
           }}
           onClick={() => document.getElementById("file-upload-input")?.click()}
         >
+          {isCheckingConflict && (
+            <LinearProgress
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 4,
+              }}
+            />
+          )}
           <CloudUploadIcon color="primary" sx={{ fontSize: 40 }} />
           <Typography>拖曳檔案到此處，或點擊上傳</Typography>
           <input

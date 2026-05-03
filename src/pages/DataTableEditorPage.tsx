@@ -12,12 +12,16 @@ import PageHeader from "../components/common/PageHeader";
 import { useTableEditor } from "../hooks/useTableEditor";
 import { useTableDataInitializer } from "../hooks/useTableDataInitializer.tsx";
 import { useToast } from "../hooks/useToast";
+import { useUpdateDataTable, useUploadTable } from "../hooks/queries/dataTable";
 
 export const DataTableEditorPage: React.FC = () => {
   console.log("[DataTableEditorPage] renders");
   const location = useLocation();
   const navigate = useNavigate();
   const toast = useToast();
+
+  const { mutateAsync: updateTable } = useUpdateDataTable();
+  const { mutateAsync: uploadTable } = useUploadTable();
 
   const editorMode: EditorMode = location.state?.editorMode || null;
   const tableId: TableId | undefined = location.state?.tableId;
@@ -47,11 +51,11 @@ export const DataTableEditorPage: React.FC = () => {
     }
     try {
       if (initialState?.id) {
-        await window.api.updateTable(initialState.id, tableName, data);
+        await updateTable({ id: initialState.id, name: tableName, data });
         toast.success("更新成功!");
       } else {
         const tableInfo = { name: tableName, description: "" };
-        await window.api.uploadTable(tableInfo, data, "create");
+        await uploadTable({ tableInfo, content: data, mode: "create" });
         toast.success("儲存成功!");
       }
       navigate("/data-tables");

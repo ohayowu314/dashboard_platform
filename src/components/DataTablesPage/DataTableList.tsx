@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { GenericEntityList } from "../common/GenericEntityList";
 import type { DataTableInfo } from "shared/types/dataTable";
 import type { EditTableNavigateState } from "../../types";
+import { useDeleteDataTable } from "../../hooks/queries/dataTable";
 
 interface Props {
   dataTables: DataTableInfo[];
@@ -12,6 +13,7 @@ interface Props {
 
 export const DataTableList = ({ dataTables, viewMode, refresh }: Props) => {
   const navigate = useNavigate();
+  const { mutate: deleteTable } = useDeleteDataTable();
 
   return (
     <GenericEntityList<DataTableInfo>
@@ -29,7 +31,7 @@ export const DataTableList = ({ dataTables, viewMode, refresh }: Props) => {
         navigate("/data-tables/edit", { state });
       }}
       onDelete={async (t) => {
-        await window.api.deleteTable(t.id);
+        deleteTable(t.id);
         refresh();
       }}
       deleteConfirmTitle="刪除資料表"
